@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bandio — Give a Gift</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#f0eeea;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;}
+nav{background:#0e0e0e;padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#f5f2eb;text-decoration:none;}
+.logo span{color:#d4541a;}
+.nav-back{margin-left:auto;padding:.38rem .85rem;border:.5px solid rgba(255,255,255,.2);border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.78rem;color:rgba(255,255,255,.6);text-decoration:none;}
+.nav-back:hover{background:rgba(255,255,255,.08);color:#fff;}
+.page{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;}
+.card{background:#fff;border-radius:20px;max-width:480px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.1);overflow:hidden;}
+
+/* Hero top */
+.hero{background:linear-gradient(135deg,#0e0e0e 0%,#1e0f00 100%);padding:2.5rem 2rem 2rem;text-align:center;}
+.hero-emoji{font-size:2.8rem;margin-bottom:.75rem;display:block;}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:#f5f2eb;margin-bottom:.5rem;letter-spacing:-.02em;}
+.hero-sub{font-size:.88rem;color:rgba(245,242,235,.55);line-height:1.65;max-width:320px;margin:0 auto;}
+
+/* Thank you message */
+.thank-you{background:#fef9c3;border-bottom:1px solid #fde68a;padding:1.1rem 2rem;text-align:center;}
+.ty-text{font-size:.9rem;color:#78350f;line-height:1.65;font-style:italic;}
+.ty-sig{font-size:.82rem;color:#92400e;font-weight:600;margin-top:.35rem;}
+
+/* Card section */
+.card-section{padding:1.75rem 2rem;}
+.cs-label{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:.85rem;}
+
+.uzcard{background:#0e0e0e;border-radius:14px;padding:1.4rem 1.5rem;margin-bottom:1rem;}
+.uz-type{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.55rem;}
+.uz-num{font-size:1.3rem;font-weight:700;letter-spacing:.12em;color:#fff;font-family:monospace;margin-bottom:.35rem;}
+.uz-name{font-size:.82rem;color:rgba(255,255,255,.55);margin-bottom:.9rem;}
+.copy-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.38rem .9rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:100px;color:rgba(255,255,255,.65);font-family:'DM Sans',sans-serif;font-size:.76rem;cursor:pointer;transition:all .15s;}
+.copy-btn:hover{background:rgba(255,255,255,.18);color:#fff;}
+.copy-btn.copied{border-color:#4ade80;color:#4ade80;}
+
+/* Optional note */
+.note-section{padding:0 2rem 1.75rem;}
+.note-label{font-size:.82rem;font-weight:500;color:#555;margin-bottom:.45rem;}
+.note-ta{width:100%;border:1px solid #d8d5d0;border-radius:8px;padding:.65rem .85rem;font-family:'DM Sans',sans-serif;font-size:.86rem;line-height:1.65;color:#1a1a1a;resize:none;outline:none;min-height:80px;background:#fafaf9;}
+.note-ta:focus{border-color:#999;background:#fff;}
+.note-ta::placeholder{color:#bbb;}
+.note-hint{font-size:.72rem;color:#aaa;margin-top:.35rem;}
+.tg-link{display:flex;align-items:center;gap:.5rem;margin-top:.85rem;padding:.65rem .9rem;background:#f0eeea;border-radius:9px;text-decoration:none;transition:background .12s;}
+.tg-link:hover{background:#e0ddd8;}
+.tg-link-icon{font-size:1.1rem;}
+.tg-link-text{font-size:.84rem;color:#1a1a1a;font-weight:500;}
+.tg-link-sub{font-size:.74rem;color:#888;}
+
+/* Footer note */
+.footer-note{padding:1.1rem 2rem;border-top:1px solid #f0eeea;text-align:center;font-size:.76rem;color:#aaa;line-height:1.6;}
+</style>
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const app=initializeApp({apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"});
+  onAuthStateChanged(getAuth(app),function(u){if(!u)location.replace("bandio-login.html");});
+</script>
+</head>
+<body>
+<nav>
+  <a class="logo" href="bandio-home.html">Band<span>io</span></a>
+  <a class="nav-back" href="bandio-dashboard.html">← Dashboard</a>
+</nav>
+<div class="page">
+  <div class="card">
+
+    <div class="hero">
+      <span class="hero-emoji">🎁</span>
+      <div class="hero-title">Give a gift to Bandio</div>
+      <div class="hero-sub">This is completely optional. If Bandio has helped you on your IELTS journey, a small donation means the world and helps us keep improving.</div>
+    </div>
+
+    <div class="thank-you">
+      <div class="ty-text">"Every donation — no matter how small — helps me keep building Bandio, adding new tests, and making this the best free IELTS platform in Uzbekistan. Thank you from the bottom of my heart."</div>
+      <div class="ty-sig">— Asilbek, founder of Bandio</div>
+    </div>
+
+    <div class="card-section">
+      <div class="cs-label">Transfer to — Uzcard</div>
+      <div class="uzcard">
+        <div class="uz-type">Uzcard</div>
+        <div class="uz-num">9860 1606 1624 3459</div>
+        <div class="uz-name">Abdug'aniyev Asilbek</div>
+        <button class="copy-btn" id="copyBtn" onclick="doCopy()">
+          &#128203; Copy card number
+        </button>
+      </div>
+      <div style="font-size:.8rem;color:#888;line-height:1.6;">
+        You can transfer any amount you feel comfortable with — there is no minimum. Any contribution is genuinely appreciated. 🙏
+      </div>
+    </div>
+
+    <div class="note-section">
+      <div class="note-label">Leave a message (optional)</div>
+      <textarea class="note-ta" id="noteTA" placeholder="Write something kind — your encouragement keeps me going! 😊" rows="3"></textarea>
+      <div class="note-hint">Your message will be sent directly to Asilbek and he will read it personally.</div>
+      <button onclick="sendMessage()" id="sendBtn" style="width:100%;margin-top:.75rem;padding:.7rem;background:#1a1a1a;color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#d4541a'" onmouseout="this.style.background='#1a1a1a'">Send message ✈️</button>
+      <div id="send-ok" style="display:none;margin-top:.75rem;background:#dcfce7;border-radius:8px;padding:.65rem .9rem;font-size:.84rem;color:#166534;text-align:center;">✓ Message sent! Asilbek will read it soon. Thank you 🙏</div>
+    </div>
+
+    <div class="footer-note">
+      Donations go directly to maintaining and improving Bandio.<br>
+      This page is separate from Premium — donating does not activate Premium.
+    </div>
+
+  </div>
+</div>
+<script>
+function sendMessage() {
+  var msg = document.getElementById('noteTA').value.trim();
+  if (!msg) { alert('Please write a message first.'); return; }
+  var entry = {
+    id: Date.now(),
+    name: 'Gift donor',
+    email: '—',
+    category: 'Gift message',
+    rating: 5,
+    message: msg,
+    date: new Date().toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}),
+    time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+    read: false
+  };
+  try {
+    var existing = JSON.parse(localStorage.getItem('bnd_feedback') || '[]');
+    existing.unshift(entry);
+    localStorage.setItem('bnd_feedback', JSON.stringify(existing));
+  } catch(e) {}
+  document.getElementById('noteTA').value = '';
+  document.getElementById('sendBtn').style.display = 'none';
+  document.getElementById('send-ok').style.display = 'block';
+}
+function doCopy() {
+  var num = '9860160616243459';
+  var btn = document.getElementById('copyBtn');
+  function done() {
+    btn.innerHTML = '&#10003; Copied!';
+    btn.classList.add('copied');
+    setTimeout(function(){ btn.innerHTML = '&#128203; Copy card number'; btn.classList.remove('copied'); }, 2000);
+  }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(num).then(done).catch(function(){ fallback(num); done(); });
+  } else { fallback(num); done(); }
+}
+function fallback(t) {
+  var ta = document.createElement('textarea');
+  ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  document.execCommand('copy'); document.body.removeChild(ta);
+}
+</script>
+</body>
+</html>

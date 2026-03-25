@@ -1,0 +1,2297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bandio — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink:#0e0e0e; --paper:#f5f2eb; --cream:#ede9df;
+    --accent:#d4541a; --muted:#7a7468; --card:#ffffff;
+    --green:#2a9d68; --red:#e24b4a; --blue:#1a6bd4;
+    --sidebar:220px;
+  }
+  body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; display:flex; }
+
+  /* ── LOGIN SCREEN ── */
+  .login-screen { position:fixed; inset:0; z-index:1000; background:var(--paper); display:flex; align-items:center; justify-content:center; }
+  .login-card { background:var(--card); border-radius:20px; border:0.5px solid rgba(14,14,14,.08); padding:2.5rem; width:100%; max-width:380px; box-shadow:0 8px 40px rgba(14,14,14,.07); }
+  .login-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.5rem; letter-spacing:-.02em; margin-bottom:.4rem; }
+  .login-logo span { color:var(--accent); }
+  .login-badge { display:inline-block; background:rgba(212,84,26,.1); color:var(--accent); font-size:.7rem; font-weight:600; padding:.2rem .65rem; border-radius:5px; letter-spacing:.06em; text-transform:uppercase; margin-bottom:1.5rem; }
+  .login-title { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; letter-spacing:-.02em; margin-bottom:.4rem; }
+  .login-sub { font-size:.84rem; color:var(--muted); margin-bottom:1.75rem; line-height:1.5; }
+  .field { margin-bottom:1rem; }
+  .field label { display:block; font-size:.78rem; font-weight:500; margin-bottom:.4rem; }
+  .field input { width:100%; padding:.72rem 1rem; border:1px solid rgba(14,14,14,.15); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:.88rem; outline:none; transition:border-color .15s, box-shadow .15s; background:var(--paper); }
+  .field input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(212,84,26,.1); }
+  .login-err { background:#FCEBEB; border:0.5px solid #F09595; border-radius:8px; padding:.6rem .9rem; font-size:.8rem; color:#791F1F; margin-bottom:.85rem; display:none; }
+  .login-err.show { display:block; }
+  .btn-login { width:100%; padding:.85rem; background:var(--ink); color:var(--paper); border:none; border-radius:100px; font-family:'DM Sans',sans-serif; font-size:.9rem; font-weight:500; cursor:pointer; transition:background .15s; }
+  .btn-login:hover { background:var(--accent); }
+  .login-hint { font-size:.74rem; color:var(--muted); text-align:center; margin-top:1rem; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width:var(--sidebar); background:var(--ink); min-height:100vh; display:flex; flex-direction:column; padding:1.5rem 1rem; position:fixed; top:0; left:0; bottom:0; z-index:50; }
+  .s-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.2rem; color:var(--paper); text-decoration:none; display:block; margin-bottom:.35rem; }
+  .s-logo span { color:var(--accent); }
+  .s-badge { display:inline-block; background:rgba(212,84,26,.2); color:var(--accent); font-size:.62rem; font-weight:600; padding:.18rem .5rem; border-radius:4px; letter-spacing:.06em; text-transform:uppercase; margin-bottom:2rem; }
+  .s-label { font-size:.65rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:rgba(245,242,235,.25); padding:0 .5rem; margin-bottom:.4rem; margin-top:1.1rem; }
+  .s-item { display:flex; align-items:center; gap:.65rem; padding:.58rem .65rem; border-radius:9px; font-size:.84rem; color:rgba(245,242,235,.5); cursor:pointer; transition:all .15s; margin-bottom:2px; border:none; background:none; font-family:'DM Sans',sans-serif; width:100%; text-align:left; text-decoration:none; }
+  .s-item:hover { background:rgba(255,255,255,.07); color:rgba(245,242,235,.85); }
+  .s-item.active { background:rgba(212,84,26,.15); color:var(--paper); }
+  .s-item .si { font-size:.95rem; width:16px; text-align:center; flex-shrink:0; }
+  .s-bottom { margin-top:auto; padding-top:1rem; border-top:0.5px solid rgba(255,255,255,.08); }
+  .s-user { display:flex; align-items:center; gap:.65rem; padding:.5rem .65rem; }
+  .s-avatar { width:30px; height:30px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; font-size:.78rem; color:white; flex-shrink:0; }
+  .s-uname { font-size:.8rem; font-weight:500; color:rgba(245,242,235,.8); }
+  .s-urole { font-size:.68rem; color:rgba(245,242,235,.35); }
+
+  /* ── MAIN ── */
+  .main { margin-left:var(--sidebar); flex:1; padding:2rem 2.25rem; max-width:100%; }
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* Page header */
+  .page-hdr { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.75rem; }
+  .page-hdr-left h1 { font-family:'Syne',sans-serif; font-size:1.45rem; font-weight:800; letter-spacing:-.02em; }
+  .page-hdr-left p { font-size:.84rem; color:var(--muted); margin-top:.25rem; }
+  .btn-primary { display:inline-flex; align-items:center; gap:.4rem; padding:.6rem 1.25rem; background:var(--ink); color:var(--paper); border:none; border-radius:100px; font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:500; cursor:pointer; transition:background .15s; text-decoration:none; }
+  .btn-primary:hover { background:var(--accent); }
+  .btn-secondary { display:inline-flex; align-items:center; gap:.4rem; padding:.6rem 1.25rem; background:var(--card); color:var(--ink); border:0.5px solid rgba(14,14,14,.15); border-radius:100px; font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:500; cursor:pointer; transition:all .15s; }
+  .btn-secondary:hover { border-color:var(--ink); }
+
+  /* Stats row */
+  .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.85rem; margin-bottom:1.75rem; }
+  .stat-card { background:var(--card); border-radius:14px; border:0.5px solid rgba(14,14,14,.07); padding:1.1rem 1.25rem; }
+  .sc-val { font-family:'Syne',sans-serif; font-weight:800; font-size:1.75rem; letter-spacing:-.02em; line-height:1; }
+  .sc-lbl { font-size:.74rem; color:var(--muted); margin-top:.3rem; }
+
+  /* Cards */
+  .card { background:var(--card); border-radius:16px; border:0.5px solid rgba(14,14,14,.07); padding:1.4rem 1.6rem; margin-bottom:1.25rem; }
+  .card-title { font-family:'Syne',sans-serif; font-size:.95rem; font-weight:700; margin-bottom:1.1rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem; }
+
+  /* Form */
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .form-field { display:flex; flex-direction:column; gap:.4rem; }
+  .form-field.full { grid-column:1/-1; }
+  .form-field label { font-size:.78rem; font-weight:500; color:var(--ink); }
+  .form-field input, .form-field select, .form-field textarea {
+    padding:.65rem .9rem; border:1px solid rgba(14,14,14,.14); border-radius:9px;
+    font-family:'DM Sans',sans-serif; font-size:.86rem; color:var(--ink);
+    background:var(--paper); outline:none; transition:border-color .15s, box-shadow .15s;
+  }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+    border-color:var(--accent); box-shadow:0 0 0 3px rgba(212,84,26,.08);
+  }
+  .form-field textarea { resize:vertical; min-height:110px; line-height:1.6; }
+  .form-hint { font-size:.72rem; color:var(--muted); margin-top:.25rem; }
+  .form-section { margin-bottom:1.5rem; padding-bottom:1.5rem; border-bottom:0.5px solid var(--cream); }
+  .form-section:last-child { border-bottom:none; margin-bottom:0; }
+  .form-section-title { font-size:.78rem; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin-bottom:.85rem; }
+
+  /* Question builder */
+  .q-builder { display:flex; flex-direction:column; gap:.85rem; margin-top:.85rem; }
+  .q-item { background:var(--cream); border-radius:12px; padding:1rem 1.1rem; position:relative; border:0.5px solid rgba(14,14,14,.07); }
+  .q-item-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:.65rem; flex-wrap:wrap; gap:.4rem; }
+  .q-item-num { font-size:.72rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); }
+  .q-item-del { background:none; border:none; cursor:pointer; color:var(--muted); font-size:.78rem; padding:.2rem .5rem; border-radius:5px; font-family:'DM Sans',sans-serif; transition:all .15s; }
+  .q-item-del:hover { color:var(--red); background:#fef2f2; }
+  .q-type-group { margin-bottom:.6rem; }
+  .q-type-group-label { font-size:.65rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:.35rem; }
+  .q-type-row { display:flex; gap:.4rem; flex-wrap:wrap; }
+  .q-type-btn { padding:.28rem .62rem; border-radius:100px; font-family:'DM Sans',sans-serif; font-size:.7rem; font-weight:500; cursor:pointer; border:0.5px solid rgba(14,14,14,.15); background:var(--card); transition:all .15s; white-space:nowrap; }
+  .q-type-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .q-type-btn.on { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .options-builder { display:flex; flex-direction:column; gap:.4rem; margin-top:.65rem; }
+  .opt-row { display:flex; align-items:center; gap:.5rem; }
+  .opt-letter { width:22px; height:22px; border-radius:50%; background:rgba(14,14,14,.08); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; flex-shrink:0; }
+  .opt-input { flex:1; padding:.42rem .75rem; border:1px solid rgba(14,14,14,.12); border-radius:7px; font-family:'DM Sans',sans-serif; font-size:.82rem; outline:none; background:var(--card); }
+  .opt-input:focus { border-color:var(--accent); }
+  .correct-radio { width:16px; height:16px; accent-color:var(--green); cursor:pointer; flex-shrink:0; }
+  .correct-label { font-size:.7rem; color:var(--muted); flex-shrink:0; white-space:nowrap; }
+  .btn-add-opt { background:none; border:0.5px dashed rgba(14,14,14,.2); border-radius:7px; padding:.32rem .7rem; font-family:'DM Sans',sans-serif; font-size:.73rem; color:var(--muted); cursor:pointer; transition:all .15s; margin-top:.35rem; display:inline-block; }
+  .btn-add-opt:hover { border-color:var(--accent); color:var(--accent); }
+  .match-row { display:grid; grid-template-columns:1fr auto 1fr; gap:.5rem; align-items:center; margin-bottom:.4rem; }
+  .match-arrow { color:var(--muted); font-size:.85rem; text-align:center; }
+  .gap-list { display:flex; flex-direction:column; gap:.5rem; margin-top:.5rem; }
+  .gap-row { display:flex; align-items:center; gap:.5rem; }
+  .gap-num { width:22px; height:22px; border-radius:50%; background:rgba(14,14,14,.08); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; flex-shrink:0; }
+  .table-builder { margin-top:.65rem; overflow-x:auto; }
+  .tbl-builder { border-collapse:collapse; width:100%; }
+  .tbl-builder td { border:0.5px solid rgba(14,14,14,.15); padding:.3rem .4rem; }
+  .tbl-input { width:100%; border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:.78rem; background:transparent; min-width:80px; }
+  .tbl-input.gap-cell { background:rgba(212,84,26,.07); border-radius:4px; padding:.2rem .4rem; }
+  .tbl-input.gap-cell::placeholder { color:var(--accent); font-style:italic; }
+  .heading-section { display:flex; flex-direction:column; gap:.4rem; }
+  .heading-item { display:flex; align-items:flex-start; gap:.5rem; }
+  .para-label { font-size:.72rem; font-weight:700; color:var(--muted); width:26px; padding-top:.45rem; flex-shrink:0; }
+  .btn-add-q { width:100%; padding:.65rem; border:0.5px dashed rgba(14,14,14,.18); border-radius:10px; background:transparent; font-family:'DM Sans',sans-serif; font-size:.82rem; color:var(--muted); cursor:pointer; transition:all .15s; }
+  .btn-add-q:hover { border-color:var(--accent); color:var(--accent); background:rgba(212,84,26,.03); }
+  .q-instructions { font-size:.75rem; color:var(--muted); background:rgba(14,14,14,.04); border-radius:7px; padding:.45rem .7rem; margin-bottom:.65rem; line-height:1.55; }
+  .q-instructions strong { color:var(--ink); }
+  .radio-lbl { display:flex; align-items:center; gap:.35rem; font-size:.82rem; cursor:pointer; }
+
+  /* Tests table */
+  .tests-table { width:100%; border-collapse:collapse; }
+  .tests-table th { text-align:left; font-size:.72rem; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); padding:.6rem .9rem; border-bottom:0.5px solid var(--cream); }
+  .tests-table td { padding:.85rem .9rem; border-bottom:0.5px solid var(--cream); font-size:.84rem; vertical-align:middle; }
+  .tests-table tr:last-child td { border-bottom:none; }
+  .tests-table tr:hover td { background:rgba(14,14,14,.015); }
+  .badge { display:inline-block; font-size:.68rem; font-weight:600; padding:.2rem .6rem; border-radius:5px; }
+  .badge-live   { background:#EAF3DE; color:#27500A; }
+  .badge-draft  { background:#FAEEDA; color:#633806; }
+  .badge-mock   { background:#E6F1FB; color:#0C447C; }
+  .badge-practice { background:#EEEDFE; color:#3C3489; }
+  .row-actions { display:flex; gap:.4rem; }
+  .row-btn { padding:.3rem .7rem; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:.72rem; cursor:pointer; border:0.5px solid rgba(14,14,14,.12); background:none; transition:all .15s; }
+  .row-btn:hover { background:var(--cream); }
+  .row-btn.del:hover { color:var(--red); border-color:var(--red); background:#fef2f2; }
+
+  /* Success toast */
+  .toast { position:fixed; bottom:2rem; right:2rem; background:var(--ink); color:var(--paper); padding:.85rem 1.4rem; border-radius:12px; font-size:.84rem; font-weight:500; box-shadow:0 8px 24px rgba(14,14,14,.18); transform:translateY(80px); opacity:0; transition:all .3s ease; z-index:999; display:flex; align-items:center; gap:.6rem; }
+  .toast.show { transform:translateY(0); opacity:1; }
+
+  /* Students table */
+  .student-row td:first-child { font-weight:500; }
+  .plan-free { color:var(--muted); }
+  .plan-premium { color:var(--green); font-weight:600; }
+  .fb-filter.on { background:var(--ink); color:#fff !important; border-color:var(--ink) !important; }
+
+  /* PASSAGE / SECTION CARDS */
+  .passage-card { border:1px solid rgba(14,14,14,.1); border-radius:14px; margin-bottom:1.1rem; overflow:hidden; }
+  .passage-card-header { display:flex; align-items:center; justify-content:space-between; padding:.85rem 1.2rem; background:var(--cream); cursor:pointer; user-select:none; }
+  .passage-card-header:hover { background:rgba(14,14,14,.05); }
+  .pch-left { display:flex; align-items:center; gap:.75rem; }
+  .pch-num { width:28px; height:28px; border-radius:8px; background:var(--ink); color:var(--paper); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; font-size:.8rem; flex-shrink:0; }
+  .pch-title { font-size:.9rem; font-weight:600; }
+  .pch-meta { font-size:.75rem; color:var(--muted); margin-top:.1rem; }
+  .pch-chevron { font-size:.75rem; color:var(--muted); transition:transform .2s; }
+  .passage-card.open .pch-chevron { transform:rotate(90deg); }
+  .passage-card-body { display:none; padding:1.2rem; border-top:1px solid rgba(14,14,14,.08); }
+  .passage-card.open .passage-card-body { display:block; }
+  .listening-upload { border:2px dashed rgba(14,14,14,.15); border-radius:10px; padding:1.5rem; text-align:center; cursor:pointer; transition:border-color .15s; margin-bottom:.85rem; }
+  .listening-upload:hover { border-color:var(--accent); }
+  .lu-icon { font-size:1.5rem; margin-bottom:.4rem; }
+  .lu-text { font-size:.84rem; font-weight:500; margin-bottom:.2rem; }
+  .lu-sub { font-size:.75rem; color:var(--muted); }
+  .lu-input { display:none; }
+  .lu-filename { font-size:.78rem; color:var(--green); font-weight:500; margin-top:.5rem; display:none; }
+  .q-count-badge { background:var(--ink); color:var(--paper); font-size:.68rem; font-weight:600; padding:.15rem .55rem; border-radius:10px; }
+
+  /* QUESTION BUILDER */
+  .q-builder { display:flex; flex-direction:column; gap:.85rem; }
+  .q-item { background:var(--cream); border-radius:12px; padding:1rem 1.1rem; border:0.5px solid rgba(14,14,14,.07); }
+  .q-item-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; }
+  .q-item-num { font-size:.72rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); }
+  .q-item-del { background:none; border:none; cursor:pointer; color:var(--muted); font-size:.78rem; padding:.2rem .5rem; border-radius:5px; font-family:'DM Sans',sans-serif; transition:all .15s; }
+  .q-item-del:hover { color:var(--red); background:#fef2f2; }
+  .q-type-row { display:flex; gap:.4rem; margin-bottom:.75rem; flex-wrap:wrap; }
+  .q-type-btn { padding:.28rem .65rem; border-radius:100px; font-family:'DM Sans',sans-serif; font-size:.7rem; font-weight:500; cursor:pointer; border:0.5px solid rgba(14,14,14,.15); background:var(--card); transition:all .15s; white-space:nowrap; }
+  .q-type-btn.on { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .options-builder { display:flex; flex-direction:column; gap:.4rem; margin-top:.65rem; }
+  .opt-row { display:flex; align-items:center; gap:.5rem; }
+  .opt-letter { width:22px; height:22px; border-radius:50%; background:rgba(14,14,14,.08); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; flex-shrink:0; }
+  .opt-input { flex:1; padding:.42rem .75rem; border:1px solid rgba(14,14,14,.12); border-radius:7px; font-family:'DM Sans',sans-serif; font-size:.82rem; outline:none; background:var(--card); }
+  .opt-input:focus { border-color:var(--accent); }
+  .correct-radio { width:16px; height:16px; accent-color:var(--green); cursor:pointer; flex-shrink:0; }
+  .correct-label { font-size:.7rem; color:var(--muted); flex-shrink:0; }
+  .btn-add-opt { background:none; border:0.5px dashed rgba(14,14,14,.2); border-radius:7px; padding:.32rem .75rem; font-family:'DM Sans',sans-serif; font-size:.74rem; color:var(--muted); cursor:pointer; transition:all .15s; margin-top:.3rem; display:inline-block; }
+  .btn-add-opt:hover { border-color:var(--accent); color:var(--accent); }
+  .btn-add-q { width:100%; padding:.6rem; border:0.5px dashed rgba(14,14,14,.18); border-radius:10px; background:transparent; font-family:'DM Sans',sans-serif; font-size:.82rem; color:var(--muted); cursor:pointer; transition:all .15s; margin-top:.65rem; }
+  .btn-add-q:hover { border-color:var(--accent); color:var(--accent); background:rgba(212,84,26,.03); }
+
+  @media(max-width:768px) { .sidebar{display:none} .main{margin-left:0} .form-grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ── -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Band<span>io</span></div>
+    <div class="login-badge">Admin access</div>
+    <h2 class="login-title">Welcome back</h2>
+    <p class="login-sub">This page is private. Only you (the owner) can log in here.</p>
+    <div class="login-err" id="login-err">Incorrect password. Please try again.</div>
+    <div class="field">
+      <label>Admin password</label>
+      <input type="password" id="admin-pw" placeholder="Enter your admin password" onkeydown="if(event.key==='Enter')window.doLogin()"/>
+    </div>
+    <button class="btn-login" onclick="window.doLogin()">Sign in →</button>
+    <p class="login-hint">Enter your admin password to continue.</p>
+    <a href="bandio-dashboard.html" style="display:block;text-align:center;margin-top:1rem;font-size:.82rem;color:#888;text-decoration:none;">← Back to student dashboard</a>
+  </div>
+</div>
+
+<!-- ── SIDEBAR ── -->
+<nav class="sidebar" id="sidebar" style="display:none">
+  <a class="s-logo" href="#">Band<span>io</span></a>
+  <span class="s-badge">Admin panel</span>
+
+  <div class="s-label">Manage</div>
+  <button class="s-item active" onclick="window.showPage('dashboard',this)"><span class="si">⊞</span> Overview</button>
+  <button class="s-item" onclick="window.showPage('upload',this)"><span class="si">＋</span> Upload test</button>
+  <button class="s-item" onclick="window.showPage('tests',this)"><span class="si">📝</span> All tests</button>
+  <button class="s-item" onclick="window.showPage('speaking',this)"><span class="si">🎤</span> Speaking practice Qs</button>
+  <button class="s-item" onclick="window.showPage('vocab',this)"><span class="si">📚</span> Vocabulary sets</button>
+  <button class="s-item" onclick="window.showPage('feedback',this)"><span class="si">💬</span> Feedback</button>
+  <button class="s-item" onclick="window.showPage('referrals',this)"><span class="si">🔗</span> Referrals</button>
+  <button class="s-item" onclick="window.showPage('students',this)"><span class="si">👥</span> Students</button>
+
+  <div class="s-label">Settings</div>
+  <button class="s-item" onclick="window.showPage('settings',this)"><span class="si">⚙</span> Site settings</button>
+  <a class="s-item" href="bandio-home.html" target="_blank"><span class="si">↗</span> View live site</a>
+
+  <div class="s-bottom">
+    <div class="s-user">
+      <div class="s-avatar">B</div>
+      <div><div class="s-uname">Bandio Admin</div><div class="s-urole">Owner</div></div>
+    </div>
+    <button class="s-item" onclick="window.doLogout()" style="margin-top:.4rem"><span class="si">→</span> Sign out</button>
+  </div>
+</nav>
+
+<!-- ── MAIN ── -->
+<main class="main" id="main-area" style="display:none">
+
+  <!-- OVERVIEW -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-hdr">
+      <div class="page-hdr-left"><h1>Overview</h1><p>Your Bandio platform at a glance</p></div>
+      <button class="btn-primary" onclick="window.showPage('upload', document.querySelector('.s-item:nth-child(5)'))">＋ Upload new test</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-val" style="color:var(--accent)" id="overview-tests">—</div><div class="sc-lbl">Tests published</div></div>
+      <div class="stat-card"><div class="sc-val" id="overview-students">—</div><div class="sc-lbl">Students signed up</div></div>
+      <div class="stat-card"><div class="sc-val" style="color:var(--green)" id="overview-premium">—</div><div class="sc-lbl">Premium students</div></div>
+      <div class="stat-card"><div class="sc-val" id="overview-completed">—</div><div class="sc-lbl">Tests completed</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Recent activity</div>
+      <p style="color:var(--muted);font-size:.86rem;padding:.5rem 0;">Activity tracking coming soon. Go to <strong>Students</strong> tab to see your real users.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Quick actions</div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <button class="btn-primary" onclick="window.showPage('upload', document.querySelectorAll('.s-item')[1])">＋ Upload new test</button>
+        <button class="btn-secondary" onclick="window.showPage('tests', document.querySelectorAll('.s-item')[2])">📝 Manage all tests</button>
+        <button class="btn-secondary" onclick="window.showPage('students', document.querySelectorAll('.s-item')[3])">👥 View students</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD TEST -->
+  <div class="page" id="page-upload">
+    <div class="page-hdr">
+      <div class="page-hdr-left"><h1>Upload a test</h1><p>Fill in the form below and click Publish. Students see it immediately.</p></div>
+    </div>
+    <div class="card">
+      <!-- SECTION 1: Basic info -->
+      <div class="form-section">
+        <div class="form-section-title">Basic information</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Test title</label>
+            <input type="text" id="f-title" placeholder="e.g. Cambridge IELTS 18 — Reading Test 1"/>
+          </div>
+          <div class="form-field">
+            <label>Test type</label>
+            <select id="f-type" onchange="window.onTypeChange()">
+              <option value="mock-reading">Mock test — Reading (3 passages)</option>
+              <option value="mock-listening">Mock test — Listening (4 sections)</option>
+              <option value="mock-writing">Mock test — Writing</option>
+              <option value="mock-speaking">Mock test — Speaking</option>
+              <option value="practice-reading">Practice — Reading (choose passage)</option>
+              <option value="practice-listening">Practice — Listening (choose section)</option>
+              <option value="practice-writing">Practice — Writing</option>
+            </select>
+          </div>
+
+          <!-- Passage / Section number — shown for practice reading/listening only -->
+          <div class="form-field" id="f-passage-num-wrap" style="display:none">
+            <label id="f-passage-num-label">Which passage is this?</label>
+            <select id="f-passage-num">
+              <option value="1">Passage 1</option>
+              <option value="2">Passage 2</option>
+              <option value="3">Passage 3</option>
+            </select>
+            <span class="form-hint" id="f-passage-num-hint">Students see this as a standalone practice passage — no need to do all 3 at once.</span>
+          </div>
+          <div class="form-field">
+            <label>Difficulty</label>
+            <select id="f-diff">
+              <option>Beginner (Band 5.0–5.5)</option>
+              <option selected>Intermediate (Band 6.0–6.5)</option>
+              <option>Upper-intermediate (Band 7.0–7.5)</option>
+              <option>Advanced (Band 8.0+)</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Access</label>
+            <select id="f-access">
+              <option value="free">Free — all students</option>
+              <option value="premium">Premium only</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Time limit (minutes)</label>
+            <input type="number" id="f-time" value="60" min="0" max="120"/>
+            <span class="form-hint">Set 0 for no time limit</span>
+          </div>
+          <div class="form-field">
+            <label>IELTS type</label>
+            <select id="f-ielts">
+              <option>Academic</option>
+              <option>General Training</option>
+              <option>Both</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Dynamic passages/sections -->
+      <div class="form-section" id="passages-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem">
+          <div class="form-section-title" style="margin:0" id="passages-label">Passages &amp; Questions</div>
+          <div id="section-info" style="font-size:.76rem;color:var(--muted);background:var(--cream);padding:.3rem .8rem;border-radius:6px;"></div>
+        </div>
+        <div id="passages-container"></div>
+      </div>
+
+      <!-- SECTION 3: Publish -->
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;padding-top:.5rem">
+        <button class="btn-primary" onclick="window.publishTest()">🚀 Publish test</button>
+        <button class="btn-secondary" onclick="window.saveDraft()">💾 Save as draft</button>
+        <button class="btn-secondary" onclick="window.previewTest()">👁 Preview</button>
+        <span style="font-size:.78rem;color:var(--muted)">Students see this immediately after publishing.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALL TESTS -->
+  <div class="page" id="page-tests">
+    <div class="page-hdr">
+      <div class="page-hdr-left"><h1>All tests</h1><p>Manage, edit or remove any test.</p></div>
+      <button class="btn-primary" onclick="window.showPage('upload', document.querySelectorAll('.s-item')[1])">＋ Upload new</button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="tests-table">
+        <thead><tr><th>Title</th><th>Type</th><th>Access</th><th>Status</th><th>Students</th><th>Avg score</th><th>Actions</th></tr></thead>
+        <tbody id="tests-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- STUDENTS -->
+  <div class="page" id="page-students">
+    <div class="page-hdr">
+      <div class="page-hdr-left"><h1>Students</h1><p>Search by email or name, then make someone Premium or remove it.</p></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-val" id="st-total">—</div><div class="sc-lbl">Total students</div></div>
+      <div class="stat-card"><div class="sc-val" style="color:var(--green)" id="st-prem">—</div><div class="sc-lbl">Premium</div></div>
+      <div class="stat-card"><div class="sc-val" id="st-free">—</div><div class="sc-lbl">Free plan</div></div>
+    </div>
+
+    <!-- Search bar -->
+    <div class="card" style="padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:.5rem;border:1px solid var(--border);border-radius:7px;padding:.42rem .85rem;flex:1;min-width:200px;background:#fff;">
+        <span style="color:#aaa;font-size:.9rem">🔍</span>
+        <input type="text" id="student-search" placeholder="Search by email or name..." oninput="filterStudents()"
+          style="border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.84rem;color:var(--ink);width:100%;background:transparent;"/>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <label style="font-size:.82rem;color:var(--muted);">Filter:</label>
+        <select id="student-filter" onchange="filterStudents()" style="border:1px solid var(--border);border-radius:6px;padding:.38rem .65rem;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--ink);background:#fff;cursor:pointer;">
+          <option value="all">All students</option>
+          <option value="free">Free only</option>
+          <option value="premium">Premium only</option>
+          <option value="intensive">Intensive only</option>
+        </select>
+      </div>
+      <div style="font-size:.8rem;color:var(--muted)" id="search-count">Showing 5 students</div>
+    </div>
+
+    <!-- Students table -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="tests-table" id="students-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Plan</th>
+            <th>Plan expires</th>
+            <th>Target band</th>
+            <th>Joined</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="students-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- No results -->
+    <div id="no-students" style="display:none;text-align:center;padding:3rem;color:var(--muted);font-size:.88rem;">
+      No students match your search.
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="page" id="page-settings">
+    <div class="page-hdr">
+      <div class="page-hdr-left"><h1>Site settings</h1><p>Control how Bandio looks and works for students.</p></div>
+    </div>
+    <div class="card">
+      <div class="form-section">
+        <div class="form-section-title">General</div>
+        <div class="form-grid">
+          <div class="form-field"><label>Site name</label><input type="text" value="Bandio"/></div>
+          <div class="form-field"><label>Tagline</label><input type="text" value="Reach your target band score. Faster."/></div>
+          <div class="form-field"><label>Contact email</label><input type="email" placeholder="your@email.com"/></div>
+          <div class="form-field"><label>Premium price ($/month)</label><input type="number" value="9" min="1"/></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Free plan limits</div>
+        <div class="form-grid">
+          <div class="form-field"><label>Mock tests per month (free)</label><input type="number" value="3"/></div>
+          <div class="form-field"><label>AI feedback uses per month (free)</label><input type="number" value="1"/></div>
+          <div class="form-field"><label>Practice passages (free)</label><input type="number" value="5"/></div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="window.showToast('✓ Settings saved!')">Save settings</button>
+    </div>
+  </div>
+
+  <!-- FEEDBACK PAGE -->
+  <div class="page" id="page-feedback">
+    <div class="page-hdr">
+      <div class="page-hdr-left"><h1>Student Feedback</h1><p>All messages sent from the feedback page. Click a message to mark it as read.</p></div>
+      <div class="page-hdr-right">
+        <button class="btn-secondary" onclick="markAllRead()">Mark all read</button>
+        <button class="btn-secondary" style="margin-left:.5rem;color:#e24b4a;border-color:#e24b4a;" onclick="clearAllFeedback()">Clear all</button>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-val" id="fb-total">0</div><div class="sc-lbl">Total messages</div></div>
+      <div class="stat-card"><div class="sc-val" style="color:var(--accent)" id="fb-unread">0</div><div class="sc-lbl">Unread</div></div>
+      <div class="stat-card"><div class="sc-val" id="fb-avg-rating">—</div><div class="sc-lbl">Avg rating</div></div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+      <button class="btn-secondary fb-filter on" onclick="fbFilter('all',this)" style="font-size:.78rem;padding:.35rem .85rem;">All</button>
+      <button class="btn-secondary fb-filter" onclick="fbFilter('unread',this)" style="font-size:.78rem;padding:.35rem .85rem;">Unread</button>
+      <button class="btn-secondary fb-filter" onclick="fbFilter('Suggestion',this)" style="font-size:.78rem;padding:.35rem .85rem;">💡 Suggestions</button>
+      <button class="btn-secondary fb-filter" onclick="fbFilter('Bug',this)" style="font-size:.78rem;padding:.35rem .85rem;">🐛 Bugs</button>
+      <button class="btn-secondary fb-filter" onclick="fbFilter('Compliment',this)" style="font-size:.78rem;padding:.35rem .85rem;">❤️ Compliments</button>
+      <button class="btn-secondary fb-filter" onclick="fbFilter('Question',this)" style="font-size:.78rem;padding:.35rem .85rem;">❓ Questions</button>
+    </div>
+
+    <!-- Messages list -->
+    <div id="fb-list"></div>
+    <div id="fb-empty" style="display:none;background:#fff;border-radius:12px;padding:3rem;text-align:center;color:var(--muted);font-size:.88rem;">
+      No feedback messages yet. They will appear here once students submit the feedback form.
+    </div>
+  </div>
+
+  <!-- REFERRALS PAGE -->
+  <div class="page" id="page-referrals">
+    <div class="page-hdr">
+      <div class="page-hdr-left"><h1>Referrals</h1><p>See who invited whom, how many friends each student has referred, and manually add bonus rewards.</p></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-val" id="ref-total-students">—</div><div class="sc-lbl">Students with referral links</div></div>
+      <div class="stat-card"><div class="sc-val" style="color:var(--green)" id="ref-total-invites">—</div><div class="sc-lbl">Total referrals made</div></div>
+    </div>
+
+    <!-- Give bonus rewards form -->
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="form-section-title">Give bonus rewards to a student</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:1rem;">Search a student by email and manually add essay checks or AI minutes to their account.</div>
+      <div style="display:flex;align-items:flex-end;gap:.75rem;flex-wrap:wrap;">
+        <div class="form-field" style="flex:2;min-width:200px;margin:0;">
+          <label>Student email</label>
+          <input type="email" id="bonus-email" placeholder="student@email.com" style="width:100%"/>
+        </div>
+        <div class="form-field" style="flex:1;min-width:100px;margin:0;">
+          <label>Essay checks to add</label>
+          <input type="number" id="bonus-essays" min="0" value="0" style="width:100%"/>
+        </div>
+        <div class="form-field" style="flex:1;min-width:100px;margin:0;">
+          <label>AI minutes to add</label>
+          <input type="number" id="bonus-mins" min="0" value="0" style="width:100%"/>
+        </div>
+        <button class="btn-primary" style="flex-shrink:0;margin-bottom:0;" onclick="giveBonusReward()">Give reward</button>
+      </div>
+      <div id="bonus-msg" style="display:none;margin-top:.75rem;font-size:.82rem;font-weight:600;color:var(--green);">✓ Reward added!</div>
+    </div>
+
+    <!-- Referrals table -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="tests-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Referral code</th>
+            <th>Friends invited</th>
+            <th>Who they invited</th>
+            <th>Essays earned</th>
+            <th>AI mins earned</th>
+            <th>Manual bonus</th>
+          </tr>
+        </thead>
+        <tbody id="ref-tbody">
+          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem;font-size:.85rem;">Referral data will appear here once students start using the system.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- VOCABULARY PAGE -->
+  <div class="page" id="page-vocab">
+    <div class="page-hdr">
+      <div class="page-hdr-left"><h1>Vocabulary sets</h1><p>Add words, topics and Cambridge test sets. Students see these in the Vocabulary practice page.</p></div>
+      <div class="page-hdr-right"><button class="btn-primary" onclick="showVocabForm()">＋ Add new set</button></div>
+    </div>
+
+    <!-- ADD / EDIT SET FORM -->
+    <div class="card" id="vocab-form-card" style="display:none;margin-bottom:1.5rem;">
+      <div class="form-section-title" id="vocab-form-title">New vocabulary set</div>
+      <div class="form-grid" style="margin-bottom:1rem;">
+        <div class="form-field">
+          <label>Set name</label>
+          <input type="text" id="vf-name" placeholder="e.g. IELTS 19, Environment, Health"/>
+        </div>
+        <div class="form-field">
+          <label>Category</label>
+          <select id="vf-cat">
+            <option value="cambridge">By Cambridge test (IELTS 17, 18, 19…)</option>
+            <option value="topic">By topic</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Access</label>
+          <select id="vf-tier">
+            <option value="free">Free</option>
+            <option value="premium">Premium only</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Words list -->
+      <div class="form-section-title" style="margin-bottom:.75rem;">Words in this set</div>
+      <div id="word-rows"></div>
+      <button class="btn-secondary" style="margin-top:.6rem;margin-bottom:1.25rem;" onclick="addWordRow()">＋ Add word</button>
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="saveVocabSet()">Save set</button>
+        <button class="btn-secondary" onclick="hideVocabForm()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- SETS TABLE -->
+    <div class="card">
+      <table class="data-table" id="vocab-table">
+        <thead>
+          <tr><th>Set name</th><th>Category</th><th>Words</th><th>Access</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="vocab-tbody">
+          <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;font-size:.85rem;">No vocabulary sets yet. Click "Add new set" to create one.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SPEAKING QUESTIONS PAGE -->
+  <div class="page" id="page-speaking">
+    <div class="page-hdr">
+      <div class="page-hdr-left">
+        <h1>Speaking practice questions</h1>
+        <p>Questions and sample answers for the <strong>free Speaking Practice</strong> page. Students record their answers and then see your sample answer.</p>
+      </div>
+      <button class="btn-primary" onclick="window.addSpeakingQuestion()">＋ Add question</button>
+    </div>
+
+    <!-- How it works banner -->
+    <div style="background:rgba(212,84,26,.07);border:0.5px solid rgba(212,84,26,.2);border-radius:12px;padding:.85rem 1.1rem;margin-bottom:1.25rem;font-size:.82rem;color:var(--ink);line-height:1.6">
+      <strong style="display:block;margin-bottom:.3rem">How this works</strong>
+      Students open the Speaking Practice page → select a question → record their answer → press submit → <strong>your sample answer appears</strong> so they can compare. No AI involved — this is 100% free for all students.
+      <span style="display:inline-block;margin-top:.4rem;font-size:.76rem;color:var(--muted)">Mock Speaking with AI feedback can be added to Premium later separately.</span>
+    </div>
+
+    <!-- Part tabs -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1.25rem;flex-wrap:wrap;">
+      <button class="q-type-btn on" id="sp-tab-1" onclick="window.switchSpPart(1)">Part 1 — Interview</button>
+      <button class="q-type-btn" id="sp-tab-2" onclick="window.switchSpPart(2)">Part 2 — Cue Card</button>
+      <button class="q-type-btn" id="sp-tab-3" onclick="window.switchSpPart(3)">Part 3 — Discussion</button>
+    </div>
+
+    <!-- Part description hint -->
+    <div id="sp-part-hint" style="font-size:.8rem;color:var(--muted);background:var(--cream);border-radius:9px;padding:.65rem 1rem;margin-bottom:1.25rem;line-height:1.6;"></div>
+
+    <!-- Questions list -->
+    <div id="sp-questions-list"></div>
+
+    <!-- Add question form -->
+    <div class="card" id="sp-add-form" style="display:none;border:1.5px dashed rgba(14,14,14,.15);">
+      <div class="card-title">
+        <span id="sp-form-title">Add new question — Part 1</span>
+        <button class="btn-secondary" style="padding:.35rem .85rem;font-size:.78rem;" onclick="window.cancelSpQuestion()">Cancel</button>
+      </div>
+
+      <!-- Part 1 & 3 fields -->
+      <div id="sp-fields-standard">
+        <div class="form-section">
+          <div class="form-grid">
+            <div class="form-field full">
+              <label>Question</label>
+              <input type="text" id="sp-q-text" placeholder="e.g. Do you enjoy cooking? Why or why not?"/>
+            </div>
+            <div class="form-field">
+              <label>Hint shown to student</label>
+              <input type="text" id="sp-q-hint" placeholder="e.g. Give an honest answer with a personal example."/>
+            </div>
+            <div class="form-field">
+              <label>Band level of sample answer</label>
+              <select id="sp-q-band">
+                <option>Band 6–7</option>
+                <option selected>Band 7–8</option>
+                <option>Band 8–9</option>
+              </select>
+            </div>
+            <div class="form-field full">
+              <label>Sample answer</label>
+              <textarea id="sp-q-sample" placeholder="Write or paste a Band 7–8 sample answer here. Students will see this after recording their own response." style="min-height:150px"></textarea>
+              <span class="form-hint">Write naturally — contractions, connected speech, and slight informality are appropriate for speaking.</span>
+            </div>
+            <div class="form-field full">
+              <label>Examiner tips (one per line — students see these alongside the sample answer)</label>
+              <textarea id="sp-q-tips" placeholder="Give a direct answer first, then expand.&#10;Aim for 30–45 seconds.&#10;Use phrases like 'I genuinely enjoy...' or 'To be honest...'" style="min-height:90px"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Part 2 cue card fields -->
+      <div id="sp-fields-cuecard" style="display:none">
+        <div class="form-section">
+          <div class="form-grid">
+            <div class="form-field full">
+              <label>Cue card topic (main instruction)</label>
+              <input type="text" id="sp-cue-topic" placeholder="e.g. Describe a place you have visited that you found particularly interesting."/>
+            </div>
+            <div class="form-field full">
+              <label>Bullet points — "You should say:" (one per line)</label>
+              <textarea id="sp-cue-bullets" placeholder="where this place is&#10;when you went there&#10;what you saw or did there" style="min-height:90px"></textarea>
+            </div>
+            <div class="form-field full">
+              <label>"And explain..." line</label>
+              <input type="text" id="sp-cue-and" placeholder="e.g. explain why you found it particularly interesting."/>
+            </div>
+            <div class="form-field">
+              <label>Preparation time (seconds)</label>
+              <input type="number" id="sp-cue-prep" value="60" min="30" max="120"/>
+            </div>
+            <div class="form-field">
+              <label>Band level of sample answer</label>
+              <select id="sp-cue-band">
+                <option>Band 6–7</option>
+                <option selected>Band 7–8</option>
+                <option>Band 8–9</option>
+              </select>
+            </div>
+            <div class="form-field full">
+              <label>Sample answer (full 1–2 minute response)</label>
+              <textarea id="sp-cue-sample" placeholder="Write a full Band 7–8 cue card response here. Include all the bullet points." style="min-height:180px"></textarea>
+            </div>
+            <div class="form-field full">
+              <label>Examiner tips (one per line)</label>
+              <textarea id="sp-cue-tips" placeholder="Structure: where → when → what → why.&#10;Start speaking immediately.&#10;Aim for a full 2 minutes." style="min-height:75px"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;padding-top:.5rem">
+        <button class="btn-primary" onclick="window.saveSpQuestion()">✓ Save question</button>
+        <button class="btn-secondary" onclick="window.cancelSpQuestion()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // ⚠️ SECURITY: Change this password and keep this file off public repos
+  // Consider moving to Firebase auth with admin custom claim for production
+  const ADMIN_PW = '13010528mzsx';
+  let tests = [
+    { id:1, title:'Cambridge IELTS 18 — Reading Test 1', type:'mock-reading', access:'free', status:'live', students:142, avg:'7.5' },
+    { id:2, title:'Cambridge IELTS 17 — Reading Test 2', type:'mock-reading', access:'premium', status:'live', students:88, avg:'7.0' },
+    { id:3, title:'Urban Green Spaces — Practice', type:'practice-reading', access:'free', status:'live', students:201, avg:'7.2' },
+    { id:4, title:'Cambridge IELTS 18 — Listening Test 1', type:'mock-listening', access:'free', status:'live', students:76, avg:'6.5' },
+    { id:5, title:'Writing Task 2 — Urban Migration', type:'mock-writing', access:'premium', status:'live', students:54, avg:'7.0' },
+    { id:6, title:'Climate Change — Practice', type:'practice-reading', access:'free', status:'draft', students:0, avg:'—' },
+  ];
+
+  // passage question counters per passage: { passageId: count }
+  let qCounters = {};
+
+  // ── AUTH ──
+  window.doLogin = async function() {
+    const pw  = document.getElementById('admin-pw').value;
+    const err = document.getElementById('login-err');
+    if (pw === ADMIN_PW) {
+      // Sign into Firebase Auth so Firestore rules recognise this as admin
+      // Replace these with your actual Firebase Auth admin account credentials
+      const ADMIN_EMAIL = 'admin@bandio.uz';
+      const ADMIN_FB_PW = 'Bandio@admin2025';
+      if (window.fbAdminSignIn && ADMIN_EMAIL !== 'PASTE_YOUR_ADMIN_EMAIL_HERE') {
+        await window.fbAdminSignIn(ADMIN_EMAIL, ADMIN_FB_PW);
+      }
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('sidebar').style.display = 'flex';
+      document.getElementById('main-area').style.display = 'block';
+      initTests();
+      buildPassages();
+      // Init speaking page
+      const hint = document.getElementById('sp-part-hint');
+      if (hint) hint.textContent = SP_HINTS[1];
+      renderSpQuestions();
+    } else {
+      err.classList.add('show');
+      document.getElementById('admin-pw').style.borderColor = '#e24b4a';
+      setTimeout(() => err.classList.remove('show'), 3000);
+    }
+  };
+
+  window.doLogout = function() {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('sidebar').style.display = 'none';
+    document.getElementById('main-area').style.display = 'none';
+    document.getElementById('admin-pw').value = '';
+  };
+
+  document.getElementById('admin-pw').addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.doLogin();
+  });
+
+  // ── NAVIGATION ──
+  window.showPage = function(name, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    document.querySelectorAll('.s-item').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+  };
+
+  // ── TYPE CHANGE ──────────────────────────────────────────────────────
+  window.onTypeChange = function() {
+    const type = document.getElementById('f-type').value;
+    const wrap  = document.getElementById('f-passage-num-wrap');
+    const sel   = document.getElementById('f-passage-num');
+    const label = document.getElementById('f-passage-num-label');
+    const hint  = document.getElementById('f-passage-num-hint');
+    if (type === 'practice-reading') {
+      wrap.style.display = 'flex';
+      label.textContent = 'Which passage is this?';
+      hint.textContent  = 'Students practice this passage on its own — no need to do all 3 at once.';
+      sel.innerHTML = '<option value="1">Passage 1</option><option value="2">Passage 2</option><option value="3">Passage 3</option>';
+    } else if (type === 'practice-listening') {
+      wrap.style.display = 'flex';
+      label.textContent = 'Which section is this?';
+      hint.textContent  = 'Students practice this section on its own — no need to do all 4 at once.';
+      sel.innerHTML = '<option value="1">Section 1 — Conversation (2 people)</option><option value="2">Section 2 — Monologue (one person)</option><option value="3">Section 3 — Academic discussion</option><option value="4">Section 4 — Academic lecture</option>';
+    } else {
+      wrap.style.display = 'none';
+    }
+    buildPassages();
+  };
+
+  function getTypeConfig() {
+    const type = document.getElementById('f-type') ? document.getElementById('f-type').value : 'mock-reading';
+    if (type === 'mock-reading')    return { kind:'reading',   count:3, label:'Passage', info:'3 passages · 40 questions total · 60 min' };
+    if (type === 'mock-listening')  return { kind:'listening', count:4, label:'Section', info:'4 sections · 40 questions total · 40 min' };
+    if (type === 'practice-reading') {
+      const num = +(document.getElementById('f-passage-num')?.value || 1);
+      const labels = {1:'Passage 1 (Questions 1–13)',2:'Passage 2 (Questions 14–26)',3:'Passage 3 (Questions 27–40)'};
+      return { kind:'reading', count:1, label:'Passage', passageNum:num, passageLabel:labels[num]||'Passage '+num, info:`Passage ${num} only · standalone practice · no time limit` };
+    }
+    if (type === 'practice-listening') {
+      const num = +(document.getElementById('f-passage-num')?.value || 1);
+      const sectionNames = {1:'Section 1 — Conversation',2:'Section 2 — Monologue',3:'Section 3 — Academic discussion',4:'Section 4 — Academic lecture'};
+      return { kind:'listening', count:1, label:'Section', passageNum:num, passageLabel:sectionNames[num]||'Section '+num, info:`${sectionNames[num]||'Section '+num} · standalone practice · no time limit` };
+    }
+    if (type === 'mock-writing')    return { kind:'writing',          count:1, label:'Task',    info:'Task 1 + Task 2 · 60 min' };
+    if (type === 'practice-writing')return { kind:'writing-practice', count:1, label:'Task',    info:'Single writing task · no time limit' };
+    if (type === 'mock-speaking')   return { kind:'speaking',         count:1, label:'Part',    info:'Parts 1, 2 and 3' };
+    return { kind:'other', count:1, label:'Content', info:'' };
+  }
+
+  function buildPassages() {
+    const container = document.getElementById('passages-container');
+    const infoEl    = document.getElementById('section-info');
+    const labelEl   = document.getElementById('passages-label');
+    if (!container) return;
+
+    const cfg = getTypeConfig();
+    infoEl.textContent = cfg.info;
+    container.innerHTML = '';
+    qCounters = {};
+
+    if (cfg.kind === 'other' || cfg.kind === 'writing' || cfg.kind === 'writing-practice' || cfg.kind === 'speaking') {
+      labelEl.textContent = cfg.kind === 'speaking' ? 'Speaking Parts' : 'Tasks & Content';
+      if (cfg.kind === 'writing') buildMockWriting(container);
+      else if (cfg.kind === 'writing-practice') buildPracticeWriting(container);
+      else if (cfg.kind === 'speaking') buildSpeaking(container);
+      else buildWritingSpeaking(container);
+      return;
+    }
+
+    labelEl.textContent = cfg.kind === 'reading' ? 'Passages & Questions' : 'Sections & Questions';
+
+    for (let i = 1; i <= cfg.count; i++) {
+      const pid = 'p' + i;
+      qCounters[pid] = 0;
+      const card = document.createElement('div');
+      card.className = 'passage-card open';
+      card.id = 'passage-card-' + pid;
+
+      // For practice (count=1), use passageLabel from config (e.g. "Passage 2 (Questions 14–26)")
+      // For mock (count>1), use the standard numbered label
+      const headerLabel = cfg.count === 1 && cfg.passageLabel
+        ? cfg.passageLabel
+        : cfg.kind === 'reading'
+          ? `${cfg.label} ${i}`
+          : `Section ${i} — ${['Conversation (2 people)','Monologue (one person)','Academic discussion','Academic lecture'][i-1]}`;
+
+      // For practice, the pch-num badge shows the actual passage/section number, not always "1"
+      const badgeNum = cfg.count === 1 && cfg.passageNum ? cfg.passageNum : i;
+
+      card.innerHTML = `
+        <div class="passage-card-header" onclick="window.togglePassage('${pid}')">
+          <div class="pch-left">
+            <div class="pch-num">${badgeNum}</div>
+            <div>
+              <div class="pch-title">${headerLabel}</div>
+              <div class="pch-meta" id="meta-${pid}">No questions yet</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem">
+            <span class="q-count-badge" id="qbadge-${pid}">0 Qs</span>
+            <span class="pch-chevron">▶</span>
+          </div>
+        </div>
+        <div class="passage-card-body">
+          ${cfg.kind === 'reading' ? buildReadingBody(pid, cfg.passageNum||i) : buildListeningBody(pid, cfg.passageNum||i)}
+          <div class="q-builder" id="qbuilder-${pid}"></div>
+          <button class="btn-add-q" onclick="window.addQ('${pid}')">＋ Add question to ${headerLabel}</button>
+        </div>`;
+      container.appendChild(card);
+    }
+  }
+
+  function buildReadingBody(pid, num) {
+    const qStart = (num-1)*13+1;
+    const qEnd   = num*13;
+    return `
+      <div class="form-grid" style="margin-bottom:.85rem">
+        <div class="form-field">
+          <label>Passage ${num} title</label>
+          <input type="text" id="title-${pid}" placeholder="e.g. The Future of Urban Agriculture"/>
+        </div>
+        <div class="form-field">
+          <label>Question range</label>
+          <input type="text" id="qrange-${pid}" placeholder="e.g. Questions ${qStart}–${qEnd}" value="Questions ${qStart}–${qEnd}"/>
+        </div>
+        <div class="form-field full">
+          <label>Passage text</label>
+          <textarea id="text-${pid}" placeholder="Paste the passage here. Each paragraph on a new line." style="min-height:160px"></textarea>
+          <span class="form-hint">Tip: paste directly from Cambridge PDF — formatting is preserved.</span>
+        </div>
+      </div>`;
+  }
+
+  function buildListeningBody(pid, num) {
+    const topics = ['A conversation in a social context','A monologue in everyday context','A conversation in academic/training context','A monologue on academic subject'];
+    const qStart = (num-1)*10+1;
+    const qEnd   = num*10;
+    return `
+      <div class="form-grid" style="margin-bottom:.85rem">
+        <div class="form-field">
+          <label>Section ${num} topic / title</label>
+          <input type="text" id="title-${pid}" placeholder="${topics[num-1]||'Section '+num+' topic'}"/>
+        </div>
+        <div class="form-field">
+          <label>Question range</label>
+          <input type="text" id="qrange-${pid}" placeholder="e.g. Questions ${qStart}–${qEnd}" value="Questions ${qStart}–${qEnd}"/>
+        </div>
+      </div>
+      <div class="listening-upload" onclick="document.getElementById('audio-${pid}').click()">
+        <div class="lu-icon">🎧</div>
+        <div class="lu-text">Upload audio file</div>
+        <div class="lu-sub">MP3 or M4A · Section ${num} recording</div>
+        <div class="lu-filename" id="luname-${pid}"></div>
+        <input type="file" accept=".mp3,.m4a,.wav,.ogg" class="lu-input" id="audio-${pid}" onchange="window.onAudioPick('${pid}', this)"/>
+      </div>
+      <div class="form-field" style="margin-bottom:.85rem">
+        <label>Section notes / context (optional)</label>
+        <textarea id="text-${pid}" placeholder="Any context students should read before listening, e.g. situation description." style="min-height:60px"></textarea>
+      </div>`;
+  }
+
+  function buildMockWriting(container) {
+    container.innerHTML = `
+      <!-- TASK 1 -->
+      <div class="passage-card open" id="passage-card-task1">
+        <div class="passage-card-header" onclick="window.togglePassage('task1')">
+          <div class="pch-left">
+            <div class="pch-num">1</div>
+            <div>
+              <div class="pch-title">Task 1 — Academic or General</div>
+              <div class="pch-meta">Describe a graph, chart, diagram or map — 20 min · 150 words</div>
+            </div>
+          </div>
+          <span class="pch-chevron">▶</span>
+        </div>
+        <div class="passage-card-body">
+          <div class="form-grid" style="margin-bottom:.85rem">
+            <div class="form-field">
+              <label>Task 1 type</label>
+              <select id="task1-type" onchange="window.onTask1TypeChange()">
+                <option value="graph">Graph / Chart (bar, line, pie)</option>
+                <option value="diagram">Diagram / Process</option>
+                <option value="map">Map comparison</option>
+                <option value="table">Table</option>
+                <option value="general">General Training letter</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Time limit</label>
+              <input type="number" value="20" min="5" max="60"/>
+            </div>
+          </div>
+
+          <!-- Image upload — shown for graph/diagram/map/table -->
+          <div id="task1-image-section">
+            <div class="form-section-title" style="margin-bottom:.65rem">Image / visual</div>
+            <div class="listening-upload" id="task1-upload-box" onclick="document.getElementById('task1-img').click()">
+              <div class="lu-icon">🖼</div>
+              <div class="lu-text" id="task1-upload-label">Upload the chart or diagram image</div>
+              <div class="lu-sub" id="task1-upload-sub">PNG or JPG · Students will see this image in the test</div>
+              <div class="lu-filename" id="task1-imgname"></div>
+              <input type="file" accept=".png,.jpg,.jpeg,.gif,.webp" class="lu-input" id="task1-img"
+                onchange="window.onImgPick('task1-imgname', this)"/>
+            </div>
+            <div class="form-hint" style="margin-top:.4rem">Tip: screenshot the chart from the Cambridge PDF and upload it directly.</div>
+          </div>
+
+          <!-- General Training letter prompt (shown instead of image) -->
+          <div id="task1-letter-section" style="display:none">
+            <div class="form-section-title" style="margin-bottom:.65rem">Letter prompt</div>
+            <div class="form-field">
+              <label>Situation & instructions</label>
+              <textarea id="task1-letter-text" placeholder="e.g. You recently had a problem with a product you bought online. Write a letter to the company manager. In your letter:&#10;• describe the problem&#10;• explain what you have done so far&#10;• say what you would like them to do" style="min-height:110px"></textarea>
+            </div>
+          </div>
+
+          <div class="form-field" style="margin-top:.85rem">
+            <label>Task 1 written instructions (shown below the image)</label>
+            <textarea id="task1-instructions" placeholder="e.g. The bar chart below shows the percentage of households with access to the internet in five countries in 2005 and 2015. Summarise the information by selecting and reporting the main features, and make comparisons where relevant." style="min-height:90px"></textarea>
+          </div>
+          <div class="form-field" style="margin-top:.75rem">
+            <label>Model answer (optional — shown after student submits)</label>
+            <textarea id="task1-model" placeholder="Paste a Band 8–9 model answer here." style="min-height:120px"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- TASK 2 -->
+      <div class="passage-card open" id="passage-card-task2">
+        <div class="passage-card-header" onclick="window.togglePassage('task2')">
+          <div class="pch-left">
+            <div class="pch-num">2</div>
+            <div>
+              <div class="pch-title">Task 2 — Essay</div>
+              <div class="pch-meta">Argumentative or discursive essay — 40 min · 250 words</div>
+            </div>
+          </div>
+          <span class="pch-chevron">▶</span>
+        </div>
+        <div class="passage-card-body">
+          <div class="form-grid" style="margin-bottom:.85rem">
+            <div class="form-field">
+              <label>Essay type</label>
+              <select id="task2-type">
+                <option>Opinion (Do you agree or disagree?)</option>
+                <option>Discussion (Discuss both views)</option>
+                <option>Problem & solution</option>
+                <option>Advantages & disadvantages</option>
+                <option>Double question</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Topic / theme</label>
+              <input type="text" placeholder="e.g. Technology, Education, Environment"/>
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom:.85rem">
+            <label>Task 2 question / prompt</label>
+            <textarea id="task2-prompt" placeholder="e.g. Some people believe that universities should focus on providing academic knowledge, while others think they should prepare students for employment. Discuss both views and give your own opinion." style="min-height:100px"></textarea>
+          </div>
+          <div class="form-field">
+            <label>Model answer (optional)</label>
+            <textarea id="task2-model" placeholder="Paste a Band 8–9 model answer here." style="min-height:120px"></textarea>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function buildPracticeWriting(container) {
+    container.innerHTML = `
+      <div class="passage-card open">
+        <div class="passage-card-header" onclick="this.closest('.passage-card').classList.toggle('open')">
+          <div class="pch-left">
+            <div class="pch-num">1</div>
+            <div><div class="pch-title">Practice writing task</div><div class="pch-meta">Task 1 or Task 2 — student's choice</div></div>
+          </div>
+          <span class="pch-chevron">▶</span>
+        </div>
+        <div class="passage-card-body">
+          <div class="form-field" style="margin-bottom:.75rem">
+            <label>Task type</label>
+            <select id="prac-task-type" onchange="window.onPracTaskChange()">
+              <option value="task1-graph">Task 1 — Graph / Chart</option>
+              <option value="task1-diagram">Task 1 — Diagram / Process</option>
+              <option value="task1-map">Task 1 — Map comparison</option>
+              <option value="task1-letter">Task 1 — General letter</option>
+              <option value="task2">Task 2 — Essay</option>
+            </select>
+          </div>
+
+          <div id="prac-image-wrap">
+            <div class="form-section-title" style="margin-bottom:.6rem">Image / visual</div>
+            <div class="listening-upload" onclick="document.getElementById('prac-img').click()">
+              <div class="lu-icon">🖼</div>
+              <div class="lu-text">Upload the chart or diagram image</div>
+              <div class="lu-sub">PNG or JPG · Students see this in the practice task</div>
+              <div class="lu-filename" id="prac-imgname"></div>
+              <input type="file" accept=".png,.jpg,.jpeg,.gif,.webp" class="lu-input" id="prac-img"
+                onchange="window.onImgPick('prac-imgname', this)"/>
+            </div>
+          </div>
+
+          <div class="form-field" style="margin-top:.75rem;margin-bottom:.75rem">
+            <label>Task instructions / prompt</label>
+            <textarea id="prac-prompt" placeholder="Type the full task prompt here." style="min-height:100px"></textarea>
+          </div>
+          <div class="form-field">
+            <label>Model answer (optional)</label>
+            <textarea id="prac-model" placeholder="Paste a Band 8–9 model answer here." style="min-height:110px"></textarea>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function buildSpeaking(container) {
+    const parts = [
+      { num:1, title:'Part 1 — Introduction & Interview', desc:'General questions about yourself, your life, interests · 4–5 min' },
+      { num:2, title:'Part 2 — Long Turn (Cue Card)', desc:'Student speaks for 1–2 min on a given topic · 3–4 min total' },
+      { num:3, title:'Part 3 — Discussion', desc:'Abstract discussion questions linked to Part 2 topic · 4–5 min' },
+    ];
+    container.innerHTML = parts.map(p => `
+      <div class="passage-card open" id="passage-card-sp${p.num}">
+        <div class="passage-card-header" onclick="window.togglePassage('sp${p.num}')">
+          <div class="pch-left">
+            <div class="pch-num">${p.num}</div>
+            <div><div class="pch-title">${p.title}</div><div class="pch-meta">${p.desc}</div></div>
+          </div>
+          <span class="pch-chevron">▶</span>
+        </div>
+        <div class="passage-card-body">
+          <div class="form-field" style="margin-bottom:${p.num===2?'.65rem':'.3rem'}">
+            <label>${p.num===2?'Cue card topic & bullet points':'Questions (one per line)' }</label>
+            <textarea style="min-height:${p.num===2?'100px':'80px'}"
+              placeholder="${p.num===1?'Do you work or study?\nWhat do you like about your hometown?\nDo you enjoy cooking?':p.num===2?'Describe a place you have visited that you found particularly interesting.\nYou should say:\n• where this place is\n• when you went there\n• what you saw or did there\nand explain why you found it particularly interesting.':'Do you think it is important for people to travel to new places?\nHow has tourism changed in recent years?'}"></textarea>
+          </div>
+          ${p.num===2?`<div class="form-field">
+            <label>Preparation time (seconds)</label>
+            <input type="number" value="60" min="30" max="120"/>
+          </div>`:''}
+          <div class="form-field" style="margin-top:.65rem">
+            <label>Sample answer / notes for teacher (optional)</label>
+            <textarea style="min-height:70px" placeholder="Band 7–8 sample answer or examiner tips…"></textarea>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  // old fallback
+  function buildWritingSpeaking(container) { buildMockWriting(container); }
+
+  window.onTask1TypeChange = function() {
+    const type = document.getElementById('task1-type').value;
+    const imgSection = document.getElementById('task1-image-section');
+    const letterSection = document.getElementById('task1-letter-section');
+    const uploadLabel = document.getElementById('task1-upload-label');
+    const uploadSub   = document.getElementById('task1-upload-sub');
+    if (type === 'general') {
+      imgSection.style.display = 'none';
+      letterSection.style.display = 'block';
+    } else {
+      imgSection.style.display = 'block';
+      letterSection.style.display = 'none';
+      const labels = {
+        graph: ['Upload the chart or diagram image', 'Bar chart, line graph, pie chart, etc.'],
+        diagram: ['Upload the process or diagram image', 'Cycle, flow chart, cross-section, etc.'],
+        map: ['Upload the map image', 'Two maps showing changes over time'],
+        table: ['Upload the table image', 'Data table for students to describe'],
+      };
+      if (labels[type]) {
+        uploadLabel.textContent = labels[type][0];
+        uploadSub.textContent   = labels[type][1];
+      }
+    }
+  };
+
+  window.onPracTaskChange = function() {
+    const type = document.getElementById('prac-task-type').value;
+    const wrap = document.getElementById('prac-image-wrap');
+    wrap.style.display = type === 'task2' || type === 'task1-letter' ? 'none' : 'block';
+  };
+
+  window.onImgPick = function(nameId, input) {
+    const nameEl = document.getElementById(nameId);
+    if (input.files[0]) {
+      nameEl.textContent = '✓ ' + input.files[0].name;
+      nameEl.style.display = 'block';
+    }
+  };
+
+  window.togglePassage = function(pid) {
+    const card = document.getElementById('passage-card-' + pid);
+    if (card) card.classList.toggle('open');
+  };
+
+  window.onAudioPick = function(pid, input) {
+    const nameEl = document.getElementById('luname-' + pid);
+    if (input.files[0]) {
+      nameEl.textContent = '✓ ' + input.files[0].name;
+      nameEl.style.display = 'block';
+    }
+  };
+
+  // ── QUESTION BUILDER ────────────────────────────────────────────────
+  window.addQ = function(pid) {
+    qCounters[pid] = (qCounters[pid] || 0) + 1;
+    const qn = pid + '_q' + qCounters[pid];
+    const builder = document.getElementById('qbuilder-' + pid);
+    if (!builder) return;
+
+    const div = document.createElement('div');
+    div.className = 'q-item';
+    div.id = 'qi-' + qn;
+    div.innerHTML = `
+      <div class="q-item-hdr">
+        <span class="q-item-num">Question ${qCounters[pid]}</span>
+        <button class="q-item-del" onclick="window.removeQ('${qn}','${pid}')">✕ Remove</button>
+      </div>
+      <div class="q-type-row">
+        <button class="q-type-btn on"  onclick="window.setQt('${qn}','mcq',this)">Multiple choice</button>
+        <button class="q-type-btn"     onclick="window.setQt('${qn}','tfng',this)">T/F/NG</button>
+        <button class="q-type-btn"     onclick="window.setQt('${qn}','yng',this)">Y/N/NG</button>
+        <button class="q-type-btn"     onclick="window.setQt('${qn}','gap',this)">Gap fill</button>
+        <button class="q-type-btn"     onclick="window.setQt('${qn}','match-head',this)">Match headings</button>
+        <button class="q-type-btn"     onclick="window.setQt('${qn}','match-feat',this)">Match features</button>
+        <button class="q-type-btn"     onclick="window.setQt('${qn}','sent-end',this)">Sentence endings</button>
+        <button class="q-type-btn"     onclick="window.setQt('${qn}','summary',this)">Summary fill</button>
+        <button class="q-type-btn"     onclick="window.setQt('${qn}','table',this)">Table/Note fill</button>
+        <button class="q-type-btn"     onclick="window.setQt('${qn}','short',this)">Short answer</button>
+        <button class="q-type-btn"     onclick="window.setQt('${qn}','diagram',this)">Diagram label</button>
+        <button class="q-type-btn"     onclick="window.setQt('${qn}','map',this)">Map/Plan label</button>
+      </div>
+      <div class="form-field" style="margin-bottom:.6rem">
+        <label>Question text / instruction</label>
+        <textarea style="min-height:52px" placeholder="Type the question or instruction here…"></textarea>
+      </div>
+      <div id="qopts-${qn}">${buildMCQ(qn)}</div>`;
+
+    builder.appendChild(div);
+    updateQBadge(pid);
+  };
+
+  window.removeQ = function(qn, pid) {
+    const el = document.getElementById('qi-' + qn);
+    if (el) el.remove();
+    updateQBadge(pid);
+  };
+
+  window.setQt = function(qn, type, btn) {
+    btn.closest('.q-type-row').querySelectorAll('.q-type-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const opt = document.getElementById('qopts-' + qn);
+    const builders = {
+      mcq: buildMCQ, tfng: buildTFNG, yng: buildYNG,
+      gap: buildGap, short: buildShort, summary: buildSummary,
+      table: buildTable, 'match-head': buildMatchHead,
+      'match-feat': buildMatchFeat, 'sent-end': buildSentEnd,
+      diagram: buildDiagram, map: buildMap,
+    };
+    if (builders[type]) opt.innerHTML = builders[type](qn);
+  };
+
+  function updateQBadge(pid) {
+    const builder = document.getElementById('qbuilder-' + pid);
+    const count = builder ? builder.querySelectorAll('.q-item').length : 0;
+    const badge = document.getElementById('qbadge-' + pid);
+    const meta  = document.getElementById('meta-' + pid);
+    if (badge) badge.textContent = count + ' Q' + (count !== 1 ? 's' : '');
+    if (meta)  meta.textContent  = count === 0 ? 'No questions yet' : count + ' question' + (count !== 1 ? 's' : '') + ' added';
+  }
+
+  // Question type builders
+  function buildMCQ(qn) {
+    return `<div class="options-builder" id="mcqopts-${qn}">
+      ${['A','B','C','D'].map(l=>`<div class="opt-row">
+        <div class="opt-letter">${l}</div>
+        <input class="opt-input" placeholder="Option ${l}"/>
+        <input type="radio" name="cr-${qn}" class="correct-radio" title="Correct answer"/>
+        <span class="correct-label">Correct</span>
+      </div>`).join('')}
+    </div>
+    <button class="btn-add-opt" onclick="window.addOpt('${qn}')">＋ Add option</button>`;
+  }
+
+  function buildTFNG(qn) {
+    return `<div style="display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;margin-top:.35rem">
+      <span style="font-size:.78rem;font-weight:500">Correct:</span>
+      ${['True','False','Not Given'].map(v=>`<label style="display:flex;align-items:center;gap:.3rem;font-size:.82rem;cursor:pointer"><input type="radio" name="tfng-${qn}" value="${v}"/> ${v}</label>`).join('')}
+    </div>`;
+  }
+
+  function buildYNG(qn) {
+    return `<div style="display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;margin-top:.35rem">
+      <span style="font-size:.78rem;font-weight:500">Correct:</span>
+      ${['Yes','No','Not Given'].map(v=>`<label style="display:flex;align-items:center;gap:.3rem;font-size:.82rem;cursor:pointer"><input type="radio" name="yng-${qn}" value="${v}"/> ${v}</label>`).join('')}
+    </div>`;
+  }
+
+  function buildGap(qn) {
+    return `<div class="form-field" style="margin-top:.35rem">
+      <label>Correct answer (exact words from passage)</label>
+      <input type="text" placeholder="e.g. blood pressure"/>
+      <span class="form-hint">Max word count allowed: <input type="number" value="2" min="1" max="5" style="width:50px;padding:.2rem .4rem;border:1px solid rgba(14,14,14,.15);border-radius:5px;font-size:.78rem;"/> words</span>
+    </div>`;
+  }
+
+  function buildShort(qn) {
+    return `<div class="form-field" style="margin-top:.35rem">
+      <label>Correct answer (max 3 words)</label>
+      <input type="text" placeholder="e.g. Matthew White"/>
+      <span class="form-hint">Short answer — students write from the passage, no more than 3 words.</span>
+    </div>`;
+  }
+
+  function buildSummary(qn) {
+    return `<div style="margin-top:.35rem">
+      <div class="form-field" style="margin-bottom:.6rem">
+        <label>Summary text (use ___ for each gap)</label>
+        <textarea style="min-height:80px" placeholder="The researchers found that ___ improves wellbeing significantly when people spend at least ___ hours per week outdoors."></textarea>
+        <span class="form-hint">Use ___ (three underscores) to mark each gap. Students choose from a word list or write from the passage.</span>
+      </div>
+      <div class="form-field">
+        <label>Answer key (one answer per line)</label>
+        <textarea style="min-height:60px" placeholder="nature&#10;two"></textarea>
+      </div>
+    </div>`;
+  }
+
+  function buildTable(qn) {
+    return `<div style="margin-top:.35rem">
+      <div class="form-field" style="margin-bottom:.6rem">
+        <label>Table / note structure (describe or paste)</label>
+        <textarea style="min-height:80px" placeholder="Paste your table or notes here. Use ___ for each blank students must fill."></textarea>
+      </div>
+      <div class="form-field">
+        <label>Answer key (one answer per line)</label>
+        <textarea style="min-height:60px" placeholder="Answer 1&#10;Answer 2&#10;Answer 3"></textarea>
+      </div>
+    </div>`;
+  }
+
+  function buildMatchHead(qn) {
+    return `<div style="margin-top:.35rem">
+      <div class="form-field" style="margin-bottom:.6rem">
+        <label>Headings list (one per line, label with i, ii, iii…)</label>
+        <textarea style="min-height:80px" placeholder="i. The origins of urban planning&#10;ii. Economic consequences of green spaces&#10;iii. Psychological benefits of nature"></textarea>
+      </div>
+      <div class="form-field">
+        <label>Paragraph → heading answers (e.g. A=ii, B=iv…)</label>
+        <input type="text" placeholder="A=ii, B=v, C=i, D=iii"/>
+      </div>
+    </div>`;
+  }
+
+  function buildMatchFeat(qn) {
+    return `<div style="margin-top:.35rem">
+      <div class="form-field" style="margin-bottom:.6rem">
+        <label>List of features / people / places (one per line)</label>
+        <textarea style="min-height:70px" placeholder="A. Matthew White&#10;B. Roger Ulrich&#10;C. Jennifer Wolch"></textarea>
+      </div>
+      <div class="form-field">
+        <label>Statements and their correct match (one per line)</label>
+        <textarea style="min-height:80px" placeholder="Conducted research on physiological recovery = B&#10;Coined the term green gentrification = C"></textarea>
+      </div>
+    </div>`;
+  }
+
+  function buildSentEnd(qn) {
+    return `<div style="margin-top:.35rem">
+      <div class="form-field" style="margin-bottom:.6rem">
+        <label>Sentence beginnings (one per line)</label>
+        <textarea style="min-height:70px" placeholder="1. The 2019 study concluded that&#10;2. Attention Restoration Theory suggests that"></textarea>
+      </div>
+      <div class="form-field" style="margin-bottom:.6rem">
+        <label>Sentence endings list (label A, B, C…)</label>
+        <textarea style="min-height:70px" placeholder="A. natural environments restore focused attention.&#10;B. two hours per week is enough to improve wellbeing."></textarea>
+      </div>
+      <div class="form-field">
+        <label>Answer key (e.g. 1=B, 2=A)</label>
+        <input type="text" placeholder="1=B, 2=A"/>
+      </div>
+    </div>`;
+  }
+
+  function buildDiagram(qn) {
+    return `<div style="margin-top:.35rem">
+      <div class="listening-upload" onclick="document.getElementById('diag-${qn}').click()" style="margin-bottom:.65rem">
+        <div class="lu-icon">🖼</div>
+        <div class="lu-text">Upload diagram image</div>
+        <div class="lu-sub">PNG or JPG · The diagram students will label</div>
+        <div class="lu-filename" id="diagname-${qn}"></div>
+        <input type="file" accept=".png,.jpg,.jpeg" class="lu-input" id="diag-${qn}"
+          onchange="document.getElementById('diagname-${qn}').textContent='✓ '+this.files[0].name;document.getElementById('diagname-${qn}').style.display='block'"/>
+      </div>
+      <div class="form-field">
+        <label>Answer key (label number = correct word, one per line)</label>
+        <textarea style="min-height:60px" placeholder="1 = inlet pipe&#10;2 = heating element&#10;3 = thermostat"></textarea>
+      </div>
+    </div>`;
+  }
+
+  function buildMap(qn) {
+    return `<div style="margin-top:.35rem">
+      <div class="listening-upload" onclick="document.getElementById('map-${qn}').click()" style="margin-bottom:.65rem">
+        <div class="lu-icon">🗺</div>
+        <div class="lu-text">Upload map or floor plan</div>
+        <div class="lu-sub">PNG or JPG · The map students will label</div>
+        <div class="lu-filename" id="mapname-${qn}"></div>
+        <input type="file" accept=".png,.jpg,.jpeg" class="lu-input" id="map-${qn}"
+          onchange="document.getElementById('mapname-${qn}').textContent='✓ '+this.files[0].name;document.getElementById('mapname-${qn}').style.display='block'"/>
+      </div>
+      <div class="form-field">
+        <label>Answer key (letter = location name, one per line)</label>
+        <textarea style="min-height:60px" placeholder="A = entrance&#10;B = reception desk&#10;C = waiting room"></textarea>
+      </div>
+    </div>`;
+  }
+
+  window.addOpt = function(qn) {
+    const opts = document.getElementById('mcqopts-' + qn);
+    if (!opts) return;
+    const count = opts.querySelectorAll('.opt-row').length;
+    const letter = String.fromCharCode(65 + count);
+    const row = document.createElement('div');
+    row.className = 'opt-row';
+    row.innerHTML = `<div class="opt-letter">${letter}</div>
+      <input class="opt-input" placeholder="Option ${letter}"/>
+      <input type="radio" name="cr-${qn}" class="correct-radio"/>
+      <span class="correct-label">Correct</span>`;
+    opts.appendChild(row);
+  };
+
+  // ── TESTS TABLE ──────────────────────────────────────────────────────
+  function initTests() { renderTests(); }
+
+  function renderTests() {
+    const tbody = document.getElementById('tests-tbody');
+    if (!tbody) return;
+    const typeLabels = {
+      'mock-reading':'Reading mock','mock-listening':'Listening mock',
+      'mock-writing':'Writing mock','mock-speaking':'Speaking mock',
+      'practice-reading':'Reading practice','practice-listening':'Listening practice',
+      'practice-writing':'Writing practice'
+    };
+    tbody.innerHTML = '';
+    tests.forEach(t => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight:500">${t.title}</td>
+        <td><span class="badge ${t.type.startsWith('mock')?'badge-mock':'badge-practice'}">${typeLabels[t.type]||t.type}</span></td>
+        <td><span class="badge ${t.access==='free'?'badge-live':'badge-draft'}">${t.access==='free'?'Free':'Premium'}</span></td>
+        <td><span class="badge ${t.status==='live'?'badge-live':'badge-draft'}">${t.status==='live'?'Live':'Draft'}</span></td>
+        <td style="color:var(--muted)">${t.students}</td>
+        <td style="font-weight:600;color:var(--blue)">${t.avg}</td>
+        <td><div class="row-actions">
+          <button class="row-btn" onclick="window.editTest(${t.id})">Edit</button>
+          <button class="row-btn" onclick="window.toggleStatus(${t.id})">${t.status==='live'?'Unpublish':'Publish'}</button>
+          <button class="row-btn del" onclick="window.deleteTest(${t.id})">Delete</button>
+        </div></td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  window.toggleStatus = function(id) {
+    const t = tests.find(t => t.id === id);
+    if (!t) return;
+    t.status = t.status === 'live' ? 'draft' : 'live';
+    renderTests();
+    showToast(t.status === 'live' ? '✓ Test published!' : '✓ Test unpublished.');
+  };
+
+  window.deleteTest = function(id) {
+    if (!confirm('Delete this test? This cannot be undone.')) return;
+    tests = tests.filter(t => t.id !== id);
+    renderTests();
+    showToast('🗑 Test deleted.');
+  };
+
+  window.editTest = function(id) {
+    window.showPage('upload', document.querySelectorAll('.s-item')[1]);
+    const t = tests.find(t => t.id === id);
+    if (!t) return;
+    document.getElementById('f-title').value = t.title;
+    document.getElementById('f-type').value = t.type;
+    document.getElementById('f-access').value = t.access;
+    buildPassages();
+    showToast('📝 Editing: ' + t.title);
+  };
+
+  // ── PUBLISH ──────────────────────────────────────────────────────────
+  window.publishTest = function() {
+    const title = document.getElementById('f-title').value.trim();
+    if (!title) { alert('Please add a test title before publishing.'); return; }
+    const type = document.getElementById('f-type').value;
+    const access = document.getElementById('f-access').value;
+    tests.unshift({ id: Date.now(), title, type, access, status:'live', students:0, avg:'—' });
+    renderTests();
+    showToast('🚀 Test published and live for students!');
+    document.getElementById('f-title').value = '';
+    buildPassages();
+  };
+
+  window.saveDraft = function() {
+    const title = document.getElementById('f-title').value.trim() || 'Untitled draft';
+    const type = document.getElementById('f-type').value;
+    const access = document.getElementById('f-access').value;
+    tests.unshift({ id: Date.now(), title, type, access, status:'draft', students:0, avg:'—' });
+    renderTests();
+    showToast('💾 Saved as draft.');
+  };
+
+  window.previewTest = function() {
+    showToast('👁 Preview will open the test in a new tab once Firebase is connected.');
+  };
+
+  // ── TOAST ────────────────────────────────────────────────────────────
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+  window.showToast = showToast;
+
+  // ── SPEAKING QUESTIONS ADMIN ─────────────────────────────────────────
+  let currentSpPart = 1;
+  let editingSpIdx = null;
+
+  const SP_HINTS = {
+    1: 'Part 1 questions are short, general, and about familiar topics — home, family, work, hobbies. Students answer for 30–45 seconds each.',
+    2: 'Part 2 is a cue card. Students get 1 minute to prepare, then speak for 1–2 minutes without interruption.',
+    3: 'Part 3 questions are more abstract and linked to the Part 2 topic. Students discuss ideas in depth — 60–90 seconds each.'
+  };
+
+  let spQuestions = {
+    1: [
+      { text:'Do you work or are you a student?', hint:'Talk about your current occupation and what you enjoy about it.', band:'Band 7–8', sample:`I'm currently a student at university, studying Business Administration in my second year. I genuinely enjoy my course because it covers a wide range of subjects — from marketing and finance to management. Outside of studying, I also do some part-time tutoring, which I find quite rewarding.`, tips:['Give a direct answer first, then expand.','Aim for 30–45 seconds.','Use phrases like "I genuinely enjoy..."'] },
+      { text:'What do you like about your hometown?', hint:'Describe one or two things you genuinely appreciate about where you grew up.', band:'Band 7–8', sample:`I grew up in Tashkent, a vibrant city with a fascinating mix of modern architecture and traditional markets. What I particularly love is the food culture — there are incredible local restaurants serving traditional Uzbek dishes. Despite being a large city, it still has a strong sense of community.`, tips:['Be specific — mention real places or features.','Show genuine enthusiasm.'] },
+    ],
+    2: [
+      { isCueCard:true, topic:'Describe a place you have visited that you found particularly interesting.', bullets:['where this place is','when you went there','what you saw or did there'], cueAnd:'explain why you found it particularly interesting.', prepTime:60, band:'Band 7–8', sample:`I'd like to talk about Samarkand, a city in Uzbekistan that I visited last summer. It has an almost magical atmosphere because of its stunning Islamic architecture.\n\nThe first thing we visited was the Registan — a huge square surrounded by three beautifully decorated madrasas covered in intricate blue tilework. I remember standing there completely overwhelmed.\n\nWhat I found particularly fascinating was the sense of history — the city has been visited by figures like Alexander the Great, and you can genuinely feel that weight of history while walking through it.`, tips:['Structure: where → when → what → why.','Start speaking immediately.','Aim for a full 2 minutes.'] },
+    ],
+    3: [
+      { text:'Do you think it is important for people to travel to different places?', hint:'Give a developed opinion with reasons and an example.', band:'Band 7–8', sample:`Yes, I think travel is genuinely valuable. Most importantly, it exposes people to different cultures and ways of life they wouldn't encounter at home — this tends to make people more open-minded and empathetic.\n\nThat said, I do think the environmental impact of tourism is a growing concern, and people should try to travel more responsibly.\n\nOverall, I believe the benefits of travel outweigh the downsides.`, tips:['Start with your position clearly.','Use "Most importantly...", "That said..."','Acknowledge the other side to show balance.'] },
+    ]
+  };
+
+  window.switchSpPart = function(part) {
+    currentSpPart = part;
+    [1,2,3].forEach(p => {
+      const tab = document.getElementById('sp-tab-'+p);
+      if (tab) tab.classList.toggle('on', p===part);
+    });
+    const hint = document.getElementById('sp-part-hint');
+    if (hint) hint.textContent = SP_HINTS[part];
+    cancelSpForm();
+    renderSpQuestions();
+  };
+
+  function renderSpQuestions() {
+    const list = document.getElementById('sp-questions-list');
+    if (!list) return;
+    const qs = spQuestions[currentSpPart] || [];
+    if (!qs.length) {
+      list.innerHTML = `<div class="card" style="text-align:center;padding:2rem;color:var(--muted)">
+        <div style="font-size:1.5rem;margin-bottom:.65rem">🎤</div>
+        <div style="font-size:.88rem">No questions yet for Part ${currentSpPart}. Click <strong>+ Add question</strong> to add one.</div>
+      </div>`;
+      return;
+    }
+    list.innerHTML = '';
+    qs.forEach((q, i) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.marginBottom = '.85rem';
+      const title   = q.isCueCard ? q.topic : q.text;
+      const preview = (q.sample || '').slice(0, 100) + '…';
+      card.innerHTML = `
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.45rem;flex-wrap:wrap">
+              <span style="font-size:.68rem;font-weight:600;background:${q.isCueCard?'#E6F1FB':'#EEEDFE'};color:${q.isCueCard?'#0C447C':'#3C3489'};padding:.18rem .6rem;border-radius:5px;">${q.isCueCard?'Cue card':'Question'}</span>
+              <span style="font-size:.7rem;background:#EAF3DE;color:#27500A;padding:.18rem .6rem;border-radius:5px;">${q.band||'Band 7–8'}</span>
+              ${q.isCueCard&&q.bullets?`<span style="font-size:.7rem;color:var(--muted)">${q.bullets.length} bullet points</span>`:''}
+            </div>
+            <div style="font-size:.9rem;font-weight:600;margin-bottom:.3rem;line-height:1.4">${title}</div>
+            ${q.isCueCard&&q.bullets?`<div style="font-size:.76rem;color:var(--muted);margin-bottom:.3rem">${q.bullets.map(b=>'• '+b).join('  ')}</div>`:''}
+            <div style="font-size:.76rem;color:var(--muted);font-style:italic">"${preview}"</div>
+          </div>
+          <div style="display:flex;gap:.4rem;flex-shrink:0">
+            <button class="row-btn" onclick="window.editSpQuestion(${i})">Edit</button>
+            <button class="row-btn del" onclick="window.deleteSpQuestion(${i})">Delete</button>
+          </div>
+        </div>`;
+      list.appendChild(card);
+    });
+  }
+
+  window.addSpeakingQuestion = function() {
+    editingSpIdx = null;
+    clearSpForm();
+    document.getElementById('sp-form-title').textContent = 'Add new question — Part ' + currentSpPart;
+    document.getElementById('sp-add-form').style.display = 'block';
+    document.getElementById('sp-add-form').scrollIntoView({ behavior:'smooth', block:'start' });
+  };
+
+  window.editSpQuestion = function(idx) {
+    editingSpIdx = idx;
+    const q = (spQuestions[currentSpPart]||[])[idx];
+    if (!q) return;
+    clearSpForm();
+    document.getElementById('sp-form-title').textContent = 'Edit question — Part ' + currentSpPart;
+    if (q.isCueCard) {
+      showCuecardFields();
+      document.getElementById('sp-cue-topic').value   = q.topic||'';
+      document.getElementById('sp-cue-bullets').value = (q.bullets||[]).join('\n');
+      document.getElementById('sp-cue-and').value     = q.cueAnd||'';
+      document.getElementById('sp-cue-prep').value    = q.prepTime||60;
+      document.getElementById('sp-cue-band').value    = q.band||'Band 7–8';
+      document.getElementById('sp-cue-sample').value  = q.sample||'';
+      document.getElementById('sp-cue-tips').value    = (q.tips||[]).join('\n');
+    } else {
+      showStandardFields();
+      document.getElementById('sp-q-text').value   = q.text||'';
+      document.getElementById('sp-q-hint').value   = q.hint||'';
+      document.getElementById('sp-q-band').value   = q.band||'Band 7–8';
+      document.getElementById('sp-q-sample').value = q.sample||'';
+      document.getElementById('sp-q-tips').value   = (q.tips||[]).join('\n');
+    }
+    document.getElementById('sp-add-form').style.display = 'block';
+    document.getElementById('sp-add-form').scrollIntoView({ behavior:'smooth', block:'start' });
+  };
+
+  window.saveSpQuestion = function() {
+    let q;
+    if (currentSpPart === 2) {
+      const topic = (document.getElementById('sp-cue-topic').value||'').trim();
+      if (!topic) { alert('Please enter the cue card topic.'); return; }
+      q = {
+        isCueCard: true, topic,
+        bullets:  (document.getElementById('sp-cue-bullets').value||'').trim().split('\n').filter(Boolean),
+        cueAnd:   (document.getElementById('sp-cue-and').value||'').trim(),
+        prepTime: +(document.getElementById('sp-cue-prep').value||60),
+        band:     document.getElementById('sp-cue-band').value,
+        sample:   (document.getElementById('sp-cue-sample').value||'').trim(),
+        tips:     (document.getElementById('sp-cue-tips').value||'').trim().split('\n').filter(Boolean),
+      };
+    } else {
+      const text = (document.getElementById('sp-q-text').value||'').trim();
+      if (!text) { alert('Please enter the question text.'); return; }
+      q = {
+        text,
+        hint:   (document.getElementById('sp-q-hint').value||'').trim(),
+        band:   document.getElementById('sp-q-band').value,
+        sample: (document.getElementById('sp-q-sample').value||'').trim(),
+        tips:   (document.getElementById('sp-q-tips').value||'').trim().split('\n').filter(Boolean),
+      };
+    }
+    if (!spQuestions[currentSpPart]) spQuestions[currentSpPart] = [];
+    if (editingSpIdx !== null) spQuestions[currentSpPart][editingSpIdx] = q;
+    else spQuestions[currentSpPart].push(q);
+    cancelSpForm();
+    renderSpQuestions();
+
+    // Save to Firestore so students see it immediately
+    var spId = 'sp_' + currentSpPart + '_' + Date.now();
+    var spData = Object.assign({}, q, {
+      part: currentSpPart,
+      id:   spId,
+      updatedAt: new Date().toISOString()
+    });
+    if (window.fbSaveSpeakingQ) {
+      window.fbSaveSpeakingQ(spId, spData)
+        .then(function(){ showToast('Question saved — students can see it now!'); })
+        .catch(function(e){ showToast('Saved locally. Firestore sync failed.'); });
+    } else {
+      showToast('Question saved locally.');
+    }
+  };
+
+  window.deleteSpQuestion = function(idx) {
+    if (!confirm('Delete this question?')) return;
+    var q = spQuestions[currentSpPart][idx];
+    spQuestions[currentSpPart].splice(idx, 1);
+    renderSpQuestions();
+    if (q && q.id && window.fbDeleteSpeakingQ) {
+      window.fbDeleteSpeakingQ(q.id).catch(function(e){ console.log('Firestore delete failed:', e.message); });
+    }
+    showToast('Question deleted.');
+  };
+
+  window.cancelSpQuestion = function() { cancelSpForm(); };
+
+  function cancelSpForm() {
+    const form = document.getElementById('sp-add-form');
+    if (form) form.style.display = 'none';
+    clearSpForm();
+    editingSpIdx = null;
+  }
+
+  function clearSpForm() {
+    ['sp-q-text','sp-q-hint','sp-q-sample','sp-q-tips',
+     'sp-cue-topic','sp-cue-bullets','sp-cue-and','sp-cue-sample','sp-cue-tips']
+      .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    const prep = document.getElementById('sp-cue-prep');
+    if (prep) prep.value = '60';
+    if (currentSpPart === 2) showCuecardFields(); else showStandardFields();
+  }
+
+  function showStandardFields() {
+    const s = document.getElementById('sp-fields-standard');
+    const c = document.getElementById('sp-fields-cuecard');
+    if (s) s.style.display = 'block';
+    if (c) c.style.display = 'none';
+  }
+  function showCuecardFields() {
+    const s = document.getElementById('sp-fields-standard');
+    const c = document.getElementById('sp-fields-cuecard');
+    if (s) s.style.display = 'none';
+    if (c) c.style.display = 'block';
+  }
+
+// ── STUDENT MANAGEMENT ───────────────────────────────────────────
+var STUDENTS = [];
+
+function planBadge(plan) {
+  if (plan === 'premium')   return '<span class="plan-premium">Premium ✦</span>';
+  if (plan === 'intensive')  return '<span style="font-weight:600;color:#7c3aed;">Intensive ✦✦</span>';
+  return '<span class="plan-free">Free</span>';
+}
+
+function renderStudents(list) {
+  var tbody = document.getElementById('students-tbody');
+  var noRes = document.getElementById('no-students');
+  var count = document.getElementById('search-count');
+  if (!tbody) return;
+  if (!list.length) {
+    tbody.innerHTML = '';
+    noRes.style.display = 'block';
+    count.textContent = 'No students found';
+    return;
+  }
+  noRes.style.display = 'none';
+  count.textContent = 'Showing ' + list.length + ' student' + (list.length !== 1 ? 's' : '');
+  tbody.innerHTML = list.map(function(s) {
+    var actions = '';
+    if (s.plan === 'free') {
+      actions =
+        '<button onclick="setPlan(\''+s.uid+'\',\'premium\')" style="padding:.3rem .7rem;font-size:.74rem;background:var(--ink);color:#fff;border:none;border-radius:5px;cursor:pointer;margin-right:.35rem;">✦ Make Premium</button>' +
+        '<button onclick="setPlan(\''+s.uid+'\',\'intensive\')" style="padding:.3rem .7rem;font-size:.74rem;background:#7c3aed;color:#fff;border:none;border-radius:5px;cursor:pointer;">✦✦ Make Intensive</button>';
+    } else if (s.plan === 'premium') {
+      actions =
+        '<button onclick="setPlan(\''+s.uid+'\',\'intensive\')" style="padding:.3rem .7rem;font-size:.74rem;background:#7c3aed;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-right:.35rem;">↑ Intensive</button>' +
+        '<button onclick="setPlan(\''+s.uid+'\',\'free\')" style="padding:.3rem .7rem;font-size:.74rem;background:none;border:1px solid #e24b4a;color:#e24b4a;border-radius:5px;cursor:pointer;">Remove Premium</button>';
+    } else {
+      actions =
+        '<button onclick="setPlan(\''+s.uid+'\',\'premium\')" style="padding:.3rem .7rem;font-size:.74rem;background:none;border:1px solid var(--border);color:var(--ink);border-radius:5px;cursor:pointer;margin-right:.35rem;">↓ Premium</button>' +
+        '<button onclick="setPlan(\''+s.uid+'\',\'free\')" style="padding:.3rem .7rem;font-size:.74rem;background:none;border:1px solid #e24b4a;color:#e24b4a;border-radius:5px;cursor:pointer;">Remove Premium</button>';
+    }
+    var joined = s.joinedAt ? new Date(s.joinedAt.seconds*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—';
+    return '<tr class="student-row">' +
+      '<td style="font-weight:500">' + (s.name||'—') + '</td>' +
+      '<td style="color:var(--muted);font-family:monospace;font-size:.82rem">' + (s.email||'—') + '</td>' +
+      '<td>' + planBadge(s.plan||'free') + '</td>' +
+      '<td style="font-size:.82rem;color:var(--muted)">' + (s.planExpires||'—') + '</td>' +
+      '<td>' + (s.targetBand||'—') + '</td>' +
+      '<td style="color:var(--muted);font-size:.82rem">' + joined + '</td>' +
+      '<td style="white-space:nowrap">' + actions + '</td>' +
+      '</tr>';
+  }).join('');
+
+  var total = STUDENTS.length;
+  var prem  = STUDENTS.filter(function(s){ return s.plan==='premium'||s.plan==='intensive'; }).length;
+  var free  = STUDENTS.filter(function(s){ return s.plan==='free'||!s.plan; }).length;
+  var ts=document.getElementById('st-total'); if(ts) ts.textContent=total;
+  var ps=document.getElementById('st-prem');  if(ps) ps.textContent=prem;
+  var fs=document.getElementById('st-free');  if(fs) fs.textContent=free;
+}
+
+function filterStudents() {
+  var q      = (document.getElementById('student-search').value||'').toLowerCase().trim();
+  var filter = document.getElementById('student-filter').value;
+  var result = STUDENTS.filter(function(s) {
+    var matchQ = !q || (s.name||'').toLowerCase().indexOf(q)!==-1 || (s.email||'').toLowerCase().indexOf(q)!==-1;
+    var matchF = filter==='all' || (s.plan||'free')===filter;
+    return matchQ && matchF;
+  });
+  renderStudents(result);
+}
+
+function setPlan(uid, plan) {
+  var s = STUDENTS.find(function(x){ return x.uid===uid; });
+  if (!s) return;
+  var planNames = {free:'Free',premium:'Premium',intensive:'Intensive'};
+  var msg = plan==='free'
+    ? 'Remove Premium from '+s.name+'?\n\nThey will lose access to AI feedback.'
+    : 'Upgrade '+s.name+' to '+planNames[plan]+'?\n\nConfirm payment received first.';
+  if (!confirm(msg)) return;
+  if (window.fbSetPlan) {
+    window.fbSetPlan(uid, plan).then(function() {
+      s.plan = plan;
+      s.planExpires = plan==='free' ? '—' : getExpiry();
+      filterStudents();
+      window.showToast('✓ ' + s.name + (plan==='free' ? ' downgraded to Free' : ' upgraded to '+planNames[plan]+' ✦'));
+    });
+  } else {
+    s.plan = plan;
+    s.planExpires = plan==='free' ? '—' : getExpiry();
+    filterStudents();
+    window.showToast('✓ Updated (Firebase not connected yet)');
+  }
+}
+
+function getExpiry() {
+  var d=new Date(); d.setMonth(d.getMonth()+1);
+  return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+
+renderStudents(STUDENTS);
+
+// ── FEEDBACK ADMIN ───────────────────────────────────────────────
+var fbActiveFilter = 'all';
+
+function loadFeedback() {
+  try { return JSON.parse(localStorage.getItem('bnd_feedback') || '[]'); }
+  catch(e) { return []; }
+}
+function saveFeedback(data) {
+  try { localStorage.setItem('bnd_feedback', JSON.stringify(data)); } catch(e) {}
+}
+
+function renderFeedback(filter) {
+  var all    = loadFeedback();
+  var unread = all.filter(function(f){ return !f.read; }).length;
+  var total  = all.length;
+  var ratings = all.filter(function(f){ return f.rating; }).map(function(f){ return f.rating; });
+  var avgR   = ratings.length ? (ratings.reduce(function(a,b){ return a+b; },0)/ratings.length).toFixed(1) : '—';
+
+  var te = document.getElementById('fb-total');   if(te) te.textContent = total;
+  var ue = document.getElementById('fb-unread');   if(ue) ue.textContent = unread;
+  var ae = document.getElementById('fb-avg-rating'); if(ae) ae.textContent = avgR + (avgR !== '—' ? ' ⭐' : '');
+
+  var list = all.filter(function(f) {
+    if (filter === 'unread') return !f.read;
+    if (filter !== 'all') return f.category && f.category.indexOf(filter) !== -1;
+    return true;
+  });
+
+  var wrap  = document.getElementById('fb-list');
+  var empty = document.getElementById('fb-empty');
+  if (!wrap) return;
+
+  if (!list.length) {
+    wrap.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+
+  var stars = function(n) { var s=''; for(var i=1;i<=5;i++) s+=(i<=n?'⭐':'☆'); return s; };
+
+  wrap.innerHTML = list.map(function(f) {
+    var catColour = {
+      'Suggestion':'background:#dcfce7;color:#166534',
+      'Bug':'background:#fee2e2;color:#991b1b',
+      'Compliment':'background:#dcfce7;color:#166534',
+      'Question':'background:#fef9c3;color:#78350f'
+    }[f.category] || 'background:#f0eeea;color:#555';
+
+    return '<div class="card" style="margin-bottom:.75rem;padding:1.25rem 1.4rem;cursor:pointer;border-left:3px solid '+(f.read?'transparent':'#d4541a')+'" onclick="markRead('+f.id+')">'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.4rem;">'
+      + '<div style="display:flex;align-items:center;gap:.55rem;">'
+      + (f.read ? '' : '<span style="width:8px;height:8px;background:#d4541a;border-radius:50%;flex-shrink:0;display:inline-block"></span>')
+      + '<strong style="font-size:.9rem">' + f.name + '</strong>'
+      + '<span style="font-size:.78rem;color:var(--muted);font-family:monospace">' + f.email + '</span>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:.5rem;">'
+      + '<span style="font-size:.68rem;font-weight:600;padding:.16rem .5rem;border-radius:100px;'+catColour+'">' + f.category + '</span>'
+      + '<span style="font-size:.78rem;color:var(--muted)">' + f.date + ' · ' + f.time + '</span>'
+      + '</div></div>'
+      + (f.rating ? '<div style="font-size:.82rem;margin-bottom:.5rem">' + stars(f.rating) + '</div>' : '')
+      + '<div style="font-size:.88rem;line-height:1.7;color:#333">' + f.message.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function markRead(id) {
+  var all = loadFeedback();
+  all = all.map(function(f){ if(f.id===id){ f.read=true; } return f; });
+  saveFeedback(all);
+  renderFeedback(fbActiveFilter);
+}
+
+function markAllRead() {
+  var all = loadFeedback().map(function(f){ f.read=true; return f; });
+  saveFeedback(all);
+  renderFeedback(fbActiveFilter);
+  window.showToast('All messages marked as read.');
+}
+
+function clearAllFeedback() {
+  if (!confirm('Delete all feedback messages? This cannot be undone.')) return;
+  saveFeedback([]);
+  renderFeedback(fbActiveFilter);
+  window.showToast('All feedback cleared.');
+}
+
+function fbFilter(filter, btn) {
+  fbActiveFilter = filter;
+  document.querySelectorAll('.fb-filter').forEach(function(b){ b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  renderFeedback(filter);
+}
+
+// Re-render feedback when page becomes visible
+var origShowPage = window.showPage;
+window.showPage = function(name, btn) {
+  origShowPage(name, btn);
+  if (name === 'feedback') renderFeedback(fbActiveFilter);
+};
+
+// ── REFERRAL ADMIN ──────────────────────────────────────────────
+var DEMO_REFS = [];
+
+function renderReferrals() {
+  var tbody = document.getElementById('ref-tbody');
+  if (!tbody) return;
+  var totalInvites = 0;
+  var totalRewards = 0;
+  tbody.innerHTML = '';
+  DEMO_REFS.forEach(function(r) {
+    totalInvites += r.invited.length;
+    totalRewards += r.bonus_essays + r.bonus_mins > 0 ? 1 : 0;
+    var invitedStr = r.invited.length
+      ? r.invited.join(', ')
+      : '<span style="color:var(--muted)">None yet</span>';
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td style="font-weight:500">'+r.student+'<br><span style="font-size:.74rem;color:var(--muted)">'+r.email+'</span></td>'
+      +'<td style="font-family:monospace;font-size:.8rem">'+r.code+'</td>'
+      +'<td style="font-weight:600;font-size:1rem;text-align:center">'+r.invited.length+'</td>'
+      +'<td style="font-size:.78rem;max-width:180px;white-space:normal">'+invitedStr+'</td>'
+      +'<td style="text-align:center"><span style="font-weight:600;color:var(--green)">'+(r.essays + r.bonus_essays)+'</span></td>'
+      +'<td style="text-align:center"><span style="font-weight:600;color:var(--accent)">'+(r.mins + r.bonus_mins)+'</span></td>'
+      +'<td style="white-space:nowrap">'
+      +'<button class="btn-secondary" style="padding:.28rem .6rem;font-size:.74rem;" onclick="quickBonus(\''+r.email+'\',1,0)">+1 essay</button>'
+      +'<button class="btn-secondary" style="padding:.28rem .6rem;font-size:.74rem;margin-left:.3rem;" onclick="quickBonus(\''+r.email+'\',0,10)">+10 min</button>'
+      +'</td>';
+    tbody.appendChild(tr);
+  });
+  var ti = document.getElementById('ref-total-invites');
+  if (ti) ti.textContent = totalInvites;
+}
+
+function giveBonusReward() {
+  var email = document.getElementById('bonus-email').value.trim();
+  var essays = parseInt(document.getElementById('bonus-essays').value) || 0;
+  var mins   = parseInt(document.getElementById('bonus-mins').value) || 0;
+  if (!email) { alert('Please enter a student email.'); return; }
+  if (!essays && !mins) { alert('Please enter at least 1 essay or 1 minute to add.'); return; }
+  var found = DEMO_REFS.find(function(r){ return r.email === email; });
+  if (!found) { alert('Student not found. Check the email address.'); return; }
+  found.bonus_essays += essays;
+  found.bonus_mins   += mins;
+  renderReferrals();
+  var msg = document.getElementById('bonus-msg');
+  msg.textContent = "Added " + essays + " essay check(s) and " + mins + " minute(s) to " + found.student + " account.";;
+  msg.style.display = 'block';
+  setTimeout(function(){ msg.style.display = 'none'; }, 4000);
+  document.getElementById('bonus-email').value = '';
+  document.getElementById('bonus-essays').value = '0';
+  document.getElementById('bonus-mins').value = '0';
+  window.showToast('✓ Reward given to ' + found.student);
+}
+
+function quickBonus(email, essays, mins) {
+  var found = DEMO_REFS.find(function(r){ return r.email === email; });
+  if (!found) return;
+  found.bonus_essays += essays;
+  found.bonus_mins   += mins;
+  renderReferrals();
+  var label = essays ? '+1 essay check' : '+10 AI minutes';
+  window.showToast('✓ ' + label + ' given to ' + found.student);
+}
+
+// Re-render when page is opened
+var _origShowPage2 = window.showPage;
+window.showPage = function(name, btn) {
+  _origShowPage2(name, btn);
+  if (name === 'referrals') renderReferrals();
+};
+
+}); // end DOMContentLoaded
+
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",
+    authDomain: "bandio-53433.firebaseapp.com",
+    projectId: "bandio-53433",
+    storageBucket: "bandio-53433.firebasestorage.app",
+    messagingSenderId: "161548316253",
+    appId: "1:161548316253:web:a7746750b2ea6d239d67b4"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // Sign in as admin when password is entered so Firestore rules pass
+  // You must have a Firebase Auth account with isAdmin:true in Firestore
+  window.fbAdminSignIn = async function(email, password) {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      return true;
+    } catch(e) {
+      console.log('Admin auth failed:', e.message);
+      return false;
+    }
+  };
+
+  // Load all students from Firestore
+  async function loadStudentsFromFirestore() {
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      window.STUDENTS = [];
+      snap.forEach(function(d) {
+        var data = d.data();
+        data.uid = d.id;
+        window.STUDENTS.push(data);
+      });
+      // Sort by joined date newest first
+      window.STUDENTS.sort(function(a,b) {
+        var at = a.joinedAt ? a.joinedAt.seconds : 0;
+        var bt = b.joinedAt ? b.joinedAt.seconds : 0;
+        return bt - at;
+      });
+      // Sync to local STUDENTS array and re-render
+      if (typeof STUDENTS !== 'undefined') {
+        STUDENTS.length = 0;
+        window.STUDENTS.forEach(function(s){ STUDENTS.push(s); });
+      }
+      if (typeof filterStudents === 'function') filterStudents();
+      // Update overview stats
+      var total = STUDENTS.length;
+      var prem  = STUDENTS.filter(function(s){ return s.plan==='premium'||s.plan==='intensive'; }).length;
+      var free  = STUDENTS.filter(function(s){ return !s.plan||s.plan==='free'; }).length;
+      var ts=document.getElementById('st-total'); if(ts) ts.textContent=total;
+      var ps=document.getElementById('st-prem');  if(ps) ps.textContent=prem;
+      var fs=document.getElementById('st-free');  if(fs) fs.textContent=free;
+      // Also update overview card
+      var oc=document.getElementById('overview-students'); if(oc) oc.textContent=total;
+      var op=document.getElementById('overview-premium');  if(op) op.textContent=prem;
+      var of2=document.getElementById('overview-completed'); if(of2) of2.textContent='—';
+      // Referral stats
+      var totalRefs = window.STUDENTS.reduce(function(sum,s){ return sum+(s.referralCount||0); },0);
+      var rts=document.getElementById('ref-total-students'); if(rts) rts.textContent=window.STUDENTS.filter(function(s){return (s.referralCount||0)>0;}).length;
+      var rti=document.getElementById('ref-total-invites'); if(rti) rti.textContent=totalRefs;
+    } catch(e) {
+      console.log('Could not load students from Firestore:', e.message);
+    }
+  }
+
+  // Set plan in Firestore
+  window.fbSetPlan = async function(uid, plan) {
+    var expiry = plan === 'free' ? null : getExpiryDate();
+    await updateDoc(doc(db, 'users', uid), {
+      plan: plan,
+      planExpires: plan === 'free' ? '—' : expiry,
+      planUpdatedAt: serverTimestamp()
+    });
+  };
+
+  function getExpiryDate() {
+    var d = new Date(); d.setMonth(d.getMonth()+1);
+    return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  }
+
+  // Give bonus rewards via Firestore
+  window.fbGiveBonus = async function(uid, essays, mins) {
+    const docRef = doc(db, 'users', uid);
+    const snap   = await (await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")).getDoc(docRef);
+    if (!snap.exists()) return;
+    const data = snap.data();
+    await updateDoc(docRef, {
+      aiWritingBonus: (data.aiWritingBonus||0) + essays,
+      aiMinsBonus:    (data.aiMinsBonus||0)    + mins
+    });
+  };
+
+  // ── VOCAB FIRESTORE FUNCTIONS ──────────────────────────────
+  window.fbSaveVocab = async function(id, data) {
+    await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js").then(async function(fs) {
+      await fs.setDoc(fs.doc(db, 'vocab', String(id)), data);
+    });
+  };
+
+  window.fbDeleteVocab = async function(id) {
+    await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js").then(async function(fs) {
+      await fs.deleteDoc(fs.doc(db, 'vocab', String(id)));
+    });
+  };
+
+  window.fbLoadVocab = async function() {
+    const snap = await getDocs(collection(db, 'vocab'));
+    var sets = [];
+    snap.forEach(function(d) { sets.push(d.data()); });
+    return sets;
+  };
+
+  // ── TEST FIRESTORE FUNCTIONS ─────────────────────────────────
+  window.fbSaveTest = async function(id, data) {
+    await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js").then(async function(fs) {
+      await fs.setDoc(fs.doc(db, 'tests', String(id)), data);
+    });
+  };
+
+  window.fbDeleteTest = async function(id) {
+    await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js").then(async function(fs) {
+      await fs.deleteDoc(fs.doc(db, 'tests', String(id)));
+    });
+  };
+
+  window.fbLoadTests = async function() {
+    const snap = await getDocs(collection(db, 'tests'));
+    var tests = [];
+    snap.forEach(function(d) { tests.push(d.data()); });
+    return tests;
+  };
+
+  // ── SPEAKING QUESTIONS FIRESTORE FUNCTIONS ──────────────────────
+  window.fbSaveSpeakingQ = async function(id, data) {
+    await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js").then(async function(fs) {
+      await fs.setDoc(fs.doc(db, 'speaking_questions', String(id)), data);
+    });
+  };
+
+  window.fbDeleteSpeakingQ = async function(id) {
+    await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js").then(async function(fs) {
+      await fs.deleteDoc(fs.doc(db, 'speaking_questions', String(id)));
+    });
+  };
+
+  // Load students whenever Students page is opened
+  var _orig = window.showPage;
+  window.showPage = function(name, btn) {
+    _orig(name, btn);
+    if (name === 'students') loadStudentsFromFirestore();
+    if (name === 'referrals') loadStudentsFromFirestore();
+    if (name === 'dashboard') loadStudentsFromFirestore();
+    if (name === 'vocab') {
+      // Load vocab sets from Firestore
+      if (window.fbLoadVocab) {
+        window.fbLoadVocab().then(function(sets) {
+          vocabSets = sets;
+          renderVocabTable();
+        }).catch(function(e){ console.log('Vocab load error:', e.message); });
+      }
+    }
+  };
+
+  // Auto-load on init
+  loadStudentsFromFirestore();
+</script>
+
+// ── VOCABULARY ADMIN ─────────────────────────────────────────────
+var vocabSets = [];
+var editingVocabId = null;
+
+function showVocabForm(id) {
+  editingVocabId = id || null;
+  var card = document.getElementById('vocab-form-card');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  if (id) {
+    var set = vocabSets.find(function(s){ return s.id === id; });
+    if (!set) return;
+    document.getElementById('vf-name').value = set.name;
+    document.getElementById('vf-cat').value  = set.category;
+    document.getElementById('vf-tier').value = set.tier;
+    document.getElementById('vocab-form-title').textContent = 'Edit set: ' + set.name;
+    document.getElementById('word-rows').innerHTML = '';
+    set.words.forEach(function(w){ addWordRow(w); });
+  } else {
+    document.getElementById('vf-name').value = '';
+    document.getElementById('vf-cat').value  = 'cambridge';
+    document.getElementById('vf-tier').value = 'free';
+    document.getElementById('vocab-form-title').textContent = 'New vocabulary set';
+    document.getElementById('word-rows').innerHTML = '';
+    addWordRow(); addWordRow(); addWordRow(); // start with 3 empty rows
+  }
+}
+
+function hideVocabForm() {
+  document.getElementById('vocab-form-card').style.display = 'none';
+  editingVocabId = null;
+}
+
+function addWordRow(w) {
+  var wrap = document.getElementById('word-rows');
+  var row  = document.createElement('div');
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 2fr 2fr 2fr auto;gap:.6rem;margin-bottom:.6rem;align-items:start;';
+  row.innerHTML =
+    '<div><label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:.25rem">Word</label>'
+    + '<input type="text" placeholder="e.g. sustainable" value="' + (w ? w.word : '') + '" style="width:100%"/></div>'
+    + '<div><label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:.25rem">Definition</label>'
+    + '<input type="text" placeholder="Able to be maintained long-term..." value="' + (w ? w.def : '') + '" style="width:100%"/></div>'
+    + '<div><label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:.25rem">Example sentence</label>'
+    + '<input type="text" placeholder="Solar energy is a sustainable resource." value="' + (w ? w.example : '') + '" style="width:100%"/></div>'
+    + '<div><label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:.25rem">Synonyms (comma-separated)</label>'
+    + '<input type="text" placeholder="renewable, green, ecological" value="' + (w ? (w.synonyms||[]).join(', ') : '') + '" style="width:100%"/></div>'
+    + '<button onclick="this.parentElement.remove()" style="margin-top:1.3rem;background:none;border:none;cursor:pointer;color:#e24b4a;font-size:1rem;flex-shrink:0;" title="Remove row">&#10005;</button>';
+  wrap.appendChild(row);
+}
+
+function saveVocabSet() {
+  var name = document.getElementById('vf-name').value.trim();
+  var cat  = document.getElementById('vf-cat').value;
+  var tier = document.getElementById('vf-tier').value;
+  if (!name) { alert('Please enter a set name.'); return; }
+
+  var rows  = document.getElementById('word-rows').children;
+  var words = [];
+  for (var i = 0; i < rows.length; i++) {
+    var inputs = rows[i].querySelectorAll('input');
+    var word   = inputs[0].value.trim();
+    var def    = inputs[1].value.trim();
+    var ex     = inputs[2].value.trim();
+    var syns   = inputs[3].value.trim();
+    if (!word) continue;
+    words.push({
+      word: word, def: def, example: ex,
+      synonyms: syns ? syns.split(',').map(function(s){ return s.trim(); }) : []
+    });
+  }
+  if (!words.length) { alert('Please add at least one word.'); return; }
+
+  var setId = editingVocabId || 'vocab_' + Date.now();
+  var setData = { id: setId, name: name, category: cat, tier: tier, words: words, updatedAt: new Date().toISOString() };
+
+  if (editingVocabId) {
+    var idx = vocabSets.findIndex(function(s){ return s.id === editingVocabId; });
+    if (idx !== -1) vocabSets[idx] = setData;
+  } else {
+    vocabSets.push(setData);
+  }
+
+  // Save to Firestore so students see it immediately
+  if (window.fbSaveVocab) {
+    window.fbSaveVocab(setId, setData).then(function(){
+      window.showToast('Vocabulary set saved — students can see it now!');
+    }).catch(function(e){
+      window.showToast('Saved locally. Firestore sync failed: ' + e.message);
+    });
+  } else {
+    window.showToast('Saved locally.');
+  }
+
+  renderVocabTable();
+  hideVocabForm();
+}
+
+function renderVocabTable() {
+  var tbody = document.getElementById('vocab-tbody');
+  if (!vocabSets.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;font-size:.85rem;">No vocabulary sets yet. Click "Add new set" to create one.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = '';
+  vocabSets.forEach(function(s) {
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td style="font-weight:600">' + s.name + '</td>'
+      + '<td>' + (s.category === 'cambridge' ? '📖 Cambridge test' : '🏷 Topic') + '</td>'
+      + '<td>' + s.words.length + ' words</td>'
+      + '<td><span style="font-size:.72rem;font-weight:600;padding:.18rem .55rem;border-radius:100px;background:' + (s.tier === 'free' ? '#dcfce7;color:#166534' : '#fef9c3;color:#854d0e') + '">' + (s.tier === 'free' ? '🎁 Free' : '✦ Premium') + '</span></td>'
+      + '<td><span style="font-size:.72rem;font-weight:600;padding:.18rem .55rem;border-radius:100px;background:#dcfce7;color:#166534">Saved locally</span></td>'
+      + '<td style="display:flex;gap:.5rem;">'
+      + '<button class="btn-secondary" style="padding:.3rem .7rem;font-size:.76rem;" onclick="showVocabForm(' + s.id + ')">Edit</button>'
+      + '<button style="padding:.3rem .7rem;font-size:.76rem;background:none;border:1px solid #e24b4a;color:#e24b4a;border-radius:6px;cursor:pointer;" onclick="deleteVocabSet(' + s.id + ')">Delete</button>'
+      + '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function deleteVocabSet(id) {
+  if (!confirm('Delete this vocabulary set? Students will no longer see it.')) return;
+  vocabSets = vocabSets.filter(function(s){ return s.id !== id; });
+  if (window.fbDeleteVocab) {
+    window.fbDeleteVocab(id).catch(function(e){ console.log('Firestore delete failed:', e.message); });
+  }
+  renderVocabTable();
+  window.showToast('Set deleted.');
+}
+</script>
+</body>
+</html>

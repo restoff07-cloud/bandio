@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bandio — Mock Tests</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:#f0eeea;font-family:'DM Sans',sans-serif;color:#1a1a1a;}
+
+/* TOP NAV */
+.topnav{background:#0e0e0e;height:52px;display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;flex-shrink:0;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#f5f2eb;text-decoration:none;}
+.logo span{color:#d4541a;}
+.nav-back{margin-left:auto;padding:.32rem .85rem;border:.5px solid rgba(255,255,255,.2);border-radius:100px;font-size:.76rem;color:rgba(255,255,255,.55);text-decoration:none;font-family:'DM Sans',sans-serif;}
+.nav-back:hover{background:rgba(255,255,255,.08);color:#fff;}
+
+/* PAGE */
+.page{max-width:820px;margin:0 auto;padding:3rem 1.5rem;}
+.page-label{font-size:.74rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#d4541a;margin-bottom:.6rem;}
+.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;letter-spacing:-.03em;margin-bottom:.5rem;}
+.page-sub{font-size:.9rem;color:#777;margin-bottom:2.5rem;line-height:1.65;}
+
+/* SKILL GRID */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;}
+
+.skill-card{background:#fff;border:1.5px solid #e0ddd8;border-radius:16px;padding:2rem 1.75rem;cursor:pointer;transition:all .18s;position:relative;text-decoration:none;display:block;}
+.skill-card:hover{border-color:#bbb;box-shadow:0 6px 24px rgba(0,0,0,.09);transform:translateY(-3px);}
+.skill-card.premium{cursor:pointer;}
+.skill-card.premium:hover{border-color:#d4541a;}
+
+.sk-icon{font-size:2.2rem;margin-bottom:1rem;display:block;}
+.sk-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;margin-bottom:.35rem;}
+.sk-desc{font-size:.82rem;color:#777;line-height:1.6;margin-bottom:1.1rem;}
+.sk-meta{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;}
+.sk-tag{font-size:.7rem;font-weight:600;padding:.2rem .6rem;border-radius:100px;}
+.sk-tag.free{background:#dcfce7;color:#166534;}
+.sk-tag.prem{background:#fef9c3;color:#854d0e;}
+.sk-tag.time{background:#f0eeea;color:#555;}
+
+/* Premium lock overlay */
+.prem-lock{position:absolute;top:1rem;right:1rem;background:#0e0e0e;color:#fff;font-size:.68rem;font-weight:700;padding:.22rem .6rem;border-radius:100px;display:flex;align-items:center;gap:.25rem;}
+
+/* Go button */
+.sk-btn{margin-top:1.25rem;width:100%;padding:.6rem;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;transition:background .15s;text-align:center;}
+.skill-card:hover .sk-btn{background:#d4541a;}
+.sk-btn.prem-btn{background:#7c3aed;}
+.skill-card:hover .sk-btn.prem-btn{background:#6d28d9;}
+
+/* Premium modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;padding:1rem;}
+.modal-bg.show{display:flex;}
+.modal{background:#fff;border-radius:16px;padding:2rem;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-icon{font-size:2.5rem;margin-bottom:.75rem;display:block;text-align:center;}
+.modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;text-align:center;margin-bottom:.4rem;}
+.modal-sub{font-size:.85rem;color:#666;text-align:center;line-height:1.65;margin-bottom:1.25rem;}
+.modal-feats{background:#f0eeea;border-radius:10px;padding:.85rem 1rem;margin-bottom:1.25rem;}
+.modal-feat{display:flex;align-items:center;gap:.55rem;font-size:.83rem;color:#444;margin-bottom:.4rem;}
+.modal-feat:last-child{margin-bottom:0;}
+.modal-feat-icon{font-size:.85rem;}
+.modal-btns{display:flex;gap:.6rem;}
+.modal-btn{flex:1;padding:.62rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;border:none;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;}
+.modal-btn.p{background:#1a1a1a;color:#fff;}
+.modal-btn.p:hover{background:#d4541a;}
+.modal-btn.s{background:#f0eeea;color:#1a1a1a;}
+.modal-btn.s:hover{background:#e0ddd8;}
+
+@media(max-width:580px){.grid{grid-template-columns:1fr;}.page-title{font-size:1.5rem;}}
+</style>
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const app=initializeApp({apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"});
+  onAuthStateChanged(getAuth(app),function(u){if(!u)location.replace("bandio-login.html");});
+</script>
+</head>
+<body>
+
+<div class="topnav">
+  <a class="logo" href="bandio-home.html">Band<span>io</span></a>
+  <span style="font-size:.78rem;color:rgba(255,255,255,.3)">|</span>
+  <span style="font-size:.82rem;color:rgba(255,255,255,.5)">Mock tests</span>
+  <a class="nav-back" href="bandio-dashboard.html">← Dashboard</a>
+</div>
+
+<div class="page">
+  <div class="page-label">Full mock tests</div>
+  <div class="page-title">Choose a skill to test</div>
+  <div class="page-sub">Pick one skill to take a full timed mock test. Both are completely free.</div>
+
+  <div class="grid">
+
+    <!-- READING -->
+    <div class="skill-card" onclick="location.href='bandio-reading-mock.html'">
+      <span class="sk-icon">📖</span>
+      <div class="sk-name">Reading</div>
+      <div class="sk-desc">3 passages, 40 questions, 60 minutes. True/False/NG, MCQ, gap fill and matching.</div>
+      <div class="sk-meta">
+        <span class="sk-tag free">🎁 Free</span>
+        <span class="sk-tag time">⏱ 60 min</span>
+        <span class="sk-tag time">✓ 40 questions</span>
+      </div>
+      <div class="sk-btn">Start Reading mock →</div>
+    </div>
+
+    <!-- LISTENING -->
+    <div class="skill-card" onclick="location.href='bandio-listening-mock.html'">
+      <span class="sk-icon">🎧</span>
+      <div class="sk-name">Listening</div>
+      <div class="sk-desc">4 sections, 40 questions, 40 minutes. Audio plays automatically when you start.</div>
+      <div class="sk-meta">
+        <span class="sk-tag free">🎁 Free</span>
+        <span class="sk-tag time">⏱ 40 min</span>
+        <span class="sk-tag time">✓ 40 questions</span>
+      </div>
+      <div class="sk-btn">Start Listening mock →</div>
+    </div>
+
+
+
+  </div>
+</div>
+
+<!-- PREMIUM MODAL -->
+<div class="modal-bg" id="premModal">
+  <div class="modal">
+    <span class="modal-icon" id="modal-icon">✦</span>
+    <div class="modal-title" id="modal-title">Premium feature</div>
+    <div class="modal-sub" id="modal-sub">Upgrade to Premium to access this mock test.</div>
+    <div class="modal-feats" id="modal-feats"></div>
+    <div class="modal-btns">
+      <a class="modal-btn p" id="modal-upgrade-btn" href="bandio-pricing.html">See plans →</a>
+      <button class="modal-btn s" onclick="document.getElementById('premModal').classList.remove('show')">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var MODAL_DATA = {
+  writing: {
+    icon: '✍️',
+    title: 'Writing mock — Premium',
+    sub: 'Get your essay scored on all 4 official IELTS criteria by AI, just like a real examiner.',
+    url: 'bandio-writing-mock.html',
+    feats: [
+      '📝 Task Achievement score + detailed feedback',
+      '🔗 Coherence & Cohesion analysis',
+      '📚 Lexical Resource evaluation',
+      '⚙️ Grammatical Range assessment',
+      '🎯 Overall band score estimate',
+      '💡 Specific tips to improve your score'
+    ]
+  },
+  speaking: {
+    icon: '🎤',
+    title: 'Speaking mock — Premium',
+    sub: 'A real AI examiner conducts your full Speaking test — Parts 1, 2 and 3 — and gives you a band score.',
+    url: 'bandio-speaking-mock.html',
+    feats: [
+      '🎙️ AI examiner speaks real IELTS questions',
+      '👂 Listens and responds naturally',
+      '📊 Band score for fluency, vocabulary, grammar & pronunciation',
+      '💬 Specific feedback per part',
+      '🔄 Unlimited attempts to improve'
+    ]
+  }
+};
+
+function showPremModal(skill) {
+  var d = MODAL_DATA[skill];
+  document.getElementById('modal-icon').textContent  = d.icon;
+  document.getElementById('modal-title').textContent = d.title;
+  document.getElementById('modal-sub').textContent   = d.sub;
+  document.getElementById('modal-feats').innerHTML   = d.feats.map(function(f){
+    return '<div class="modal-feat"><span class="modal-feat-icon">'+f.slice(0,2)+'</span><span>'+f.slice(2)+'</span></div>';
+  }).join('');
+  // Store URL for upgrade button
+  document.getElementById('modal-upgrade-btn').href = 'bandio-pricing.html';
+  document.getElementById('premModal').classList.add('show');
+}
+
+document.getElementById('premModal').addEventListener('click', function(e){
+  if (e.target === this) this.classList.remove('show');
+});
+</script>
+</body>
+</html>

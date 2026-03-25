@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bandio — Create your account</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--ink:#0e0e0e;--paper:#f5f2eb;--cream:#ede9df;--accent:#d4541a;--muted:#7a7468;--card-bg:#ffffff;}
+html,body{height:100%;}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
+.left-panel{background:var(--ink);padding:3rem;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;min-height:100vh;}
+.left-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 70% 50% at 20% 80%,rgba(212,84,26,.18) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 80% 20%,rgba(26,107,212,.1) 0%,transparent 60%);}
+.left-content{position:relative;z-index:1;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-.02em;color:var(--paper);text-decoration:none;display:inline-block;margin-bottom:4rem;}
+.logo span{color:var(--accent);}
+.left-headline{font-family:'Syne',sans-serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;color:var(--paper);margin-bottom:1.25rem;}
+.left-headline em{font-style:normal;color:var(--accent);}
+.left-sub{font-size:.95rem;font-weight:300;line-height:1.7;color:rgba(245,242,235,.55);max-width:380px;margin-bottom:3rem;}
+.proof-item{background:rgba(255,255,255,.06);border:.5px solid rgba(255,255,255,.1);border-radius:12px;padding:1rem 1.25rem;display:flex;gap:.85rem;align-items:flex-start;margin-bottom:.85rem;}
+.proof-score{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--accent);flex-shrink:0;line-height:1;padding-top:2px;}
+.proof-text{font-size:.8rem;line-height:1.55;color:rgba(245,242,235,.6);}
+.proof-text strong{display:block;color:rgba(245,242,235,.9);font-size:.82rem;margin-bottom:.2rem;}
+.left-footer{position:relative;z-index:1;font-size:.75rem;color:rgba(245,242,235,.25);}
+.right-panel{display:flex;align-items:center;justify-content:center;padding:3rem 2rem;background:var(--paper);}
+.form-wrap{width:100%;max-width:420px;animation:slideUp .5s ease both;}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.form-top{margin-bottom:2rem;}
+.form-eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem;}
+.form-title{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;letter-spacing:-.025em;line-height:1.1;color:var(--ink);}
+.form-subtitle{font-size:.88rem;color:var(--muted);margin-top:.5rem;font-weight:300;}
+.field-group{display:flex;flex-direction:column;gap:1rem;margin-bottom:1rem;}
+.field{display:flex;flex-direction:column;gap:.45rem;}
+.field label{font-size:.8rem;font-weight:500;color:var(--ink);}
+.field input,.field select{width:100%;padding:.75rem 1rem;border:1px solid rgba(14,14,14,.15);border-radius:10px;background:var(--card-bg);font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);transition:border-color .15s,box-shadow .15s;appearance:none;outline:none;}
+.field input::placeholder{color:rgba(14,14,14,.3);}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(212,84,26,.1);}
+.field input.error{border-color:#e24b4a;}
+.field .field-hint{font-size:.75rem;color:var(--muted);}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:3rem;}
+.pw-toggle{position:absolute;right:.85rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:.85rem;padding:0;transition:color .15s;}
+.pw-toggle:hover{color:var(--ink);}
+.band-selector{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.band-btn{aspect-ratio:1;border:1px solid rgba(14,14,14,.15);border-radius:8px;background:var(--card-bg);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.band-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(212,84,26,.05);}
+.band-btn.selected{background:var(--accent);border-color:var(--accent);color:white;}
+.strength-wrap{margin-top:.4rem;display:flex;flex-direction:column;gap:.3rem;}
+.strength-bar{height:3px;background:var(--cream);border-radius:2px;overflow:hidden;}
+.strength-fill{height:100%;border-radius:2px;width:0%;transition:width .3s,background .3s;}
+.strength-label{font-size:.72rem;color:var(--muted);}
+.terms-row{display:flex;align-items:flex-start;gap:.65rem;margin-bottom:1.25rem;}
+.terms-row input[type="checkbox"]{width:16px;height:16px;flex-shrink:0;accent-color:var(--accent);margin-top:2px;cursor:pointer;}
+.terms-row label{font-size:.8rem;color:var(--muted);line-height:1.5;cursor:pointer;}
+.terms-row a{color:var(--accent);text-decoration:none;}
+.btn-submit{width:100%;padding:.9rem;background:var(--ink);color:var(--paper);border:none;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:500;cursor:pointer;transition:background .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.btn-submit:hover{background:var(--accent);transform:translateY(-1px);}
+.btn-submit.loading{pointer-events:none;opacity:.7;}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+.btn-submit.loading .spinner{display:block;}
+.btn-submit.loading .btn-text{display:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.signin-link{text-align:center;font-size:.82rem;color:var(--muted);margin-top:1.25rem;}
+.signin-link a{color:var(--ink);font-weight:500;text-decoration:none;border-bottom:1px solid rgba(14,14,14,.2);transition:border-color .15s;}
+.signin-link a:hover{border-color:var(--accent);color:var(--accent);}
+.form-steps{display:flex;align-items:center;gap:.5rem;margin-bottom:2rem;}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--cream);transition:all .3s;}
+.step-dot.active{width:24px;border-radius:4px;background:var(--accent);}
+.step-dot.done{background:var(--ink);}
+.success-screen{display:none;text-align:center;padding:2rem 0;animation:slideUp .4s ease both;}
+.success-icon{width:64px;height:64px;border-radius:50%;background:#EAF3DE;margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;font-size:1.75rem;}
+.success-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.75rem;}
+.success-sub{font-size:.9rem;color:var(--muted);line-height:1.6;margin-bottom:2rem;}
+.btn-dashboard{display:inline-block;background:var(--ink);color:var(--paper);padding:.85rem 2rem;border-radius:100px;font-size:.9rem;font-weight:500;text-decoration:none;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:background .2s;}
+.btn-dashboard:hover{background:var(--accent);}
+@media(max-width:768px){body{grid-template-columns:1fr;}.left-panel{display:none;}.right-panel{padding:2rem 1.25rem;align-items:flex-start;padding-top:3rem;}}
+</style>
+</head>
+<body>
+
+<div class="left-panel">
+  <div class="left-bg"></div>
+  <div class="left-content">
+    <a class="logo" href="bandio-home.html">Band<span>io</span></a>
+    <h1 class="left-headline">Your band score<br>goal starts <em>here.</em></h1>
+    <p class="left-sub">Join thousands of students using Bandio to sharpen every IELTS skill with AI feedback that actually pushes your score forward.</p>
+    <div>
+      <div class="proof-item">
+        <div class="proof-score">8.0</div>
+        <div class="proof-text"><strong>Aisha K. &mdash; Kazakhstan</strong>"The AI writing feedback spotted patterns I never noticed. Went from 6.5 to 8.0 in 6 weeks."</div>
+      </div>
+      <div class="proof-item">
+        <div class="proof-score">7.5</div>
+        <div class="proof-text"><strong>Ravi M. &mdash; India</strong>"Speaking practice with AI changed everything. I stopped freezing on Part 3."</div>
+      </div>
+    </div>
+  </div>
+  <div class="left-footer">&copy; 2025 Bandio. All rights reserved.</div>
+</div>
+
+<div class="right-panel">
+  <div class="form-wrap">
+    <div class="form-steps">
+      <div class="step-dot active" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+      <div class="step-dot" id="dot3"></div>
+    </div>
+    <div id="main-form">
+      <div class="form-top">
+        <div class="form-eyebrow" id="step-label">Step 1 of 3 &mdash; Your details</div>
+        <h2 class="form-title" id="step-title">Create your account</h2>
+        <p class="form-subtitle" id="step-sub">Free to join. No credit card needed.</p>
+      </div>
+      <div id="step1">
+        <div class="field-group">
+          <div class="field"><label for="fullname">Full name</label><input type="text" id="fullname" placeholder="e.g. Aisha Karimova" autocomplete="name"/></div>
+          <div class="field"><label for="email">Email address</label><input type="email" id="email" placeholder="you@example.com" autocomplete="email"/></div>
+        </div>
+        <button class="btn-submit" onclick="goStep(2)"><span class="btn-text">Continue &rarr;</span><div class="spinner"></div></button>
+      </div>
+      <div id="step2" style="display:none">
+        <div class="field-group">
+          <div class="field">
+            <label for="password">Create a password</label>
+            <div class="pw-wrap"><input type="password" id="password" placeholder="At least 8 characters" oninput="checkStrength(this.value)"/><button class="pw-toggle" type="button" onclick="togglePw('password',this)">Show</button></div>
+            <div class="strength-wrap"><div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div><div class="strength-label" id="strength-label">Enter a password</div></div>
+          </div>
+          <div class="field">
+            <label for="confirm">Confirm password</label>
+            <div class="pw-wrap"><input type="password" id="confirm" placeholder="Same password again"/><button class="pw-toggle" type="button" onclick="togglePw('confirm',this)">Show</button></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;margin-bottom:1rem;">
+          <button class="btn-submit" style="background:var(--cream);color:var(--ink);flex:0 0 auto;width:auto;padding:.9rem 1.25rem;" onclick="goStep(1)">&larr; Back</button>
+          <button class="btn-submit" style="flex:1" onclick="goStep(3)"><span class="btn-text">Continue &rarr;</span><div class="spinner"></div></button>
+        </div>
+      </div>
+      <div id="step3" style="display:none">
+        <div class="field-group">
+          <div class="field">
+            <label>What's your target band score?</label>
+            <div class="band-selector" id="band-selector">
+              <button class="band-btn" onclick="selectBand(this,'5.0')">5.0</button>
+              <button class="band-btn" onclick="selectBand(this,'5.5')">5.5</button>
+              <button class="band-btn" onclick="selectBand(this,'6.0')">6.0</button>
+              <button class="band-btn" onclick="selectBand(this,'6.5')">6.5</button>
+              <button class="band-btn" onclick="selectBand(this,'7.0')">7.0</button>
+              <button class="band-btn" onclick="selectBand(this,'7.5')">7.5</button>
+              <button class="band-btn" onclick="selectBand(this,'8.0')">8.0</button>
+            </div>
+            <div class="field-hint" id="band-hint" style="margin-top:.5rem">This helps us personalise your learning path.</div>
+          </div>
+        </div>
+        <div class="terms-row">
+          <input type="checkbox" id="terms"/>
+          <label for="terms">I agree to Bandio's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+        <div style="display:flex;gap:.75rem;">
+          <button class="btn-submit" style="background:var(--cream);color:var(--ink);flex:0 0 auto;width:auto;padding:.9rem 1.25rem;" onclick="goStep(2)">&larr; Back</button>
+          <button class="btn-submit" style="flex:1" id="submit-btn" onclick="submitForm()"><span class="btn-text">Create my account &rarr;</span><div class="spinner"></div></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="success-screen" id="success-screen">
+      <div class="success-icon">&#127919;</div>
+      <div class="success-title" id="success-name">Welcome to Bandio!</div>
+      <p class="success-sub">Your account is ready. Target set at <strong id="success-band">Band 7.0</strong> &mdash; let's get you there.</p>
+      <button class="btn-dashboard" onclick="window.location.href='bandio-dashboard.html'">Go to my dashboard &rarr;</button>
+    </div>
+
+    <div class="signin-link" id="signin-link">
+      <button onclick="doGoogleSignup()" style="width:100%;padding:.72rem;background:#fff;border:1.5px solid #e0ddd8;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;color:#1a1a1a;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.65rem;margin-bottom:.85rem;transition:border-color .15s;" onmouseover="this.style.borderColor='#999'" onmouseout="this.style.borderColor='#e0ddd8'">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.46-8.83l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Sign up with Google
+      </button>
+      Already have an account? <a href="bandio-login.html">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<script>
+var selectedBand = '';
+var currentStep  = 1;
+var stepLabels = ['','Step 1 of 3 \u2014 Your details','Step 2 of 3 \u2014 Set your password','Step 3 of 3 \u2014 Your goals'];
+var stepTitles = ['','Create your account','Secure your account','What are you aiming for?'];
+var stepSubs   = ['','Free to join. No credit card needed.','Pick something you\'ll remember.','We\'ll tailor everything to your goal.'];
+
+function goStep(n) {
+  if (n===2) {
+    var nm=document.getElementById('fullname').value.trim();
+    var em=document.getElementById('email').value.trim();
+    if (!nm){document.getElementById('fullname').style.borderColor='#e24b4a';return;}
+    if (!em||!em.includes('@')){document.getElementById('email').style.borderColor='#e24b4a';return;}
+  }
+  if (n===3) {
+    var pw=document.getElementById('password').value;
+    var cf=document.getElementById('confirm').value;
+    if (pw.length<8){document.getElementById('password').style.borderColor='#e24b4a';return;}
+    if (pw!==cf){document.getElementById('confirm').style.borderColor='#e24b4a';return;}
+  }
+  document.getElementById('step'+currentStep).style.display='none';
+  currentStep=n;
+  document.getElementById('step'+currentStep).style.display='block';
+  document.getElementById('step-label').textContent=stepLabels[n];
+  document.getElementById('step-title').textContent=stepTitles[n];
+  document.getElementById('step-sub').textContent=stepSubs[n];
+  updateDots(n);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateDots(n) {
+  for (var i=1;i<=3;i++){
+    var d=document.getElementById('dot'+i);
+    d.className='step-dot';
+    if (i<n) d.classList.add('done');
+    else if (i===n) d.classList.add('active');
+  }
+}
+function selectBand(btn,val) {
+  document.querySelectorAll('.band-btn').forEach(function(b){b.classList.remove('selected');});
+  btn.classList.add('selected');
+  selectedBand=val;
+  document.getElementById('band-hint').style.color='';
+  document.getElementById('band-hint').textContent='Great goal! We\'ll build your path to Band '+val+'.';
+}
+function checkStrength(pw) {
+  var fill=document.getElementById('strength-fill'),label=document.getElementById('strength-label');
+  var score=0;
+  if (pw.length>=8) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  var levels=[{pct:'0%',color:'#e24b4a',text:'Too short'},{pct:'25%',color:'#e24b4a',text:'Weak'},{pct:'50%',color:'#EF9F27',text:'Fair'},{pct:'75%',color:'#639922',text:'Good'},{pct:'100%',color:'#1D9E75',text:'Strong'}];
+  var l=levels[Math.min(score,4)];
+  fill.style.width=l.pct;fill.style.background=l.color;
+  label.textContent=pw.length===0?'Enter a password':l.text;
+}
+function togglePw(id,btn) {
+  var input=document.getElementById(id);
+  if (input.type==='password'){input.type='text';btn.textContent='Hide';}
+  else{input.type='password';btn.textContent='Show';}
+}
+function submitForm() {
+  if (!selectedBand){
+    document.getElementById('band-hint').style.color='#e24b4a';
+    document.getElementById('band-hint').textContent='Please select your target band score.';
+    return;
+  }
+  if (!document.getElementById('terms').checked){alert('Please agree to the Terms of Service.');return;}
+  var btn=document.getElementById('submit-btn');
+  btn.classList.add('loading');
+  window.selectedBand=selectedBand;
+  doFirebaseSignup();
+}
+document.querySelectorAll('input').forEach(function(inp){
+  inp.addEventListener('input',function(){inp.style.borderColor='';});
+});
+</script>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,createUserWithEmailAndPassword,onAuthStateChanged,GoogleAuthProvider,signInWithPopup}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,setDoc,getDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{getFunctions,httpsCallable}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
+
+const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
+const app       = initializeApp(cfg);
+const auth      = getAuth(app);
+const db        = getFirestore(app);
+const functions = getFunctions(app);
+const gProvider = new GoogleAuthProvider();
+
+// Callable Cloud Function reference
+const processReferral = httpsCallable(functions, 'processReferral');
+
+// Save ?ref= param in localStorage as soon as page loads
+const urlRef = new URLSearchParams(window.location.search).get('ref');
+if (urlRef) localStorage.setItem('bnd_ref', urlRef);
+
+// Redirect if already logged in
+onAuthStateChanged(auth, user => { if (user) window.location.href = 'bandio-dashboard.html'; });
+
+// Create the user document — NO referral fields written here
+async function createUserDoc(uid, name, email, band) {
+  await setDoc(doc(db, 'users', uid), {
+    name,
+    email,
+    targetBand:        band || 7.0,
+    plan:              'free',
+    joinedAt:          serverTimestamp(),
+    referralCount:     0,
+    referredUsers:     [],
+    referredBy:        null,
+    writingChecksUsed: 0,
+    writingCheckMonth: '',
+    speakingMinsUsed:  0,
+    speakingMinMonth:  '',
+    mockSpeakUsed:     0,
+    mockSpeakMonth:    '',
+    aiWritingBonus:    0,
+    aiMinsBonus:       0,
+    essaysEarned:      0,
+    minsEarned:        0
+  });
+}
+
+// Call Cloud Function to handle referral — all validation happens server-side
+async function handleReferral(uid) {
+  const referrerId = localStorage.getItem('bnd_ref') || null;
+  try {
+    await processReferral({ newUserId: uid, referrerId });
+    localStorage.removeItem('bnd_ref');
+  } catch(e) {
+    // Non-fatal — user is signed up, referral just didn't process
+    console.log('Referral function error (non-fatal):', e.message);
+    localStorage.removeItem('bnd_ref');
+  }
+}
+
+function showSuccess(name, band) {
+  document.getElementById('success-name').textContent = 'Welcome, ' + name.split(' ')[0] + '!';
+  document.getElementById('success-band').textContent = 'Band ' + band;
+  document.getElementById('main-form').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'block';
+  document.getElementById('signin-link').style.display = 'none';
+  document.querySelectorAll('.step-dot').forEach(d => { d.className = 'step-dot done'; });
+  setTimeout(() => { window.location.href = 'bandio-dashboard.html'; }, 2000);
+}
+
+// ── Email/Password Signup ─────────────────────────────────────────────────────
+window.doFirebaseSignup = async function() {
+  const name  = document.getElementById('fullname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const pw    = document.getElementById('password').value;
+  const btn   = document.getElementById('submit-btn');
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pw);
+    const uid  = cred.user.uid;
+    const band = parseFloat(window.selectedBand) || 7.0;
+    await createUserDoc(uid, name, email, band);
+    await handleReferral(uid);  // Cloud Function — server validates everything
+    btn.classList.remove('loading');
+    showSuccess(name, band);
+  } catch(err) {
+    btn.classList.remove('loading');
+    const msg = err.code === 'auth/email-already-in-use' ? 'An account with this email already exists. Sign in instead.'
+              : err.code === 'auth/weak-password'        ? 'Password must be at least 6 characters.'
+              : err.code === 'auth/invalid-email'        ? 'Please enter a valid email address.'
+              : 'Sign up failed. Please try again.';
+    alert(msg);
+  }
+};
+
+// ── Google Sign-Up ────────────────────────────────────────────────────────────
+window.doGoogleSignup = async function() {
+  try {
+    const result = await signInWithPopup(auth, gProvider);
+    const user   = result.user;
+    const snap   = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists()) {
+      await createUserDoc(user.uid, user.displayName || 'Student', user.email, 7.0);
+      await handleReferral(user.uid);
+    }
+    window.location.href = 'bandio-dashboard.html';
+  } catch(err) {
+    if (err.code !== 'auth/popup-closed-by-user') alert('Google sign-up failed. Please try again.');
+  }
+};
+</script>
+</body>
+</html>

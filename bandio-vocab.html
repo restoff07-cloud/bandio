@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bandio — Vocabulary</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'DM Sans',sans-serif;background:#f0eeea;color:#1a1a1a;display:flex;flex-direction:column;font-size:15px;}
+
+/* TOP BAR */
+.topbar{background:#0e0e0e;padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;flex-shrink:0;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#f5f2eb;text-decoration:none;}
+.logo span{color:#d4541a;}
+.tb-sep{width:1px;height:18px;background:rgba(255,255,255,.15);}
+.tb-title{font-size:.82rem;color:rgba(245,242,235,.45);flex:1;}
+.tb-right{display:flex;align-items:center;gap:.5rem;margin-left:auto;}
+.tb-btn{padding:.4rem .85rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:500;cursor:pointer;border:0.5px solid rgba(255,255,255,.18);background:transparent;color:rgba(245,242,235,.65);transition:all .15s;text-decoration:none;}
+.tb-btn:hover{background:rgba(255,255,255,.09);color:#f5f2eb;}
+
+/* LAYOUT */
+.layout{flex:1;display:flex;overflow:hidden;}
+
+/* LEFT SIDEBAR */
+.sidebar{width:260px;background:#fff;border-right:1px solid #d8d5d0;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.sb-section{padding:.65rem 1rem .3rem;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#aaa;}
+.sb-item{display:flex;align-items:center;gap:.65rem;padding:.55rem 1rem;cursor:pointer;font-size:.84rem;color:#555;transition:background .12s;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
+.sb-item:hover{background:#f5f3f0;color:#1a1a1a;}
+.sb-item.active{background:#f0eeea;color:#1a1a1a;font-weight:600;border-right:3px solid #d4541a;}
+.sb-icon{font-size:.95rem;flex-shrink:0;width:18px;text-align:center;}
+.sb-badge{margin-left:auto;font-size:.65rem;font-weight:600;padding:.1rem .45rem;border-radius:5px;}
+.badge-free{background:#dcfce7;color:#166534;}
+.badge-prem{background:#fef9c3;color:#854d0e;}
+
+/* USAGE BAR */
+.usage-card{margin:1rem;background:#f0eeea;border-radius:10px;padding:.75rem;}
+.uc-title{font-size:.75rem;font-weight:600;margin-bottom:.4rem;display:flex;justify-content:space-between;}
+.uc-bar{height:5px;background:#d8d5d0;border-radius:5px;overflow:hidden;margin-bottom:.35rem;}
+.uc-fill{height:100%;background:#d4541a;border-radius:5px;transition:width .3s;}
+.uc-sub{font-size:.68rem;color:#888;}
+.upgrade-btn{width:100%;margin:.5rem 1rem;margin-right:1rem;width:calc(100% - 2rem);padding:.5rem;background:#0e0e0e;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer;transition:background .15s;}
+.upgrade-btn:hover{background:#d4541a;}
+
+/* MAIN CONTENT */
+.main{flex:1;overflow-y:auto;padding:1.5rem;}
+
+/* PAGE TITLE */
+.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-.02em;margin-bottom:.3rem;}
+.page-sub{font-size:.84rem;color:#666;margin-bottom:1.5rem;}
+
+/* MODE TABS */
+.mode-tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+.mode-tab{padding:.45rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:500;cursor:pointer;border:1px solid #d8d5d0;background:#fff;color:#555;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.mode-tab:hover{border-color:#999;color:#1a1a1a;}
+.mode-tab.on{background:#0e0e0e;color:#fff;border-color:#0e0e0e;}
+
+/* ═══ FLASHCARD MODE ═══ */
+.flashcard-wrap{display:flex;flex-direction:column;align-items:center;gap:1.5rem;}
+.fc-progress{width:100%;max-width:520px;display:flex;align-items:center;gap:.75rem;}
+.fc-prog-bar{flex:1;height:5px;background:#d8d5d0;border-radius:5px;overflow:hidden;}
+.fc-prog-fill{height:100%;background:#d4541a;border-radius:5px;transition:width .3s;}
+.fc-prog-label{font-size:.76rem;color:#666;white-space:nowrap;}
+
+.flashcard{width:100%;max-width:520px;height:280px;perspective:1000px;cursor:pointer;}
+.fc-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s ease;}
+.flashcard.flipped .fc-inner{transform:rotateY(180deg);}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;}
+.fc-front{background:#fff;border:1px solid #d8d5d0;box-shadow:0 4px 20px rgba(0,0,0,.06);}
+.fc-back{background:#0e0e0e;transform:rotateY(180deg);}
+.fc-label{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.85rem;}
+.fc-front .fc-label{color:#aaa;}
+.fc-back  .fc-label{color:rgba(255,255,255,.35);}
+.fc-word{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;letter-spacing:-.02em;text-align:center;line-height:1.2;}
+.fc-front .fc-word{color:#1a1a1a;}
+.fc-back  .fc-word{color:#f5f2eb;font-size:1.2rem;margin-bottom:.6rem;}
+.fc-def{font-size:.88rem;line-height:1.65;text-align:center;color:rgba(255,255,255,.7);margin-bottom:.75rem;}
+.fc-example{font-size:.78rem;font-style:italic;text-align:center;color:rgba(255,255,255,.4);line-height:1.55;}
+.fc-hint{font-size:.75rem;color:#aaa;margin-top:.5rem;}
+
+.fc-buttons{display:flex;gap:.75rem;}
+.fc-btn{padding:.6rem 1.4rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:500;cursor:pointer;border:1px solid #d8d5d0;background:#fff;color:#555;transition:all .15s;}
+.fc-btn:hover{border-color:#999;}
+.fc-btn.know{background:#0e0e0e;color:#fff;border-color:#0e0e0e;}
+.fc-btn.know:hover{background:#2a9d68;border-color:#2a9d68;}
+.fc-btn.again:hover{border-color:#d4541a;color:#d4541a;}
+
+/* Session complete */
+.session-done{text-align:center;padding:3rem 2rem;background:#fff;border-radius:18px;border:1px solid #d8d5d0;max-width:520px;width:100%;}
+.sd-icon{font-size:3rem;margin-bottom:.75rem;}
+.sd-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;margin-bottom:.4rem;}
+.sd-sub{font-size:.88rem;color:#666;margin-bottom:1.5rem;line-height:1.6;}
+.sd-stats{display:flex;gap:2rem;justify-content:center;margin-bottom:1.5rem;}
+.sd-stat-n{font-family:'Syne',sans-serif;font-weight:700;font-size:1.6rem;}
+.sd-stat-l{font-size:.72rem;color:#888;margin-top:.1rem;}
+.sd-btn{padding:.65rem 1.75rem;background:#0e0e0e;color:#fff;border:none;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:500;cursor:pointer;transition:background .15s;}
+.sd-btn:hover{background:#d4541a;}
+
+/* ═══ MATCH SYNONYMS MODE ═══ */
+.match-wrap{max-width:700px;}
+.match-inst{font-size:.86rem;color:#666;margin-bottom:1.25rem;line-height:1.6;}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1.25rem;}
+.match-card{padding:.85rem 1.1rem;background:#fff;border:2px solid #d8d5d0;border-radius:12px;cursor:pointer;font-size:.88rem;font-weight:500;text-align:center;transition:all .15s;user-select:none;line-height:1.4;}
+.match-card:hover{border-color:#aaa;background:#f9f8f7;}
+.match-card.selected{border-color:#d4541a;background:rgba(212,84,26,.05);color:#d4541a;}
+.match-card.matched{border-color:#2a9d68;background:#e8f5ee;color:#155724;cursor:default;}
+.match-card.wrong{border-color:#e24b4a;background:#fef2f2;animation:shake .3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.match-score{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.ms-text{font-size:.84rem;color:#666;}
+.ms-num{font-weight:700;color:#1a1a1a;}
+.match-restart{padding:.5rem 1.25rem;background:#0e0e0e;color:#fff;border:none;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer;transition:background .15s;}
+.match-restart:hover{background:#d4541a;}
+
+/* SET CARDS */
+.sets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.set-card{background:#fff;border:1px solid #d8d5d0;border-radius:14px;padding:1.2rem;cursor:pointer;transition:all .15s;}
+.set-card:hover{border-color:#999;box-shadow:0 4px 14px rgba(0,0,0,.07);transform:translateY(-2px);}
+.set-card.locked{opacity:.6;cursor:default;}
+.set-card.locked:hover{transform:none;box-shadow:none;}
+.sc-icon{font-size:1.4rem;margin-bottom:.55rem;}
+.sc-name{font-size:.9rem;font-weight:600;margin-bottom:.22rem;}
+.sc-meta{font-size:.75rem;color:#888;margin-bottom:.6rem;}
+.sc-tag{font-size:.68rem;font-weight:600;padding:.15rem .55rem;border-radius:100px;}
+.sc-btn{width:100%;margin-top:.6rem;padding:.45rem;background:#0e0e0e;color:#fff;border:none;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;cursor:pointer;}
+.set-card:hover .sc-btn{background:#d4541a;}
+.sc-btn.locked-btn{background:#9b5de5;}
+
+/* FILTER TABS */
+.filter-row{display:flex;gap:.4rem;margin-bottom:1.25rem;flex-wrap:wrap;}
+.ftab{padding:.35rem .85rem;border-radius:100px;font-size:.78rem;font-weight:500;cursor:pointer;border:1px solid #d8d5d0;background:#fff;color:#666;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.ftab:hover{border-color:#999;}
+.ftab.on{background:#0e0e0e;color:#fff;border-color:#0e0e0e;}
+
+/* PREMIUM LOCK OVERLAY */
+.prem-overlay{position:fixed;inset:0;background:rgba(14,14,14,.6);z-index:300;display:none;align-items:center;justify-content:center;}
+.prem-overlay.show{display:flex;}
+.prem-card{background:#fff;border-radius:18px;padding:2.5rem 2rem;max-width:400px;width:90%;text-align:center;}
+.pc-icon{font-size:2.5rem;margin-bottom:.65rem;}
+.pc-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:.5rem;}
+.pc-sub{font-size:.86rem;color:#666;line-height:1.65;margin-bottom:1.5rem;}
+.pc-btn{padding:.65rem 1.75rem;background:#0e0e0e;color:#fff;border:none;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:500;cursor:pointer;margin-right:.5rem;}
+.pc-btn:hover{background:#d4541a;}
+.pc-close{padding:.65rem 1.25rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.86rem;cursor:pointer;}
+
+/* LIMIT OVERLAY */
+.limit-banner{background:#fef9c3;border:1px solid #d97706;border-radius:12px;padding:.85rem 1.1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;font-size:.84rem;color:#92400e;}
+.limit-banner strong{font-weight:600;}
+.lb-btn{margin-left:auto;padding:.35rem .85rem;background:#d97706;color:#fff;border:none;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+
+/* ═══ FILL THE BLANK ═══ */
+.fill-wrap{max-width:600px;}
+.fill-card{background:#fff;border:1px solid #d8d5d0;border-radius:16px;padding:1.75rem 2rem;margin-bottom:1rem;}
+.fill-num{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-bottom:.65rem;}
+.fill-sentence{font-size:1rem;line-height:1.9;color:#1a1a1a;margin-bottom:1.1rem;}
+.fill-blank{display:inline-block;min-width:120px;height:32px;border-bottom:2.5px solid #d4541a;background:transparent;font-family:'DM Sans',sans-serif;font-size:.95rem;color:#d4541a;outline:none;text-align:center;padding:0 8px;transition:all .15s;vertical-align:middle;}
+.fill-blank:focus{background:#fff8f6;}
+.fill-blank.ok{border-color:#2a9d68;color:#2a9d68;background:#e8f5ee;}
+.fill-blank.bad{border-color:#e24b4a;color:#e24b4a;background:#fef2f2;}
+.fill-hint{font-size:.78rem;color:#aaa;font-style:italic;margin-top:.3rem;}
+.fill-answer{font-size:.82rem;color:#2a9d68;font-weight:600;margin-top:.35rem;display:none;}
+.fill-check-btn{padding:.55rem 1.5rem;background:#0e0e0e;color:#fff;border:none;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:500;cursor:pointer;transition:background .15s;margin-top:.5rem;}
+.fill-check-btn:hover{background:#d4541a;}
+.fill-result{display:flex;align-items:center;gap:1rem;margin-top:1rem;font-size:.84rem;color:#666;flex-wrap:wrap;}
+.fill-next-btn{padding:.5rem 1.25rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer;margin-left:auto;}
+.fill-next-btn:hover{background:#d8d5d0;}
+
+/* ═══ DEFINITION QUIZ ═══ */
+.dq-wrap{max-width:560px;}
+.dq-card{background:#fff;border:1px solid #d8d5d0;border-radius:16px;padding:1.75rem 2rem;margin-bottom:1rem;}
+.dq-num{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-bottom:.85rem;}
+.dq-def{font-size:.97rem;line-height:1.75;color:#1a1a1a;margin-bottom:.4rem;}
+.dq-example{font-size:.82rem;font-style:italic;color:#888;margin-bottom:1.25rem;line-height:1.6;}
+.dq-choices{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+.dq-choice{padding:.75rem 1rem;border:1.5px solid #d8d5d0;border-radius:10px;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;text-align:center;transition:all .15s;color:#1a1a1a;}
+.dq-choice:hover:not(:disabled){border-color:#aaa;background:#f9f8f7;}
+.dq-choice.correct{border-color:#2a9d68;background:#e8f5ee;color:#155724;}
+.dq-choice.wrong{border-color:#e24b4a;background:#fef2f2;color:#721c24;}
+.dq-choice:disabled{cursor:default;}
+.dq-feedback{font-size:.84rem;margin-top:.85rem;min-height:1.2rem;font-weight:500;}
+.dq-feedback.ok{color:#2a9d68;}
+.dq-feedback.bad{color:#e24b4a;}
+.dq-next{margin-top:.85rem;padding:.55rem 1.5rem;background:#0e0e0e;color:#fff;border:none;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:500;cursor:pointer;transition:background .15s;display:none;}
+.dq-next:hover{background:#d4541a;}
+.dq-progress{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;max-width:560px;}
+.dq-pbar{flex:1;height:5px;background:#d8d5d0;border-radius:5px;overflow:hidden;}
+.dq-pfill{height:100%;background:#d4541a;border-radius:5px;transition:width .3s;}
+.dq-plabel{font-size:.76rem;color:#666;white-space:nowrap;}
+
+@media(max-width:700px){
+  .layout{flex-direction:column;}
+  .sidebar{width:100%;max-height:200px;flex-direction:row;flex-wrap:wrap;overflow-x:auto;border-right:none;border-bottom:1px solid #d8d5d0;padding:.5rem;}
+  .sb-section{display:none;}
+  .sb-item{white-space:nowrap;flex:0 0 auto;padding:.4rem .75rem;border-right:none!important;}
+  .main{padding:1rem;}
+  .flashcard{height:220px;}
+  .dq-choices{grid-template-columns:1fr;}
+  .match-grid{grid-template-columns:1fr 1fr;}
+}
+
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,getDocs}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+// Auth redirect
+onAuthStateChanged(auth,function(u){if(!u)location.replace("bandio-login.html");});
+
+// Load vocab sets added by admin from Firestore
+async function loadFirestoreVocab(){
+  try{
+    const snap=await getDocs(collection(db,'vocab'));
+    if(snap.empty)return;
+    const container=document.getElementById('dynamic-sets-container');
+    const list=document.getElementById('dynamic-sets-list');
+    if(!container||!list)return;
+    var added=0;
+    snap.forEach(function(d){
+      var set=d.data();
+      if(!set.name||!set.words||!set.words.length)return;
+      // Inject into SETS so selectSet() works
+      if(typeof SETS!=='undefined') SETS[set.name]=set.words;
+      var badge=set.tier==='premium'
+        ?'<span class="sb-badge badge-prem">Premium</span>'
+        :'<span class="sb-badge badge-free">Free</span>';
+      var icon=set.category==='topic'?'🏷':'📖';
+      var btn=document.createElement('button');
+      btn.className='sb-item';
+      btn.innerHTML='<span class="sb-icon">'+icon+'</span> '+set.name+' '+badge;
+      btn.onclick=function(){selectSet(set.category||'cambridge',set.name,btn);};
+      list.appendChild(btn);
+      added++;
+    });
+    if(added>0)container.style.display='block';
+  }catch(e){console.log('Vocab load error:',e.message);}
+}
+loadFirestoreVocab();
+</script>
+</head>
+<body>
+
+<!-- PREMIUM OVERLAY -->
+<div class="prem-overlay" id="premOverlay">
+  <div class="prem-card">
+    <div class="pc-icon">✦</div>
+    <div class="pc-title">Premium Vocabulary</div>
+    <div class="pc-sub">Upgrade to Premium to unlock Essential Words for IELTS sets, spaced repetition, and unlimited vocabulary practice every month.</div>
+    <button class="pc-btn" onclick="alert('Pricing page coming soon!')">Upgrade to Premium →</button>
+    <button class="pc-close" onclick="document.getElementById('premOverlay').classList.remove('show')">Maybe later</button>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a class="logo" href="bandio-home.html">Band<span>io</span></a>
+  <div class="tb-sep"></div>
+  <span class="tb-title">Vocabulary Practice</span>
+  <div class="tb-right">
+    <a class="tb-btn" href="bandio-dashboard.html">← Dashboard</a>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-section">Practice mode</div>
+    <button class="sb-item active" id="sb-flashcard" onclick="switchMode('flashcard',this)">
+      <span class="sb-icon">🃏</span> Flashcards
+    </button>
+    <button class="sb-item" id="sb-match" onclick="switchMode('match',this)">
+      <span class="sb-icon">🔗</span> Match synonyms
+    </button>
+    <button class="sb-item" id="sb-fill" onclick="switchMode('fill',this)">
+      <span class="sb-icon">✏️</span> Fill the blank
+    </button>
+    <button class="sb-item" id="sb-defquiz" onclick="switchMode('defquiz',this)">
+      <span class="sb-icon">🧠</span> Definition quiz
+    </button>
+
+    <div class="sb-section" style="margin-top:.5rem">By Cambridge test</div>
+    <button class="sb-item" id="sb-c19" onclick="selectSet('cambridge','IELTS 19',this)">
+      <span class="sb-icon">📖</span> IELTS 19
+      <span class="sb-badge badge-free">Free</span>
+    </button>
+    <button class="sb-item" id="sb-c18" onclick="selectSet('cambridge','IELTS 18',this)">
+      <span class="sb-icon">📖</span> IELTS 18
+      <span class="sb-badge badge-free">Free</span>
+    </button>
+    <button class="sb-item" id="sb-c17" onclick="selectSet('cambridge','IELTS 17',this)">
+      <span class="sb-icon">📖</span> IELTS 17
+      <span class="sb-badge badge-free">Free</span>
+    </button>
+
+    <div class="sb-section" style="margin-top:.5rem">By topic</div>
+    <button class="sb-item" id="sb-env" onclick="selectSet('topic','Environment',this)">
+      <span class="sb-icon">🌿</span> Environment
+      <span class="sb-badge badge-free">Free</span>
+    </button>
+    <button class="sb-item" id="sb-tech" onclick="selectSet('topic','Technology',this)">
+      <span class="sb-icon">💻</span> Technology
+      <span class="sb-badge badge-free">Free</span>
+    </button>
+    <button class="sb-item" id="sb-health" onclick="selectSet('topic','Health',this)">
+      <span class="sb-icon">🏥</span> Health
+      <span class="sb-badge badge-free">Free</span>
+    </button>
+    <button class="sb-item" id="sb-edu" onclick="selectSet('topic','Education',this)">
+      <span class="sb-icon">🎓</span> Education
+      <span class="sb-badge badge-free">Free</span>
+    </button>
+    <button class="sb-item" id="sb-soc" onclick="selectSet('topic','Society',this)">
+      <span class="sb-icon">🏙</span> Society
+      <span class="sb-badge badge-free">Free</span>
+    </button>
+
+    <!-- Dynamic sets loaded from Firestore -->
+    <div id="dynamic-sets-container" style="display:none">
+      <div class="sb-section" style="margin-top:.5rem" id="dynamic-sets-label">More sets</div>
+      <div id="dynamic-sets-list"></div>
+    </div>
+
+    <div class="sb-section" style="margin-top:.5rem">Premium sets ✦</div>
+    <button class="sb-item" onclick="document.getElementById('premOverlay').classList.add('show')">
+      <span class="sb-icon">📚</span> Essential Words
+      <span class="sb-badge badge-prem">Premium</span>
+    </button>
+    <button class="sb-item" onclick="document.getElementById('premOverlay').classList.add('show')">
+      <span class="sb-icon">🎯</span> Academic Word List
+      <span class="sb-badge badge-prem">Premium</span>
+    </button>
+
+    <!-- Usage bar -->
+    <div style="margin-top:auto">
+      <div class="usage-card">
+        <div class="uc-title">
+          <span>Monthly usage</span>
+          <span id="usageNum" style="color:#d4541a">0/100</span>
+        </div>
+        <div class="uc-bar"><div class="uc-fill" id="usageFill" style="width:0%"></div></div>
+        <div class="uc-sub">Free plan · resets 1st of each month</div>
+      </div>
+      <button class="upgrade-btn" onclick="alert('Pricing page coming soon!')">✦ Upgrade for unlimited</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<script>
+// ── VOCAB DATA ────────────────────────────────────────────────────────
+const SETS = {
+  'IELTS 19': [
+    {word:'prodigious',def:'Remarkably great in size, amount, or extent.',example:'She had a prodigious memory for dates and facts.',synonyms:['remarkable','extraordinary','exceptional']},
+    {word:'inadvertently',def:'Without intention; accidentally.',example:'She inadvertently revealed the surprise party plans.',synonyms:['accidentally','unintentionally','unwittingly']},
+    {word:'disparity',def:'A great difference or inequality between things.',example:'The disparity in income between rich and poor is growing.',synonyms:['inequality','difference','gap']},
+    {word:'perpetuate',def:'To cause something to continue indefinitely.',example:'Poverty can perpetuate social inequality across generations.',synonyms:['maintain','sustain','preserve']},
+    {word:'rampant',def:'Flourishing or spreading unchecked; widespread.',example:'Corruption was rampant in the local government.',synonyms:['widespread','uncontrolled','prevalent']},
+    {word:'concede',def:'To admit that something is true after initial denial.',example:'He conceded that the new policy had some flaws.',synonyms:['admit','acknowledge','accept']},
+    {word:'mitigate',def:'To make less severe, serious, or painful.',example:'Planting trees can help mitigate the effects of climate change.',synonyms:['reduce','lessen','alleviate']},
+    {word:'augment',def:'To make something greater by adding to it.',example:'She augmented her income by teaching evening classes.',synonyms:['increase','boost','enhance']},
+  ],
+  'IELTS 18': [
+    {word:'detrimental',def:'Tending to cause harm or damage.',example:'Excessive screen time can be detrimental to children\'s eyesight.',synonyms:['harmful','damaging','injurious']},
+    {word:'prevalent',def:'Widespread or common at a particular time.',example:'Mobile phone use is now prevalent among all age groups.',synonyms:['widespread','common','ubiquitous']},
+    {word:'substantial',def:'Of considerable importance, size, or worth.',example:'The project received substantial funding from the government.',synonyms:['significant','considerable','sizeable']},
+    {word:'attributed',def:'Regarded as resulting from a specified cause.',example:'The success was attributed to years of hard work.',synonyms:['credited','ascribed','assigned']},
+    {word:'inevitable',def:'Certain to happen; unavoidable.',example:'Given the drought, food shortages seemed inevitable.',synonyms:['unavoidable','certain','inescapable']},
+    {word:'sustain',def:'To cause or allow something to continue over time.',example:'It is difficult to sustain economic growth indefinitely.',synonyms:['maintain','support','uphold']},
+    {word:'phenomenon',def:'A fact or situation that is observed to exist.',example:'The northern lights are a spectacular natural phenomenon.',synonyms:['occurrence','event','development']},
+    {word:'implement',def:'To put a plan or decision into effect.',example:'The government plans to implement new environmental policies.',synonyms:['execute','enforce','apply']},
+  ],
+  'IELTS 17': [
+    {word:'arbitrary',def:'Based on random choice rather than reason.',example:'The selection process seemed completely arbitrary.',synonyms:['random','capricious','unreasoned']},
+    {word:'coherent',def:'Logical and consistent; easy to understand.',example:'She presented a coherent argument for reform.',synonyms:['logical','consistent','rational']},
+    {word:'deteriorate',def:'To become progressively worse.',example:'Air quality in the city continues to deteriorate.',synonyms:['worsen','decline','degrade']},
+    {word:'intrinsic',def:'Belonging naturally; essential; fundamental.',example:'Creativity is intrinsic to a child\'s development.',synonyms:['inherent','fundamental','innate']},
+    {word:'plausible',def:'Seeming reasonable or probable.',example:'Her explanation sounded plausible but was later disproved.',synonyms:['credible','convincing','reasonable']},
+    {word:'scrutiny',def:'Critical observation or examination.',example:'The new law is under intense public scrutiny.',synonyms:['examination','inspection','analysis']},
+    {word:'tangible',def:'Clear and definite; perceptible by touch.',example:'The programme produced tangible results within a year.',synonyms:['concrete','real','definite']},
+    {word:'alleviate',def:'To make suffering or a problem less severe.',example:'Exercise can alleviate symptoms of mild depression.',synonyms:['relieve','ease','reduce']},
+  ],
+  'Environment': [
+    {word:'biodiversity',def:'The variety of life in the world or a habitat.',example:'Deforestation threatens the biodiversity of tropical rainforests.',synonyms:['variety','richness','ecological diversity']},
+    {word:'sustainable',def:'Able to be maintained at a certain rate without depleting resources.',example:'Sustainable farming practices protect soil quality.',synonyms:['ecological','renewable','green']},
+    {word:'emission',def:'The production and discharge of gas or radiation.',example:'Carbon emissions from cars contribute to global warming.',synonyms:['discharge','release','output']},
+    {word:'deforestation',def:'The action of clearing trees from an area of land.',example:'Deforestation in the Amazon is accelerating at an alarming rate.',synonyms:['tree-felling','land-clearing','logging']},
+    {word:'contamination',def:'The presence of harmful substance that makes water, soil, or air impure.',example:'Industrial waste caused serious contamination of the river.',synonyms:['pollution','impurity','toxicity']},
+    {word:'renewable',def:'Not depleted when used; naturally replenished.',example:'Solar and wind are renewable sources of energy.',synonyms:['sustainable','green','clean']},
+    {word:'habitat',def:'The natural home of an organism.',example:'Wetlands are the natural habitat of many migratory birds.',synonyms:['environment','ecosystem','territory']},
+    {word:'erosion',def:'The gradual wearing away of rock or soil.',example:'Coastal erosion is threatening homes along the shoreline.',synonyms:['wearing away','degradation','deterioration']},
+  ],
+  'Technology': [
+    {word:'innovation',def:'A new method, idea, or product.',example:'Technological innovation is transforming the healthcare industry.',synonyms:['advancement','breakthrough','development']},
+    {word:'automation',def:'The use of technology to perform tasks with minimal human effort.',example:'Factory automation has reduced the need for manual labour.',synonyms:['mechanisation','computerisation','robotics']},
+    {word:'algorithm',def:'A set of rules for solving a problem or achieving a result.',example:'Search engines use complex algorithms to rank web pages.',synonyms:['procedure','process','formula']},
+    {word:'obsolete',def:'No longer in use; out of date.',example:'CDs became obsolete with the rise of music streaming.',synonyms:['outdated','outmoded','superseded']},
+    {word:'proliferation',def:'Rapid increase in numbers or amount.',example:'The proliferation of social media has changed how we communicate.',synonyms:['spread','increase','expansion']},
+    {word:'surveillance',def:'Close observation, especially by authorities.',example:'CCTV surveillance has increased in urban areas.',synonyms:['monitoring','observation','oversight']},
+    {word:'infrastructure',def:'The basic systems serving a country or organisation.',example:'The country needs to invest in its digital infrastructure.',synonyms:['framework','foundation','system']},
+    {word:'virtual',def:'Existing or occurring on a computer or the internet.',example:'Many conferences have moved to virtual platforms.',synonyms:['digital','online','simulated']},
+  ],
+  'Health': [
+    {word:'sedentary',def:'Tending to spend much time seated; inactive.',example:'A sedentary lifestyle increases the risk of heart disease.',synonyms:['inactive','stationary','desk-bound']},
+    {word:'chronic',def:'Persisting for a long time; a chronic illness.',example:'Chronic stress can weaken the immune system.',synonyms:['persistent','long-term','ongoing']},
+    {word:'prevalent',def:'Widespread in a particular area at a particular time.',example:'Obesity is increasingly prevalent in developed countries.',synonyms:['common','widespread','rife']},
+    {word:'immunity',def:'The ability of an organism to resist infection.',example:'Vaccines strengthen the body\'s immunity to diseases.',synonyms:['resistance','protection','defence']},
+    {word:'cardiovascular',def:'Relating to the heart and blood vessels.',example:'Regular exercise improves cardiovascular health.',synonyms:['cardiac','circulatory','heart-related']},
+    {word:'epidemic',def:'A widespread occurrence of an infectious disease.',example:'Doctors feared the outbreak could become an epidemic.',synonyms:['outbreak','plague','pandemic']},
+    {word:'nutrition',def:'The process of providing food necessary for health.',example:'Good nutrition is essential during childhood development.',synonyms:['diet','nourishment','sustenance']},
+    {word:'rehabilitation',def:'Restoring someone to health through therapy.',example:'After surgery, she underwent months of rehabilitation.',synonyms:['recovery','restoration','therapy']},
+  ],
+  'Education': [
+    {word:'curriculum',def:'The subjects comprising a course of study.',example:'The school updated its curriculum to include coding.',synonyms:['syllabus','programme','course']},
+    {word:'pedagogy',def:'The method and practice of teaching.',example:'Modern pedagogy emphasises active rather than passive learning.',synonyms:['teaching method','instruction','didactics']},
+    {word:'literacy',def:'The ability to read and write.',example:'Improving literacy rates is a priority in developing countries.',synonyms:['reading ability','education','learning']},
+    {word:'attainment',def:'The action of achieving something; an achievement.',example:'Academic attainment is influenced by many social factors.',synonyms:['achievement','accomplishment','success']},
+    {word:'vocational',def:'Relating to an occupation or employment.',example:'Vocational training prepares students for specific careers.',synonyms:['occupational','professional','technical']},
+    {word:'cognitive',def:'Relating to mental processes of understanding.',example:'Reading stimulates cognitive development in young children.',synonyms:['mental','intellectual','psychological']},
+    {word:'autonomous',def:'Acting independently; self-governing.',example:'Universities should be autonomous and free from political influence.',synonyms:['independent','self-governing','self-directed']},
+    {word:'inclusive',def:'Not excluding any group of people.',example:'Inclusive education benefits both disabled and non-disabled students.',synonyms:['comprehensive','broad-based','all-embracing']},
+  ],
+  'Society': [
+    {word:'inequality',def:'Difference in size, degree, or social standing.',example:'Income inequality is one of the biggest challenges facing modern societies.',synonyms:['disparity','imbalance','unfairness']},
+    {word:'demographic',def:'Relating to the structure of a population.',example:'The demographic shift towards an older population has policy implications.',synonyms:['population-related','statistical','social']},
+    {word:'marginalised',def:'Treated as unimportant or pushed to the edge of society.',example:'Marginalised communities often lack access to quality healthcare.',synonyms:['excluded','disadvantaged','disenfranchised']},
+    {word:'cohesion',def:'The action of forming a unified whole.',example:'Social cohesion depends on shared values and mutual respect.',synonyms:['unity','solidarity','togetherness']},
+    {word:'urbanisation',def:'The process by which towns and cities grow.',example:'Rapid urbanisation has strained public services in many regions.',synonyms:['city growth','metropolitan expansion','urban development']},
+    {word:'stigma',def:'A mark of disgrace associated with a circumstance.',example:'There is still a social stigma attached to mental illness.',synonyms:['shame','disgrace','disapproval']},
+    {word:'integration',def:'The action of combining to form a whole.',example:'Social integration of immigrants benefits the wider community.',synonyms:['inclusion','assimilation','incorporation']},
+    {word:'welfare',def:'Statutory support for those in financial need.',example:'The welfare system provides a safety net for the most vulnerable.',synonyms:['wellbeing','support','aid']},
+  ],
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────
+const FREE_LIMIT = 100;
+let wordsStudied = parseInt(localStorage.getItem('bnd_vocab_count') || '0');
+let currentSet   = 'IELTS 19';
+let currentMode  = 'flashcard';
+let fcIndex      = 0;
+let fcKnown      = 0;
+let fcAgain      = 0;
+let fcWords      = [];
+let matchSelected = null;
+let matchMatched  = 0;
+let matchAttempts = 0;
+
+// ── USAGE ─────────────────────────────────────────────────────────────
+function updateUsage() {
+  const pct = Math.min((wordsStudied / FREE_LIMIT) * 100, 100);
+  document.getElementById('usageFill').style.width = pct + '%';
+  document.getElementById('usageNum').textContent = wordsStudied + '/' + FREE_LIMIT;
+  if (wordsStudied >= FREE_LIMIT) document.getElementById('usageFill').style.background = '#e24b4a';
+}
+
+function addUsage(n) {
+  wordsStudied = Math.min(wordsStudied + n, FREE_LIMIT);
+  localStorage.setItem('bnd_vocab_count', wordsStudied);
+  updateUsage();
+}
+
+function atLimit() {
+  return wordsStudied >= FREE_LIMIT;
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────
+function switchMode(mode, btn) {
+  currentMode = mode;
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMain();
+}
+
+function selectSet(type, name, btn) {
+  currentSet = name;
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  // re-activate the current mode button
+  const modeBtn = document.getElementById('sb-'+currentMode);
+  if (modeBtn) modeBtn.classList.add('active');
+  renderMain();
+}
+
+// ── RENDER MAIN ───────────────────────────────────────────────────────
+function renderMain() {
+  if      (currentMode === 'flashcard') renderFlashcard();
+  else if (currentMode === 'match')     renderMatch();
+  else if (currentMode === 'fill')      renderFill();
+  else if (currentMode === 'defquiz')   renderDefQuiz();
+}
+
+// ── FLASHCARD MODE ────────────────────────────────────────────────────
+function renderFlashcard() {
+  const words = SETS[currentSet] || [];
+  fcWords  = [...words];
+  fcIndex  = 0;
+  fcKnown  = 0;
+  fcAgain  = 0;
+  showFlashcardUI();
+}
+
+function showFlashcardUI() {
+  const words = fcWords;
+  if (!words.length) { document.getElementById('main').innerHTML = '<p style="color:#888;padding:2rem">No words in this set yet.</p>'; return; }
+
+  if (fcIndex >= words.length) {
+    showSessionDone();
+    return;
+  }
+
+  if (atLimit()) {
+    showLimitBanner();
+    return;
+  }
+
+  const w = words[fcIndex];
+  const progress = Math.round((fcIndex / words.length) * 100);
+
+  document.getElementById('main').innerHTML = `
+    <div class="page-title">${currentSet}</div>
+    <div class="page-sub">${words.length} words · Flashcard mode · Click the card to reveal</div>
+
+    <div id="limitBannerWrap"></div>
+
+    <div class="flashcard-wrap">
+      <div class="fc-progress">
+        <div class="fc-prog-bar"><div class="fc-prog-fill" style="width:${progress}%"></div></div>
+        <div class="fc-prog-label">${fcIndex}/${words.length} · ✓ ${fcKnown} known</div>
+      </div>
+
+      <div class="flashcard" id="fc" onclick="flipCard()">
+        <div class="fc-inner">
+          <div class="fc-face fc-front">
+            <div class="fc-label">Word</div>
+            <div class="fc-word">${w.word}</div>
+            <div class="fc-hint">Click to see definition →</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-label">Definition</div>
+            <div class="fc-word">${w.word}</div>
+            <div class="fc-def">${w.def}</div>
+            <div class="fc-example">"${w.example}"</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fc-buttons">
+        <button class="fc-btn again" onclick="fcAgainBtn()">↩ Study again</button>
+        <button class="fc-btn know"  onclick="fcKnowBtn()">✓ I know this</button>
+      </div>
+    </div>`;
+}
+
+function flipCard() {
+  const fc = document.getElementById('fc');
+  if (fc) fc.classList.toggle('flipped');
+}
+
+function fcKnowBtn() {
+  addUsage(1);
+  fcKnown++;
+  fcIndex++;
+  showFlashcardUI();
+}
+
+function fcAgainBtn() {
+  addUsage(1);
+  fcAgain++;
+  // Move to end of stack
+  fcWords.push(fcWords[fcIndex]);
+  fcIndex++;
+  showFlashcardUI();
+}
+
+function showSessionDone() {
+  document.getElementById('main').innerHTML = `
+    <div class="flashcard-wrap">
+      <div class="session-done">
+        <div class="sd-icon">🎉</div>
+        <div class="sd-title">Session complete!</div>
+        <div class="sd-sub">You've gone through all ${SETS[currentSet].length} words in <strong>${currentSet}</strong>.</div>
+        <div class="sd-stats">
+          <div><div class="sd-stat-n" style="color:#2a9d68">${fcKnown}</div><div class="sd-stat-l">Knew it</div></div>
+          <div><div class="sd-stat-n" style="color:#d4541a">${fcAgain}</div><div class="sd-stat-l">Studied again</div></div>
+        </div>
+        <button class="sd-btn" onclick="renderFlashcard()">Practice again →</button>
+      </div>
+    </div>`;
+}
+
+function showLimitBanner() {
+  document.getElementById('main').innerHTML = `
+    <div class="page-title">${currentSet}</div>
+    <div class="page-sub">You've reached your free monthly limit.</div>
+    <div class="limit-banner">
+      <span>🔒 You've used all <strong>100 free words</strong> this month. Upgrade to Premium for unlimited practice.</span>
+      <button class="lb-btn" onclick="alert('Pricing page coming soon!')">Upgrade ✦</button>
+    </div>`;
+}
+
+// ── MATCH SYNONYMS MODE ───────────────────────────────────────────────
+function renderMatch() {
+  if (atLimit()) { showLimitBanner(); return; }
+  const words = (SETS[currentSet] || []).slice(0, 6);
+  matchSelected = null;
+  matchMatched  = 0;
+  matchAttempts = 0;
+
+  // Build pairs: word ↔ first synonym
+  const pairs = words.map(w => ({ word: w.word, match: w.synonyms[0] }));
+
+  // Shuffle all items into one flat array
+  const items = [];
+  pairs.forEach((p, i) => {
+    items.push({ id: i, type: 'word', text: p.word });
+    items.push({ id: i, type: 'syn',  text: p.match });
+  });
+  items.sort(() => Math.random() - 0.5);
+
+  document.getElementById('main').innerHTML = `
+    <div class="page-title">${currentSet}</div>
+    <div class="page-sub">Match synonyms · Click a word then its synonym</div>
+    <div class="match-wrap">
+      <div class="match-inst">Click any word, then click its matching synonym. <strong>${pairs.length} pairs</strong> to match.</div>
+      <div class="match-grid" id="mgrid">
+        ${items.map(item =>
+          `<div class="match-card" id="mc-${item.type}-${item.id}"
+            onclick="matchClick('${item.type}',${item.id},this)"
+          >${item.text}</div>`
+        ).join('')}
+      </div>
+      <div class="match-score">
+        <span class="ms-text">Matched: <span class="ms-num" id="mScore">0/${pairs.length}</span></span>
+        <button class="match-restart" onclick="renderMatch()">↺ New game</button>
+      </div>
+    </div>`;
+}
+
+function matchClick(type, id, el) {
+  if (el.classList.contains('matched')) return;
+
+  if (!matchSelected) {
+    // First selection
+    document.querySelectorAll('.match-card.selected').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    matchSelected = { type, id, el };
+  } else {
+    // Second selection
+    if (matchSelected.el === el) { el.classList.remove('selected'); matchSelected = null; return; }
+
+    const isSame = matchSelected.id === id && matchSelected.type !== type;
+    matchAttempts++;
+    addUsage(1);
+
+    if (isSame) {
+      // Correct match!
+      el.classList.remove('selected');
+      el.classList.add('matched');
+      matchSelected.el.classList.remove('selected');
+      matchSelected.el.classList.add('matched');
+      matchMatched++;
+      document.getElementById('mScore').textContent = matchMatched + '/' + ((SETS[currentSet]||[]).slice(0,6).length);
+      matchSelected = null;
+      if (matchMatched === (SETS[currentSet]||[]).slice(0,6).length) {
+        setTimeout(() => {
+          document.getElementById('main').innerHTML += `
+            <div class="session-done" style="margin-top:1rem">
+              <div class="sd-icon">🎊</div>
+              <div class="sd-title">All matched!</div>
+              <div class="sd-sub">You matched all ${matchMatched} synonym pairs correctly.</div>
+              <button class="sd-btn" onclick="renderMatch()">Play again →</button>
+            </div>`;
+        }, 400);
+      }
+    } else {
+      // Wrong
+      el.classList.add('wrong');
+      matchSelected.el.classList.add('wrong');
+      setTimeout(() => {
+        el.classList.remove('wrong','selected');
+        matchSelected.el.classList.remove('wrong','selected');
+        matchSelected = null;
+      }, 700);
+    }
+  }
+}
+
+// ── FILL THE BLANK ────────────────────────────────────────────────────
+let fillWords = [], fillIndex = 0, fillCorrect = 0;
+
+function renderFill() {
+  if (atLimit()) { showLimitBanner(); return; }
+  const words = SETS[currentSet] || [];
+  fillWords  = [...words].sort(() => Math.random() - 0.5);
+  fillIndex  = 0;
+  fillCorrect = 0;
+  showFillCard();
+}
+
+function showFillCard() {
+  if (atLimit()) { showLimitBanner(); return; }
+  if (fillIndex >= fillWords.length) {
+    showFillDone(); return;
+  }
+  const w = fillWords[fillIndex];
+  const pct = Math.round((fillIndex / fillWords.length) * 100);
+  // Blank out the word in the example sentence
+  const re = new RegExp(w.word, 'gi');
+  const blanked = w.example.replace(re, `<input class="fill-blank" id="fblank" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="?">`);
+
+  document.getElementById('main').innerHTML = `
+    <div class="page-title">${currentSet}</div>
+    <div class="page-sub">${fillWords.length} words · Fill the blank mode</div>
+    <div class="fill-wrap">
+      <div class="dq-progress">
+        <div class="dq-pbar"><div class="dq-pfill" style="width:${pct}%"></div></div>
+        <div class="dq-plabel">${fillIndex}/${fillWords.length} · ✓ ${fillCorrect} correct</div>
+      </div>
+      <div class="fill-card">
+        <div class="fill-num">Question ${fillIndex + 1} of ${fillWords.length}</div>
+        <div class="fill-sentence" id="fsent">${blanked}</div>
+        <div class="fill-hint">Hint: ${w.def}</div>
+        <div class="fill-answer" id="fans">✓ Answer: <strong>${w.word}</strong></div>
+        <div>
+          <button class="fill-check-btn" onclick="checkFill('${w.word.toLowerCase()}')">Check answer</button>
+        </div>
+        <div class="fill-result" id="fresult"></div>
+      </div>
+    </div>`;
+  // Focus the blank
+  setTimeout(() => { const b = document.getElementById('fblank'); if(b) b.focus(); }, 50);
+  // Allow pressing Enter to check
+  setTimeout(() => {
+    const b = document.getElementById('fblank');
+    if(b) b.addEventListener('keydown', e => { if(e.key==='Enter') checkFill(w.word.toLowerCase()); });
+  }, 60);
+}
+
+function checkFill(answer) {
+  const blank = document.getElementById('fblank');
+  if (!blank) return;
+  const val = blank.value.trim().toLowerCase();
+  if (!val) return;
+  addUsage(1);
+  blank.disabled = true;
+  document.querySelector('.fill-check-btn').disabled = true;
+  document.querySelector('.fill-check-btn').style.opacity = '.4';
+  const isOk = val === answer;
+  blank.classList.add(isOk ? 'ok' : 'bad');
+  document.getElementById('fans').style.display = 'block';
+  if (isOk) fillCorrect++;
+  const result = document.getElementById('fresult');
+  result.innerHTML = (isOk
+    ? '<span style="color:#2a9d68;font-weight:600">✓ Correct!</span>'
+    : `<span style="color:#e24b4a;font-weight:600">✗ Not quite</span>`)
+    + `<button class="fill-next-btn" onclick="fillNext()">Next →</button>`;
+}
+
+function fillNext() { fillIndex++; showFillCard(); }
+
+function showFillDone() {
+  document.getElementById('main').innerHTML = `
+    <div class="fill-wrap">
+      <div class="session-done">
+        <div class="sd-icon">🎯</div>
+        <div class="sd-title">Fill the blank complete!</div>
+        <div class="sd-sub">You completed all ${fillWords.length} sentences from <strong>${currentSet}</strong>.</div>
+        <div class="sd-stats">
+          <div><div class="sd-stat-n" style="color:#2a9d68">${fillCorrect}</div><div class="sd-stat-l">Correct</div></div>
+          <div><div class="sd-stat-n" style="color:#e24b4a">${fillWords.length - fillCorrect}</div><div class="sd-stat-l">Incorrect</div></div>
+        </div>
+        <button class="sd-btn" onclick="renderFill()">Try again →</button>
+      </div>
+    </div>`;
+}
+
+// ── DEFINITION QUIZ ────────────────────────────────────────────────────
+let dqWords = [], dqIndex = 0, dqScore = 0;
+
+function renderDefQuiz() {
+  if (atLimit()) { showLimitBanner(); return; }
+  const words = SETS[currentSet] || [];
+  dqWords = [...words].sort(() => Math.random() - 0.5);
+  dqIndex = 0;
+  dqScore = 0;
+  showDqCard();
+}
+
+function showDqCard() {
+  if (atLimit()) { showLimitBanner(); return; }
+  if (dqIndex >= dqWords.length) { showDqDone(); return; }
+
+  const w = dqWords[dqIndex];
+  const pct = Math.round((dqIndex / dqWords.length) * 100);
+
+  // Pick 3 wrong answers from other words
+  const others = dqWords.filter((_, i) => i !== dqIndex);
+  const shuffled = others.sort(() => Math.random() - 0.5).slice(0, 3);
+  const choices = [...shuffled.map(o => o.word), w.word].sort(() => Math.random() - 0.5);
+
+  document.getElementById('main').innerHTML = `
+    <div class="page-title">${currentSet}</div>
+    <div class="page-sub">${dqWords.length} words · Definition quiz mode</div>
+    <div class="dq-wrap">
+      <div class="dq-progress">
+        <div class="dq-pbar"><div class="dq-pfill" style="width:${pct}%"></div></div>
+        <div class="dq-plabel">${dqIndex}/${dqWords.length} · ✓ ${dqScore} correct</div>
+      </div>
+      <div class="dq-card">
+        <div class="dq-num">Question ${dqIndex + 1} of ${dqWords.length} — Which word matches this definition?</div>
+        <div class="dq-def">${w.def}</div>
+        <div class="dq-example">"${w.example.replace(new RegExp(w.word,'gi'), '______')}"</div>
+        <div class="dq-choices">
+          ${choices.map(c =>
+            `<button class="dq-choice" onclick="checkDq(this,'${c}','${w.word}')">${c}</button>`
+          ).join('')}
+        </div>
+        <div class="dq-feedback" id="dqfb"></div>
+        <button class="dq-next" id="dqnext" onclick="dqNext()">Next question →</button>
+      </div>
+    </div>`;
+}
+
+function checkDq(btn, chosen, correct) {
+  addUsage(1);
+  document.querySelectorAll('.dq-choice').forEach(b => b.disabled = true);
+  const fb = document.getElementById('dqfb');
+  const next = document.getElementById('dqnext');
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    fb.textContent = '✓ Correct!'; fb.className = 'dq-feedback ok';
+    dqScore++;
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = `✗ The answer was: ${correct}`; fb.className = 'dq-feedback bad';
+    // Highlight correct answer
+    document.querySelectorAll('.dq-choice').forEach(b => { if(b.textContent.trim()===correct) b.classList.add('correct'); });
+  }
+  next.style.display = 'block';
+}
+
+function dqNext() { dqIndex++; showDqCard(); }
+
+function showDqDone() {
+  document.getElementById('main').innerHTML = `
+    <div class="dq-wrap">
+      <div class="session-done">
+        <div class="sd-icon">🧠</div>
+        <div class="sd-title">Quiz complete!</div>
+        <div class="sd-sub">You answered ${dqScore} out of ${dqWords.length} correctly from <strong>${currentSet}</strong>.</div>
+        <div class="sd-stats">
+          <div><div class="sd-stat-n" style="color:#2a9d68">${dqScore}</div><div class="sd-stat-l">Correct</div></div>
+          <div><div class="sd-stat-n" style="color:#e24b4a">${dqWords.length - dqScore}</div><div class="sd-stat-l">Wrong</div></div>
+        </div>
+        <button class="sd-btn" onclick="renderDefQuiz()">Play again →</button>
+      </div>
+    </div>`;
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+updateUsage();
+renderFlashcard();
+document.getElementById('sb-c19').classList.add('active');
+</script>
+</body>
+</html>

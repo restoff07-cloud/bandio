@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bandio — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--ink:#0e0e0e;--accent:#d4541a;--cream:#f0eeea;--card:#fff;--muted:#888;--border:#e0ddd8;--sidebar-w:240px;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--ink);min-height:100vh;display:flex;flex-direction:column;padding:1.75rem 1.25rem;position:fixed;top:0;left:0;bottom:0;z-index:50;overflow-y:auto;transition:transform .25s ease;}
+.s-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;color:#f5f2eb;text-decoration:none;display:block;margin-bottom:2rem;}
+.s-logo span{color:var(--accent);}
+.nav-section{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,242,235,.25);padding:0 .75rem;margin-bottom:.5rem;margin-top:1.25rem;}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;border-radius:10px;text-decoration:none;font-size:.88rem;color:rgba(245,242,235,.5);transition:all .15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;cursor:pointer;}
+.nav-item:hover{background:rgba(255,255,255,.07);color:rgba(245,242,235,.85);}
+.nav-item.active{background:rgba(212,84,26,.15);color:#f5f2eb;}
+.nav-icon{font-size:1rem;width:18px;text-align:center;flex-shrink:0;}
+.s-bottom{margin-top:auto;padding-top:1.25rem;border-top:.5px solid rgba(255,255,255,.08);}
+.user-chip{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:10px;}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;color:#fff;flex-shrink:0;}
+.user-name{font-size:.82rem;font-weight:500;color:rgba(245,242,235,.8);}
+.user-plan{font-size:.7rem;color:rgba(245,242,235,.35);}
+
+/* MOBILE */
+.mobile-topbar{display:none;background:var(--ink);padding:.65rem 1rem;align-items:center;gap:.75rem;position:sticky;top:0;z-index:50;}
+.mobile-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#f5f2eb;text-decoration:none;flex:1;}
+.mobile-logo span{color:var(--accent);}
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;cursor:pointer;padding:.5rem;border:none;background:transparent;flex-shrink:0;}
+.hamburger span{display:block;width:22px;height:2.5px;background:#f5f2eb;border-radius:2px;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49;}
+.sidebar-overlay.show{display:block;}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);padding:2rem 2.5rem;min-height:100vh;}
+.welcome{margin-bottom:2rem;}
+.welcome h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-.02em;margin-bottom:.25rem;}
+.welcome p{font-size:.9rem;color:var(--muted);}
+.plan-badge{display:inline-flex;align-items:center;padding:.2rem .65rem;border-radius:100px;font-size:.72rem;font-weight:600;background:rgba(14,14,14,.07);color:var(--muted);margin-left:.5rem;vertical-align:middle;}
+
+/* QUICK ACTIONS */
+.section-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:.75rem;}
+.actions-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2rem;}
+.action-btn{display:flex;align-items:center;gap:.55rem;padding:.6rem 1.15rem;border-radius:10px;border:1.5px solid var(--border);background:var(--card);font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:500;color:var(--ink);cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap;}
+.action-btn:hover{border-color:#999;background:#f5f3f0;}
+.action-btn.primary{background:var(--ink);color:#fff;border-color:var(--ink);}
+.action-btn.primary:hover{background:var(--accent);border-color:var(--accent);}
+
+/* SKILL GRID */
+.skill-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:2rem;}
+.skill-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;text-decoration:none;color:var(--ink);transition:all .18s;display:block;}
+.skill-card:hover{border-color:#bbb;box-shadow:0 4px 16px rgba(0,0,0,.09);transform:translateY(-2px);}
+.sk-icon{font-size:1.75rem;margin-bottom:.75rem;display:block;}
+.sk-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.25rem;}
+.sk-desc{font-size:.78rem;color:var(--muted);line-height:1.55;margin-bottom:.85rem;}
+.sk-tags{display:flex;gap:.4rem;flex-wrap:wrap;}
+.sk-tag{font-size:.68rem;font-weight:600;padding:.18rem .55rem;border-radius:100px;border:1px solid var(--border);}
+.sk-tag.free{background:#dcfce7;color:#166534;border-color:#c8e6c9;}
+.sk-tag.prem{background:#fef9c3;color:#854d0e;border-color:#fde68a;}
+.sk-tag.mock{background:#e8f0fd;color:#1a56db;border-color:#c3d3f9;}
+
+/* GOALS */
+.goals-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;margin-bottom:2rem;}
+.goals-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.goals-date{font-size:.75rem;color:var(--muted);}
+.goal-item{display:flex;align-items:center;gap:.85rem;padding:.55rem 0;border-bottom:.5px solid #f5f3f0;}
+.goal-item:last-child{border-bottom:none;padding-bottom:0;}
+.goal-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:.7rem;transition:all .15s;}
+.goal-check:hover{border-color:var(--accent);}
+.goal-check.checked{background:var(--ink);border-color:var(--ink);color:#fff;}
+.goal-text{font-size:.86rem;}
+.goal-text a{color:var(--ink);text-decoration:none;}
+.goal-text a:hover{color:var(--accent);}
+.goal-text.done{text-decoration:line-through;color:var(--muted);}
+
+/* BOTTOM ROW */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem;}
+.extra-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.4rem;cursor:pointer;transition:all .15s;text-decoration:none;color:var(--ink);display:block;}
+.extra-card:hover{border-color:#bbb;box-shadow:0 3px 12px rgba(0,0,0,.07);}
+.ec-icon{font-size:1.4rem;margin-bottom:.5rem;}
+.ec-title{font-size:.9rem;font-weight:600;margin-bottom:.2rem;}
+.ec-desc{font-size:.75rem;color:var(--muted);line-height:1.55;}
+
+/* REFERRAL */
+/* PREMIUM BANNER */
+.prem-banner{background:var(--ink);border-radius:14px;padding:1.4rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.pb-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:#f5f2eb;margin-bottom:.2rem;}
+.pb-desc{font-size:.76rem;color:rgba(245,242,235,.5);}
+.pb-btn{padding:.5rem 1.2rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block;flex-shrink:0;}
+.pb-btn:hover{opacity:.88;}
+
+@media(max-width:900px){.skill-grid{grid-template-columns:1fr 1fr;}.bottom-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:680px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);z-index:100;}
+  .main{margin-left:0!important;padding:1rem;}
+  .hamburger{display:flex!important;}
+  .mobile-topbar{display:flex!important;}
+  .skill-grid{grid-template-columns:1fr;}
+  .bottom-grid{grid-template-columns:1fr;}
+  .actions-row{gap:.5rem;}
+  .action-btn{font-size:.8rem;padding:.55rem .9rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- MOBILE TOP BAR -->
+<div class="mobile-topbar">
+  <button class="hamburger" onclick="openSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="mobile-logo" href="bandio-home.html">Band<span>io</span></a>
+</div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <a class="s-logo" href="bandio-home.html">Band<span>io</span></a>
+
+  <div class="nav-section">Practice</div>
+  <a class="nav-item active" href="bandio-dashboard.html"><span class="nav-icon">⊞</span> Dashboard</a>
+  <a class="nav-item" href="bandio-mocktest.html"><span class="nav-icon">📝</span> Mock tests</a>
+  <a class="nav-item" href="bandio-practice.html"><span class="nav-icon">📖</span> Reading</a>
+  <a class="nav-item" href="bandio-listening.html"><span class="nav-icon">🎧</span> Listening</a>
+  <a class="nav-item" href="bandio-writing.html"><span class="nav-icon">✍️</span> Writing</a>
+  <a class="nav-item" href="bandio-speaking.html"><span class="nav-icon">🎤</span> Speaking</a>
+  <a class="nav-item" href="bandio-vocab.html"><span class="nav-icon">📚</span> Vocabulary</a>
+
+  <div class="nav-section">Account</div>
+  <a class="nav-item" href="bandio-pricing.html"><span class="nav-icon">✦</span> Upgrade</a>
+  <a class="nav-item" href="bandio-feedback.html"><span class="nav-icon">💬</span> Send feedback</a>
+  <a class="nav-item" href="bandio-gift.html"><span class="nav-icon">🎁</span> Give a gift</a>
+
+  <div class="s-bottom">
+    <div class="user-chip">
+      <div class="user-avatar">?</div>
+      <div>
+        <div class="user-name">Student</div>
+        <div class="user-plan">Free plan</div>
+      </div>
+    </div>
+    <a class="nav-item" href="#" onclick="doSignOut()" style="margin-top:.35rem;">
+      <span class="nav-icon">→</span> Sign out
+    </a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="welcome">
+    <h1>Hey, <span id="dash-firstname">there</span> 👋 <span class="plan-badge" id="dash-plan-badge">Free</span></h1>
+    <p>What do you want to practise today?</p>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="section-label">Jump in</div>
+  <div class="actions-row">
+    <a class="action-btn primary" href="bandio-mocktest.html">📝 Take a mock test</a>
+    <a class="action-btn" href="bandio-writing.html">✍️ Check my writing</a>
+    <a class="action-btn" href="bandio-speaking.html">🎤 Speaking practice</a>
+    <a class="action-btn" href="bandio-vocab.html">📚 Vocabulary</a>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="section-label">Practice by skill</div>
+  <div class="skill-grid">
+    <a class="skill-card" href="bandio-practice.html">
+      <span class="sk-icon">📖</span>
+      <div class="sk-name">Reading</div>
+      <div class="sk-desc">Passages with True/False/NG, MCQ and gap fill. Timed practice with answer review.</div>
+      <div class="sk-tags"><span class="sk-tag free">Free</span><span class="sk-tag mock">Mock available</span></div>
+    </a>
+    <a class="skill-card" href="bandio-listening.html">
+      <span class="sk-icon">🎧</span>
+      <div class="sk-name">Listening</div>
+      <div class="sk-desc">Audio sections with gap fill and note completion. Check answers instantly.</div>
+      <div class="sk-tags"><span class="sk-tag free">Free</span><span class="sk-tag mock">Mock available</span></div>
+    </a>
+    <a class="skill-card" href="bandio-writing.html">
+      <span class="sk-icon">✍️</span>
+      <div class="sk-name">Writing</div>
+      <div class="sk-desc">Task 1 and Task 2 practice. Paste your own question. Get AI feedback on 4 criteria.</div>
+      <div class="sk-tags"><span class="sk-tag free">2 free checks</span><span class="sk-tag prem">25 with Premium</span></div>
+    </a>
+    <a class="skill-card" href="bandio-speaking.html">
+      <span class="sk-icon">🎤</span>
+      <div class="sk-name">Speaking</div>
+      <div class="sk-desc">Parts 1, 2 and 3. Practise with real IELTS questions and see sample band 8 answers.</div>
+      <div class="sk-tags"><span class="sk-tag free">Free</span><span class="sk-tag mock">Sample answers</span></div>
+    </a>
+  </div>
+
+  <!-- TODAY'S GOALS -->
+  <div class="goals-card">
+    <div class="goals-header">
+      <div class="section-label" style="margin-bottom:0;">Today's goals</div>
+      <div class="goals-date" id="goal-date"></div>
+    </div>
+    <div id="goals-list"></div>
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="section-label">More</div>
+  <div class="bottom-grid">
+    <a class="extra-card" href="bandio-vocab.html">
+      <div class="ec-icon">📚</div>
+      <div class="ec-title">Vocabulary games</div>
+      <div class="ec-desc">Flashcards, synonym match, fill the blank and definition quiz.</div>
+    </a>
+    <a class="extra-card" href="bandio-mocktest.html">
+      <div class="ec-icon">🏆</div>
+      <div class="ec-title">Full mock test</div>
+      <div class="ec-desc">Reading and Listening full timed mock tests with instant scoring.</div>
+    </a>
+  </div>
+
+  <!-- PREMIUM -->
+  <div class="prem-banner" id="dash-upgrade-btn">
+    <div>
+      <div class="pb-title">Unlock Premium</div>
+      <div class="pb-desc">25 AI writing checks · Unlimited mock tests · Topic vocabulary · from 80,000 so'm</div>
+    </div>
+    <a class="pb-btn" href="bandio-pricing.html">Premium →</a>
+  </div>
+
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",
+  authDomain: "bandio-53433.firebaseapp.com",
+  projectId: "bandio-53433",
+  storageBucket: "bandio-53433.firebasestorage.app",
+  messagingSenderId: "161548316253",
+  appId: "1:161548316253:web:a7746750b2ea6d239d67b4"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = 'bandio-login.html'; return; }
+
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    const data = snap.exists() ? snap.data() : {};
+
+    const firstName = (data.name || user.displayName || user.email || 'Student').split(' ')[0];
+    const el = document.getElementById('dash-firstname');
+    if (el) el.textContent = firstName;
+    document.querySelectorAll('.user-name').forEach(e => e.textContent = firstName);
+    document.querySelectorAll('.user-avatar').forEach(e => e.textContent = firstName.charAt(0).toUpperCase());
+
+    const plan = data.plan || 'free';
+    const label = plan === 'premium' ? 'Premium ✦' : plan === 'intensive' ? 'Intensive ✦✦' : 'Free';
+    document.querySelectorAll('.user-plan').forEach(e => e.textContent = label);
+    const pb = document.getElementById('dash-plan-badge');
+    if (pb) {
+      pb.textContent = label;
+      if (plan !== 'free') { pb.style.background = 'rgba(212,84,26,.15)'; pb.style.color = '#d4541a'; }
+    }
+    if (plan !== 'free') {
+      const ub = document.getElementById('dash-upgrade-btn');
+      if (ub) ub.style.display = 'none';
+    }
+
+  } catch(e) {
+    console.log('Firebase error:', e.message);
+  }
+});
+
+window.doSignOut = async function() {
+  const auth2 = getAuth();
+  await signOut(auth2);
+  window.location.href = 'bandio-login.html';
+};
+</script>
+
+<script>
+function generateGoals() {
+  var today = new Date();
+  var el = document.getElementById('goal-date');
+  if (el) el.textContent = today.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'});
+  var day = today.getDay();
+  var all = [
+    {text:'Complete 1 Reading passage',       link:'bandio-practice.html'},
+    {text:'Write a Task 2 essay (250 words)', link:'bandio-writing.html'},
+    {text:'Do a Listening section practice',  link:'bandio-listening.html'},
+    {text:'Practice Speaking Part 1',          link:'bandio-speaking.html'},
+    {text:'Learn 10 new vocabulary words',    link:'bandio-vocab.html'},
+    {text:'Take a full Reading mock test',    link:'bandio-reading-mock.html'},
+    {text:'Check your writing with AI',       link:'bandio-writing.html'},
+    {text:'Do a Speaking cue card (Part 2)',  link:'bandio-speaking.html'},
+    {text:'Complete a Listening mock',        link:'bandio-listening-mock.html'},
+    {text:'Review vocabulary flashcards',     link:'bandio-vocab.html'},
+    {text:'Write a Task 1 report (150 words)',link:'bandio-writing.html'},
+  ];
+  var seed = day * 3;
+  var goals = [];
+  for (var i = 0; i < 4; i++) goals.push(all[(seed+i) % all.length]);
+  var key = 'bnd_goals_' + today.toISOString().slice(0,10);
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(key)||'{}'); } catch(e) {}
+  var gl = document.getElementById('goals-list');
+  if (!gl) return;
+  gl.innerHTML = goals.map(function(g, i) {
+    var on = saved[i] || false;
+    return '<div class="goal-item">'
+      + '<div class="goal-check' + (on ? ' checked' : '')
+      + '" onclick="tickGoal(this,\'' + key + '\',' + i + ')">'
+      + (on ? '&#10003;' : '') + '</div>'
+      + '<div class="goal-text' + (on ? ' done' : '') + '">'
+      + '<a href="' + g.link + '">' + g.text + '</a></div></div>';
+  }).join('');
+}
+
+function tickGoal(el, key, idx) {
+  el.classList.toggle('checked');
+  var on = el.classList.contains('checked');
+  el.innerHTML = on ? '&#10003;' : '';
+  var t = el.nextElementSibling;
+  if (t) t.classList.toggle('done', on);
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(key)||'{}'); } catch(e) {}
+  saved[idx] = on;
+  localStorage.setItem(key, JSON.stringify(saved));
+}
+
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+document.querySelectorAll('.nav-item').forEach(function(el) {
+  el.addEventListener('click', function() {
+    if (window.innerWidth <= 680) closeSidebar();
+  });
+});
+
+generateGoals();
+</script>
+</body>
+</html>

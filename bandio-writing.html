@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IELTS Writing Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex;flex-direction:column;font-size:15px;height:100%;overflow:hidden;}
+
+/* MODE SWITCHER NAV */
+.modenav{display:flex;background:#0e0e0e;flex-shrink:0;padding:.5rem 1.25rem;gap:.5rem;align-items:center;}
+.logo-sm{font-family:'Syne',sans-serif;font-weight:800;font-size:.92rem;color:#f5f2eb;margin-right:.5rem;text-decoration:none;}
+.logo-sm span{color:#d4541a;}
+.mbtn{padding:.32rem .85rem;border:1px solid rgba(255,255,255,.18);border-radius:100px;background:transparent;color:rgba(255,255,255,.55);font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:500;cursor:pointer;white-space:nowrap;}
+.mbtn:hover{background:rgba(255,255,255,.1);color:#fff;}
+.mbtn.on{background:#c8102e;color:#fff;border-color:#c8102e;}
+.dash-link{margin-left:auto;font-size:.74rem;color:rgba(255,255,255,.45);text-decoration:none;}
+.dash-link:hover{color:#fff;}
+
+/* SCREENS */
+#sel{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
+#sel.hide{display:none;}
+#exam{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
+#exam.show{display:flex;}
+
+/* MODE CONTENT PANELS */
+.mode-panel{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
+.mode-panel.show{display:flex;}
+
+/* SELECTION TABS */
+.ftabs{display:flex;background:#fff;border-bottom:1px solid #e0e0e0;flex-shrink:0;}
+.ft{flex:1;padding:.85rem 1rem;text-align:center;font-size:.88rem;font-weight:500;color:#666;cursor:pointer;border-bottom:3px solid transparent;border-right:1px solid #e8e8e8;transition:all .15s;}
+.ft:last-child{border-right:none;}
+.ft:hover{background:#fafafa;}
+.ft.on{color:#c8102e;border-bottom-color:#c8102e;font-weight:600;background:#fff8f8;}
+.frow{display:flex;align-items:center;padding:.85rem 1.25rem;background:#fff;border-bottom:1px solid #eee;flex-shrink:0;}
+.sbox{display:flex;align-items:center;gap:.45rem;border:1px solid #d8d5d0;border-radius:7px;padding:.42rem .8rem;flex:1;background:#fff;}
+.sbox input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.84rem;color:#1a1a1a;width:100%;background:transparent;}
+.sbox input::placeholder{color:#bbb;}
+.larea{flex:1;overflow-y:auto;padding:1.25rem 1.5rem;}
+.lhead{font-size:1.25rem;font-weight:700;margin-bottom:1rem;}
+.tcard{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:1.1rem 1.25rem;margin-bottom:.75rem;display:flex;align-items:center;gap:1rem;transition:box-shadow .15s;cursor:pointer;}
+.tcard:hover{box-shadow:0 2px 12px rgba(0,0,0,.08);}
+.tcard-info{flex:1;min-width:0;}
+.tcard-top{display:flex;align-items:center;gap:.55rem;margin-bottom:.28rem;flex-wrap:wrap;}
+.tcard-name{font-size:.95rem;font-weight:700;}
+.tbadge{font-size:.68rem;font-weight:600;padding:.17rem .55rem;border-radius:100px;background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9;}
+.ttag{font-size:.68rem;font-weight:600;padding:.17rem .55rem;border-radius:100px;border:1px solid #d8d5d0;}
+.ttag.t1{background:#e8f0fd;color:#1a56db;border-color:#c3d3f9;}
+.ttag.t2{background:#fdeee8;color:#c2410c;border-color:#fbd4c2;}
+.tcard-sub{font-size:.78rem;color:#777;margin-bottom:.45rem;line-height:1.55;}
+.tcard-meta{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;}
+.tmeta{font-size:.76rem;color:#555;}
+.tmeta-sep{color:#ccc;}
+.sbtn{padding:.55rem 1.35rem;background:#c8102e;color:#fff;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.sbtn:hover{opacity:.88;}
+.nores{text-align:center;padding:3rem 1rem;color:#aaa;font-size:.88rem;}
+
+/* YOUR WRITING PANEL */
+.yw-wrap{flex:1;overflow-y:auto;padding:1.5rem;}
+.yw-inner{max-width:720px;margin:0 auto;}
+.yw-title{font-size:1.25rem;font-weight:700;margin-bottom:.3rem;}
+.yw-sub{font-size:.86rem;color:#888;margin-bottom:1.5rem;}
+.field{margin-bottom:1rem;}
+.field label{font-size:.78rem;font-weight:600;color:#555;display:block;margin-bottom:.4rem;}
+.field select,.field input,.field textarea{width:100%;border:1px solid #d8d5d0;border-radius:8px;padding:.55rem .85rem;font-family:'DM Sans',sans-serif;font-size:.88rem;color:#1a1a1a;outline:none;background:#fafaf9;}
+.field select:focus,.field input:focus,.field textarea:focus{border-color:#999;background:#fff;}
+.field textarea{resize:vertical;min-height:90px;line-height:1.7;}
+.img-drop{border:1.5px dashed #d8d5d0;border-radius:8px;padding:1rem;text-align:center;cursor:pointer;background:#fafaf9;min-height:70px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.35rem;transition:border-color .15s;}
+.img-drop:hover{border-color:#999;}
+.img-preview{display:none;max-width:100%;max-height:180px;border-radius:6px;object-fit:contain;}
+.img-remove{display:none;margin-top:.35rem;background:none;border:1px solid #e24b4a;color:#e24b4a;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.72rem;padding:.2rem .65rem;cursor:pointer;}
+.go-btn{padding:.7rem 2rem;background:#c8102e;color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;width:100%;}
+.go-btn:hover{opacity:.88;}
+
+/* CHECK MY WRITING PANEL */
+.chk-wrap{flex:1;overflow-y:auto;padding:1.5rem;}
+.chk-inner{max-width:720px;margin:0 auto;}
+.task-toggle-row{display:flex;gap:.5rem;margin-bottom:1rem;}
+.ttoggle{padding:.38rem .95rem;border:1.5px solid #d8d5d0;border-radius:7px;background:#fff;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;color:#555;cursor:pointer;}
+.ttoggle.on{background:#c8102e;color:#fff;border-color:#c8102e;}
+.chk-wc{font-size:.76rem;color:#aaa;margin-top:.3rem;}
+.chk-btn{padding:.7rem 2rem;background:#c8102e;color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;width:100%;margin-top:1.25rem;}
+.chk-btn:hover{opacity:.88;}
+
+/* Result boxes */
+.chk-result{display:none;margin-top:1.5rem;}
+.res-band{display:flex;align-items:center;gap:1.25rem;background:#1a1a1a;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1rem;flex-wrap:wrap;}
+.res-band-num{font-family:'Syne',sans-serif;font-weight:800;font-size:2.8rem;color:#f5f2eb;line-height:1;}
+.res-band-lbl{font-size:.7rem;color:rgba(245,242,235,.4);}
+.res-band-desc{font-size:.84rem;color:rgba(245,242,235,.65);line-height:1.6;flex:1;}
+.crit-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem;}
+.crit-box{background:#fff;border:1px solid #e8e5e0;border-radius:10px;padding:.85rem 1rem;}
+.crit-sc{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:#d4541a;margin-bottom:.15rem;}
+.crit-nm{font-size:.75rem;font-weight:600;color:#1a1a1a;margin-bottom:.25rem;}
+.crit-fb{font-size:.75rem;color:#666;line-height:1.5;}
+.tips-box{background:#fff;border-radius:10px;padding:1rem;margin-bottom:.75rem;}
+.tips-hd{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:.6rem;}
+.tip-row{display:flex;align-items:flex-start;gap:.5rem;font-size:.83rem;color:#444;line-height:1.6;margin-bottom:.4rem;}
+.tip-dot{width:6px;height:6px;border-radius:50%;background:#d4541a;flex-shrink:0;margin-top:.5rem;}
+.limit-box{background:#fee2e2;border-radius:12px;padding:1.1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.limit-text{font-size:.84rem;color:#991b1b;}
+.limit-text strong{display:block;margin-bottom:.1rem;}
+.upgrade-link{padding:.48rem 1.1rem;background:#c8102e;color:#fff;border-radius:100px;text-decoration:none;font-size:.8rem;font-weight:700;white-space:nowrap;}
+
+/* EXAM SCREEN */
+.topbar{height:54px;background:#fff;border-bottom:1px solid #d8d5d0;display:flex;align-items:center;padding:0 1rem;flex-shrink:0;position:relative;}
+.tb-l{display:flex;align-items:center;gap:.6rem;}
+.tb-m{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:.6rem;}
+.tb-r{display:flex;align-items:center;gap:.8rem;margin-left:auto;}
+.bkbtn{display:flex;align-items:center;gap:.3rem;padding:.3rem .8rem;border:1px solid #ccc;border-radius:5px;background:#fff;font-family:inherit;font-size:.82rem;color:#444;cursor:pointer;}
+.bkbtn:hover{background:#f5f3f0;}
+.ib{background:#c8102e;color:#fff;font-weight:700;font-size:.88rem;padding:.28rem .65rem;border-radius:4px;}
+.etid{font-size:.82rem;color:#888;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tval{font-size:1.1rem;font-weight:600;color:#1a1a1a;min-width:48px;text-align:right;}
+.tval.warn{color:#c8102e;}
+.tbtn{padding:.32rem 1rem;background:#c8102e;color:#fff;border:none;border-radius:5px;font-family:inherit;font-size:.84rem;font-weight:600;cursor:pointer;}
+.tbtn.on{background:#555;}
+.ico{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#888;cursor:pointer;border-radius:4px;}
+.ico:hover{background:#f0eeea;}
+.main{display:flex;flex:1;min-height:0;overflow:hidden;}
+.lp{width:50%;min-width:260px;overflow-y:auto;border-right:1px solid #d8d5d0;padding:1.5rem 1.75rem 2rem;background:#fff;}
+.tbox{background:#f0eeea;border-radius:8px;padding:1rem 1.2rem;margin-bottom:1.2rem;}
+.tbox-t{font-size:.95rem;font-weight:700;margin-bottom:.22rem;}
+.tbox-i{font-size:.85rem;color:#555;line-height:1.55;}
+.chart-ph{border:1px solid #d8d5d0;border-radius:8px;background:#f0eeea;padding:2rem 1rem;text-align:center;margin-bottom:1.25rem;}
+.tq{font-size:.93rem;line-height:1.75;}
+.rp{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#f9f8f7;}
+.ew{flex:1;padding:1.25rem 1.5rem;display:flex;flex-direction:column;overflow:hidden;}
+.eta{flex:1;width:100%;resize:none;border:1px solid #d8d5d0;border-radius:6px;padding:1rem 1.1rem;font-family:'DM Sans',sans-serif;font-size:.94rem;line-height:1.8;color:#1a1a1a;background:#fff;outline:none;}
+.eta:focus{border-color:#999;}
+.eta::placeholder{color:#bbb;}
+.wcr{display:flex;align-items:center;gap:1rem;padding:.6rem 0 0;flex-wrap:wrap;}
+.wct{font-size:.84rem;color:#666;}
+.wcn{font-weight:600;color:#1a1a1a;}
+.wcn.g{color:#2a9d68;}
+.wcbw{flex:1;height:3px;background:#e8e5e0;border-radius:3px;overflow:hidden;min-width:60px;}
+.wcbf{height:100%;background:#d8d5d0;border-radius:3px;width:0%;transition:width .3s,background .3s;}
+.wch{font-size:.78rem;color:#888;}
+.botbar{height:48px;background:#f0eeea;border-top:1px solid #d8d5d0;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+.sub-ck{position:absolute;right:1.25rem;width:32px;height:32px;border-radius:50%;background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;}
+.sub-ck:hover{background:#2a9d68;}
+
+/* RESULT OVERLAY */
+#ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:flex-start;justify-content:center;padding:1.5rem 1rem;overflow-y:auto;}
+#ovl.show{display:flex;}
+.rcard{background:#fff;border-radius:16px;padding:2rem;max-width:640px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);margin:auto;}
+.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem;}
+.rt{font-size:1.05rem;font-weight:700;}
+.rstats{display:flex;gap:1.25rem;}
+.rsv{font-size:1.2rem;font-weight:700;text-align:center;}
+.rsl{font-size:.68rem;color:#888;margin-top:.05rem;text-align:center;}
+.rel-lbl{font-size:.76rem;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.45rem;display:flex;align-items:center;justify-content:space-between;}
+.cpbtn{display:flex;align-items:center;gap:.3rem;padding:.28rem .75rem;border:1px solid #d8d5d0;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.74rem;color:#555;background:#fff;cursor:pointer;}
+.cpbtn:hover{border-color:#999;background:#f5f3f0;}
+.cpbtn.copied{border-color:#2a9d68;color:#2a9d68;background:#e8f5ee;}
+.reta{width:100%;min-height:160px;max-height:250px;border:1px solid #d8d5d0;border-radius:8px;padding:.85rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;line-height:1.8;color:#1a1a1a;background:#fafaf9;outline:none;resize:vertical;}
+.reta:focus{border-color:#999;background:#fff;}
+.reh{font-size:.72rem;color:#aaa;margin-top:.35rem;margin-bottom:1rem;}
+.rsect{font-size:.76rem;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin:.9rem 0 .5rem;}
+.rci{display:flex;align-items:flex-start;gap:.6rem;padding:.45rem 0;border-bottom:.5px solid #f0eeea;font-size:.84rem;line-height:1.55;}
+.rci:last-child{border-bottom:none;}
+.rdot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:1px;}
+.dok{background:#dcfce7;color:#166534;}
+.dwn{background:#fef9c3;color:#854d0e;}
+.din{background:#dbeafe;color:#1e40af;}
+.scta{border:1.5px solid #e0ddd8;border-radius:14px;padding:1.4rem 1.5rem;margin:1.25rem 0;background:#fafaf9;}
+.scta-top{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;}
+.scta-ico{width:46px;height:46px;border-radius:12px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.scta-title{font-size:1rem;font-weight:700;margin-bottom:.2rem;}
+.scta-sub{font-size:.82rem;color:#666;line-height:1.5;}
+.crit-grid2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem;}
+.crit2{background:#fff;border:1px solid #e8e5e0;border-radius:8px;padding:.6rem .75rem;display:flex;align-items:flex-start;gap:.5rem;}
+.crit2-ico{font-size:.95rem;flex-shrink:0;}
+.crit2-n{font-size:.78rem;font-weight:600;margin-bottom:.08rem;}
+.crit2-d{font-size:.71rem;color:#888;line-height:1.45;}
+.csbtn{width:100%;padding:.7rem;background:#c8102e;color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.csbtn:hover{opacity:.88;}
+.csnote{font-size:.72rem;color:#aaa;text-align:center;margin-top:.45rem;}
+.rbtns{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.75rem;}
+.rbtn{padding:.58rem 1.3rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:500;cursor:pointer;border:1px solid #d8d5d0;background:#fff;color:#444;}
+.rbtn:hover{border-color:#999;background:#f5f3f0;}
+.rbtn.p{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.rbtn.p:hover{background:#d4541a;border-color:#d4541a;}
+
+@media(max-width:640px){.main{flex-direction:column;}.lp{width:100%!important;height:42vh;border-right:none;border-bottom:1px solid #d8d5d0;}.tb-m{position:static;transform:none;margin:0 auto;}.crit-grid{grid-template-columns:1fr;}.crit-grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- RESULT OVERLAY -->
+<div id="ovl">
+  <div class="rcard" id="rcard"></div>
+</div>
+
+<!-- MODE SWITCHER NAV -->
+<div class="modenav">
+  <a class="logo-sm" href="bandio-home.html">Band<span>io</span></a>
+  <button class="mbtn on" id="mb-practice" onclick="switchMode('practice')">Practice</button>
+  <button class="mbtn" id="mb-yours"    onclick="switchMode('yours')">Your writing</button>
+  <button class="mbtn" id="mb-check"    onclick="switchMode('check')">Check my writing</button>
+  <a class="dash-link" href="bandio-dashboard.html">Dashboard</a>
+</div>
+
+<!-- SELECTION SCREEN -->
+<div id="sel">
+
+  <!-- PRACTICE MODE -->
+  <div class="mode-panel show" id="panel-practice">
+    <div class="ftabs">
+      <div class="ft on" id="tab-all"   onclick="setTab('all',this)">All Questions</div>
+      <div class="ft" id="tab-task1" onclick="setTab('task1',this)">Task 1</div>
+      <div class="ft" id="tab-task2" onclick="setTab('task2',this)">Task 2</div>
+    </div>
+    <div class="frow">
+      <div class="sbox">
+        <span style="color:#bbb">&#128269;</span>
+        <input type="text" id="srch" placeholder="Search questions..." oninput="renderList()"/>
+      </div>
+    </div>
+    <div class="larea">
+      <div class="lhead">Choose a question</div>
+      <div id="qlist"></div>
+    </div>
+  </div>
+
+  <!-- YOUR WRITING MODE -->
+  <div class="mode-panel" id="panel-yours">
+    <div class="yw-wrap">
+      <div class="yw-inner">
+        <div class="yw-title">Your writing</div>
+        <div class="yw-sub">Paste your own question and write with the full timer interface. You can also paste or upload a chart image.</div>
+        <div class="field">
+          <label>Task type</label>
+          <select id="yw-task">
+            <option value="task1">Task 1 — Report (150 words, 20 min)</option>
+            <option value="task2">Task 2 — Essay (250 words, 40 min)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Chart / image (optional — paste Ctrl+V, click to upload, or drag and drop)</label>
+          <div class="img-drop" id="imgDrop" onclick="document.getElementById('imgFile').click()" onpaste="handlePaste(event)" ondragover="event.preventDefault();this.style.borderColor='#999'" ondragleave="this.style.borderColor='#d8d5d0'" ondrop="handleDrop(event)">
+            <div id="imgPlaceholder" style="font-size:.84rem;color:#bbb;">&#128247; Click, drag image here, or Ctrl+V to paste a screenshot</div>
+            <img class="img-preview" id="imgPreview" src="" alt=""/>
+            <button class="img-remove" id="imgRemove" onclick="event.stopPropagation();removeImg()">Remove image</button>
+          </div>
+          <input type="file" id="imgFile" accept="image/*" style="display:none;" onchange="handleFile(this)"/>
+        </div>
+        <div class="field">
+          <label>Your question / task prompt *</label>
+          <textarea id="yw-question" placeholder="Paste your Task 1 chart description or Task 2 essay question here..." rows="4"></textarea>
+        </div>
+        <div class="field">
+          <label>Paste an existing essay to continue editing (optional)</label>
+          <textarea id="yw-paste" placeholder="Paste a draft here if you want to continue editing it..." rows="3"></textarea>
+        </div>
+        <button class="go-btn" onclick="startYours()">Start writing &#8594;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECK MY WRITING MODE -->
+  <div class="mode-panel" id="panel-check">
+    <div class="chk-wrap">
+      <div class="chk-inner">
+        <div class="yw-title">Check my writing</div>
+        <div class="yw-sub">Paste any IELTS question and your essay. Get an instant band score on all 4 criteria.</div>
+
+        <div style="background:#fef9c3;border:1px solid #fde68a;border-radius:9px;padding:.7rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div style="font-size:.82rem;color:#78350f;"><strong id="chk-badge-txt">2 free checks remaining this month</strong> &#183; Resets on the 1st</div>
+          <a href="bandio-pricing.html" style="font-size:.74rem;font-weight:600;color:#c8102e;text-decoration:none;">Upgrade for more &#8594;</a>
+        </div>
+
+        <div class="task-toggle-row">
+          <button class="ttoggle on" id="chk-t1" onclick="chkTask('task1')">Task 1</button>
+          <button class="ttoggle"    id="chk-t2" onclick="chkTask('task2')">Task 2</button>
+        </div>
+
+        <div class="field">
+          <label>The question / task prompt *</label>
+          <textarea id="chk-q" placeholder="Paste the IELTS question here..." rows="3"></textarea>
+        </div>
+        <div class="field" id="chkImgField">
+          <label>Task 1 chart / diagram (optional — helps the AI give more accurate feedback)</label>
+          <div class="img-drop" id="chkImgDrop" onclick="document.getElementById('chkImgFile').click()" onpaste="handleChkPaste(event)" ondragover="event.preventDefault();this.style.borderColor='#999'" ondragleave="this.style.borderColor='#d8d5d0'" ondrop="handleChkDrop(event)">
+            <div id="chkImgPlaceholder" style="font-size:.84rem;color:#bbb;">📷 Click, drag image here, or Ctrl+V to paste a screenshot of the chart</div>
+            <img class="img-preview" id="chkImgPreview" src="" alt=""/>
+            <button class="img-remove" id="chkImgRemove" onclick="event.stopPropagation();removeChkImg()">Remove image</button>
+          </div>
+          <input type="file" id="chkImgFile" accept="image/*" style="display:none;" onchange="handleChkFile(this)"/>
+        </div>
+        <div class="field">
+          <label>Your essay or report *</label>
+          <textarea id="chk-essay" placeholder="Paste your full essay or Task 1 report here..." rows="7" oninput="updateChkWC()"></textarea>
+          <div class="chk-wc">Word count: <span id="chk-wc-num" style="font-weight:600;color:#1a1a1a;">0</span></div>
+        </div>
+        <button class="chk-btn" id="chkBtn" onclick="doCheck()">Check my writing &#8594;</button>
+        <div class="chk-result" id="chkResult"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end sel -->
+
+<!-- EXAM SCREEN -->
+<div id="exam">
+  <div class="topbar">
+    <div class="tb-l">
+      <button class="bkbtn" onclick="goBack()">&#8592; Back</button>
+      <span class="ib">IELTS</span>
+      <span class="etid" id="etitle">Writing Practice</span>
+    </div>
+    <div class="tb-m">
+      <span class="tval" id="tvEl">40:00</span>
+      <button class="tbtn" id="tBtn" onclick="toggleTimer()">Start</button>
+    </div>
+    <div class="tb-r">
+      <div class="ico" onclick="toggleFS()">&#9635;</div>
+      <div class="ico" onclick="doSubmit()">&#10003;</div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="lp">
+      <div class="tbox">
+        <div class="tbox-t" id="tboxTitle">Task 2</div>
+        <div class="tbox-i" id="tboxInst">You should spend about 40 minutes on this task. Write at least 250 words.</div>
+      </div>
+      <div class="chart-ph" id="chartPh" style="display:none">
+        <div style="font-size:1.4rem;margin-bottom:.3rem">&#128202;</div>
+        <div style="font-size:.8rem;color:#888;line-height:1.6">Chart image will appear here</div>
+      </div>
+      <div class="tq" id="tqEl">Select a question to begin.</div>
+    </div>
+    <div class="rp">
+      <div class="ew">
+        <textarea class="eta" id="essayTA" placeholder="Start writing your essay here..." oninput="updateWC(this.value)"></textarea>
+        <div class="wcr">
+          <span class="wct">Words: <span class="wcn" id="wcNum">0</span></span>
+          <div class="wcbw"><div class="wcbf" id="wcBar"></div></div>
+          <span class="wch" id="wcHint">Minimum: 250 words</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="botbar">
+    <span style="font-size:.84rem;font-weight:500;color:#666" id="botLbl">Task 2</span>
+    <button class="sub-ck" onclick="doSubmit()">&#10003;</button>
+  </div>
+</div>
+
+<script>
+/* QUESTIONS */
+var QS = [
+  {id:1,task:'task1',title:'Bar chart — Internet access',sub:'The bar chart shows household internet access across five countries in 2005 and 2015.',inst:'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',time:20,min:150,chart:false},
+  {id:2,task:'task1',title:'Line graph — CO2 emissions',sub:'The line graph shows CO2 emissions per capita in four countries between 1990 and 2020.',inst:'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',time:20,min:150,chart:false},
+  {id:3,task:'task1',title:'Pie charts — Energy sources',sub:'The pie charts show the percentage of energy produced from different sources in 2000 and 2020.',inst:'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',time:20,min:150,chart:false},
+  {id:4,task:'task1',title:'Table — Tourist arrivals',sub:'The table shows the number of tourists visiting five countries in 2010, 2015 and 2020.',inst:'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',time:20,min:150,chart:false},
+  {id:5,task:'task1',title:'Process diagram — Paper recycling',sub:'The diagram shows the process of recycling paper.',inst:'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',time:20,min:150,chart:false},
+  {id:6,task:'task2',title:'Modern buildings & cultural identity',sub:'Modern buildings change the character and appearance of towns and cities. The government should insist that new buildings be built in traditional styles to protect cultural identity.',inst:'To what extent do you agree or disagree?',time:40,min:250,chart:false},
+  {id:7,task:'task2',title:'Technology & social interaction',sub:'Technology is making people less sociable and face-to-face communication is declining.',inst:'Do you agree or disagree with this view?',time:40,min:250,chart:false},
+  {id:8,task:'task2',title:'University vs vocational training',sub:'Some people think that universities provide more benefits to individuals and society than vocational training. Others think vocational training is more valuable.',inst:'Discuss both views and give your own opinion.',time:40,min:250,chart:false},
+  {id:9,task:'task2',title:'Individual vs government — environment',sub:'Many people believe that individuals, not governments, should be primarily responsible for protecting the environment.',inst:'To what extent do you agree or disagree?',time:40,min:250,chart:false},
+  {id:10,task:'task2',title:'International tourism',sub:'International tourism has brought enormous benefits to many countries, but it has also caused serious problems.',inst:'What are the advantages and disadvantages of international tourism?',time:40,min:250,chart:false},
+  {id:11,task:'task2',title:'Children & technology',sub:'Some people believe that children today are too dependent on technology such as smartphones and computers.',inst:'To what extent do you agree or disagree?',time:40,min:250,chart:false},
+  {id:12,task:'task2',title:'Working from home',sub:'More and more people are working from home. Some say this is positive while others say it has disadvantages.',inst:'Discuss both views and give your own opinion.',time:40,min:250,chart:false}
+];
+
+var activeTab  = 'all';
+var currentQ   = null;
+var activeMode = 'practice';
+var imgData    = null;
+var ts=0, tr=false, ti=null;
+var chkType    = 'task1';
+
+/* MODE SWITCHING */
+function switchMode(mode) {
+  activeMode = mode;
+  ['practice','yours','check'].forEach(function(m) {
+    document.getElementById('mb-'+m).classList.toggle('on', m===mode);
+    document.getElementById('panel-'+m).classList.toggle('show', m===mode);
+    document.getElementById('panel-'+m).style.display = m===mode ? 'flex' : 'none';
+    document.getElementById('panel-'+m).style.flexDirection = 'column';
+  });
+  if (mode === 'check') updateChkBadge();
+}
+
+/* PRACTICE LIST */
+function setTab(t,el) {
+  activeTab = t;
+  document.querySelectorAll('.ft').forEach(function(x){x.classList.remove('on');});
+  el.classList.add('on');
+  renderList();
+}
+function renderList() {
+  var s = (document.getElementById('srch').value||'').toLowerCase();
+  var f = QS.filter(function(q) {
+    if (activeTab==='task1' && q.task!=='task1') return false;
+    if (activeTab==='task2' && q.task!=='task2') return false;
+    if (s && q.title.toLowerCase().indexOf(s)===-1 && q.sub.toLowerCase().indexOf(s)===-1) return false;
+    return true;
+  });
+  var w = document.getElementById('qlist');
+  if (!f.length) { w.innerHTML='<div class="nores">No questions found.</div>'; return; }
+  w.innerHTML = f.map(function(q) {
+    return '<div class="tcard"><div class="tcard-info">'
+      +'<div class="tcard-top"><span class="tcard-name">'+q.title+'</span>'
+      +'<span class="tbadge">Free</span>'
+      +'<span class="ttag '+(q.task==='task1'?'t1':'t2')+'">'+(q.task==='task1'?'Task 1':'Task 2')+'</span></div>'
+      +'<div class="tcard-sub">'+q.sub+'</div>'
+      +'<div class="tcard-meta"><span class="tmeta">'+q.time+' min</span><span class="tmeta-sep">|</span><span class="tmeta">Min '+q.min+' words</span></div>'
+      +'</div>'
+      +'<button class="sbtn" onclick="startTest('+q.id+')">Start</button>'
+      +'</div>';
+  }).join('');
+}
+
+/* START PRACTICE TEST */
+function startTest(id) {
+  var q = QS.filter(function(x){return x.id===id;})[0];
+  if (!q) return;
+  currentQ = q;
+  loadExam(q, null);
+}
+
+/* YOUR WRITING */
+function startYours() {
+  var question = document.getElementById('yw-question').value.trim();
+  if (!question) { alert('Please paste your question first.'); return; }
+  var task  = document.getElementById('yw-task').value;
+  var paste = document.getElementById('yw-paste').value.trim();
+  var isT1  = task==='task1';
+  currentQ = {id:999, task:task, title:isT1?'Your Task 1':'Your Task 2',
+    sub:question, inst:isT1?'Summarise the information by selecting and reporting the main features.':'Write at least 250 words.',
+    time:isT1?20:40, min:isT1?150:250, chart:false};
+  loadExam(currentQ, paste);
+}
+
+function loadExam(q, prefill) {
+  var isT1 = q.task==='task1';
+  document.getElementById('etitle').textContent   = q.title;
+  document.getElementById('tboxTitle').textContent = isT1?'Task 1':'Task 2';
+  document.getElementById('tboxInst').textContent  = 'You should spend about '+q.time+' minutes on this task. Write at least '+q.min+' words.';
+  document.getElementById('tqEl').innerHTML = '<strong>'+q.sub+'</strong><br><br>'+q.inst;
+  document.getElementById('botLbl').textContent = isT1?'Task 1':'Task 2';
+  document.getElementById('wcHint').textContent = 'Minimum: '+q.min+' words';
+  document.getElementById('essayTA').value = prefill||'';
+  updateWC(prefill||'');
+  // Chart
+  var cp = document.getElementById('chartPh');
+  if (imgData && activeMode==='yours') {
+    cp.style.display='block';
+    cp.innerHTML = '<img src="'+imgData+'" style="max-width:100%;border-radius:6px;"/>';
+  } else { cp.style.display='none'; }
+  resetTimer();
+  document.getElementById('sel').classList.add('hide');
+  document.getElementById('exam').classList.add('show');
+}
+
+function goBack() {
+  clearInterval(ti); tr=false;
+  document.getElementById('exam').classList.remove('show');
+  document.getElementById('sel').classList.remove('hide');
+  document.getElementById('ovl').classList.remove('show');
+}
+
+/* TIMER */
+function resetTimer() {
+  clearInterval(ti); tr=false;
+  ts=(currentQ?currentQ.time:40)*60;
+  var m=Math.floor(ts/60);
+  document.getElementById('tvEl').textContent=m+':00';
+  document.getElementById('tvEl').classList.remove('warn');
+  document.getElementById('tBtn').textContent='Start';
+  document.getElementById('tBtn').className='tbtn';
+}
+function toggleTimer() {
+  if (tr) {
+    clearInterval(ti); tr=false;
+    document.getElementById('tBtn').textContent='Resume';
+    document.getElementById('tBtn').classList.remove('on');
+  } else {
+    tr=true;
+    document.getElementById('tBtn').textContent='Pause';
+    document.getElementById('tBtn').classList.add('on');
+    ti=setInterval(function(){
+      ts--;
+      var m=Math.floor(ts/60),s=ts%60;
+      var el=document.getElementById('tvEl');
+      el.textContent=m+':'+(s<10?'0':'')+s;
+      el.classList.toggle('warn',ts<=300&&ts>0);
+      if(ts<=0){clearInterval(ti);tr=false;doSubmit();}
+    },1000);
+  }
+}
+
+/* WORD COUNT */
+function updateWC(text) {
+  var words = text.trim()===''?0:text.trim().split(/\s+/).length;
+  var minW  = currentQ?currentQ.min:250;
+  var pct   = Math.min((words/(minW+80))*100,100);
+  document.getElementById('wcNum').textContent=words;
+  document.getElementById('wcNum').className='wcn'+(words>=minW?' g':'');
+  document.getElementById('wcBar').style.width=pct+'%';
+  document.getElementById('wcBar').style.background=words>=minW?'#2a9d68':'#b0aca6';
+  document.getElementById('wcHint').textContent=words===0?'Minimum: '+(currentQ?currentQ.min:250)+' words':words<minW?(minW-words)+' more words needed':'Good length';
+}
+
+/* SUBMIT */
+function doSubmit() {
+  var text=document.getElementById('essayTA').value.trim();
+  var minW=currentQ?currentQ.min:250;
+  if(!text){alert('Please write something before submitting.');return;}
+  var words=text.trim().split(/\s+/).length;
+  if(words<minW && !confirm('Your essay is '+words+' words, below the '+minW+' word minimum. Submit anyway?')) return;
+  clearInterval(ti); tr=false;
+  var paras=text.split(/\n\s*\n/).filter(function(p){return p.trim();}).length;
+  var sents=text.split(/[.!?]+/).filter(function(s){return s.trim();}).length;
+  var isT1=currentQ&&currentQ.task==='task1';
+  var checks=[
+    {cls:words>=minW?'dok':'dwn',ic:words>=minW?'&#10003;':'!',t:'Word count: '+words+' words',d:words>=minW?'Meets the '+minW+'-word minimum.':'Below the minimum — costs marks.'},
+    {cls:paras>=3?'dok':'dwn',ic:paras>=3?'&#10003;':'!',t:'Paragraphs: '+paras,d:paras>=3?'Good paragraph structure.':'Aim for at least 3 paragraphs.'},
+    {cls:sents>=5?'dok':'dwn',ic:sents>=5?'&#10003;':'!',t:'Sentences: '+sents,d:sents>=5?'Good sentence range.':'Develop ideas with more sentences.'},
+    {cls:'din',ic:'i',t:isT1?'Did you include an overview?':'Did you answer all parts?',d:isT1?'Make sure you summarised the main trend.':'Check every part of the question is addressed.'}
+  ];
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var checksHtml='';
+  for(var i=0;i<checks.length;i++){
+    var c=checks[i];
+    checksHtml+='<div class="rci"><div class="rdot '+c.cls+'">'+c.ic+'</div><div><strong style="display:block;font-size:.83rem">'+c.t+'</strong><span style="font-size:.8rem;color:#666">'+c.d+'</span></div></div>';
+  }
+  document.getElementById('rcard').innerHTML=
+    '<div class="rh"><div class="rt">Your '+(isT1?'Task 1 Report':'Task 2 Essay')+'</div>'
+    +'<div class="rstats"><div><div class="rsv">'+words+'</div><div class="rsl">Words</div></div>'
+    +'<div><div class="rsv">'+paras+'</div><div class="rsl">Paragraphs</div></div>'
+    +'<div><div class="rsv">'+sents+'</div><div class="rsl">Sentences</div></div></div></div>'
+    +'<div class="rel-lbl"><span>Your essay</span><button class="cpbtn" id="cpBtn" onclick="doCopy()">Copy</button></div>'
+    +'<textarea class="reta" id="retaEl" spellcheck="true">'+esc(text)+'</textarea>'
+    +'<div class="reh">Edit above then copy to use elsewhere.</div>'
+    +'<div class="rsect">Self-review checklist</div>'+checksHtml
+    +'<div class="scta">'
+    +'<div class="scta-top"><div class="scta-ico">&#127919;</div>'
+    +'<div><div class="scta-title">Get your real IELTS band score</div>'
+    +'<div class="scta-sub">AI scores your essay on all 4 official IELTS Writing criteria.</div></div></div>'
+    +'<div class="crit-grid2">'
+    +'<div class="crit2"><span class="crit2-ico">&#128221;</span><div><div class="crit2-n">Task Achievement</div><div class="crit2-d">Did you answer fully?</div></div></div>'
+    +'<div class="crit2"><span class="crit2-ico">&#128279;</span><div><div class="crit2-n">Coherence &amp; Cohesion</div><div class="crit2-d">Logical structure?</div></div></div>'
+    +'<div class="crit2"><span class="crit2-ico">&#128218;</span><div><div class="crit2-n">Lexical Resource</div><div class="crit2-d">Vocabulary range?</div></div></div>'
+    +'<div class="crit2"><span class="crit2-ico">&#9881;</span><div><div class="crit2-n">Grammatical Range</div><div class="crit2-d">Grammar accuracy?</div></div></div>'
+    +'</div>'
+    +'<button class="csbtn" onclick="window.location.href=\'bandio-pricing.html\'">&#127919; Check my score — Upgrade to Premium</button>'
+    +'<div class="csnote">From 99,000 som/month &middot; Cancel anytime</div>'
+    +'</div>'
+    +'<div class="rbtns">'
+    +'<button class="rbtn" onclick="document.getElementById(\'ovl\').classList.remove(\'show\')">Edit &amp; retry</button>'
+    +'<button class="rbtn" onclick="goBack()">Choose another</button>'
+    +'<button class="rbtn p" onclick="window.location.href=\'bandio-dashboard.html\'">Dashboard</button>'
+    +'</div>';
+  document.getElementById('ovl').classList.add('show');
+}
+
+function doCopy() {
+  var ta=document.getElementById('retaEl');
+  var btn=document.getElementById('cpBtn');
+  if(!ta) return;
+  ta.select();
+  function done(){btn.textContent='Copied!';btn.classList.add('copied');setTimeout(function(){btn.textContent='Copy';btn.classList.remove('copied');},2000);}
+  if(navigator.clipboard){navigator.clipboard.writeText(ta.value).then(done).catch(function(){document.execCommand('copy');done();});}
+  else{document.execCommand('copy');done();}
+}
+
+/* IMAGE HANDLING */
+function setImg(src) {
+  imgData=src;
+  document.getElementById('imgPreview').src=src;
+  document.getElementById('imgPreview').style.display='block';
+  document.getElementById('imgPlaceholder').style.display='none';
+  document.getElementById('imgRemove').style.display='inline-block';
+  document.getElementById('imgDrop').style.borderColor='#2a9d68';
+}
+function removeImg() {
+  imgData=null;
+  document.getElementById('imgPreview').src='';
+  document.getElementById('imgPreview').style.display='none';
+  document.getElementById('imgPlaceholder').style.display='block';
+  document.getElementById('imgRemove').style.display='none';
+  document.getElementById('imgDrop').style.borderColor='#d8d5d0';
+  document.getElementById('imgFile').value='';
+}
+function handleFile(input) {
+  if(!input.files||!input.files[0]) return;
+  var r=new FileReader();
+  r.onload=function(e){setImg(e.target.result);};
+  r.readAsDataURL(input.files[0]);
+}
+function handlePaste(e) {
+  var items=(e.clipboardData||e.originalEvent.clipboardData).items;
+  for(var i=0;i<items.length;i++){
+    if(items[i].type.indexOf('image')!==-1){
+      var blob=items[i].getAsFile();
+      var r=new FileReader();
+      r.onload=function(ev){setImg(ev.target.result);};
+      r.readAsDataURL(blob);
+      e.preventDefault(); return;
+    }
+  }
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('imgDrop').style.borderColor='#d8d5d0';
+  var file=e.dataTransfer.files[0];
+  if(!file||file.type.indexOf('image')===-1) return;
+  var r=new FileReader();
+  r.onload=function(ev){setImg(ev.target.result);};
+  r.readAsDataURL(file);
+}
+document.addEventListener('paste',function(e){
+  if(activeMode!=='yours') return;
+  var items=(e.clipboardData||e.originalEvent.clipboardData).items;
+  for(var i=0;i<items.length;i++){
+    if(items[i].type.indexOf('image')!==-1){
+      var blob=items[i].getAsFile();
+      var r=new FileReader();
+      r.onload=function(ev){setImg(ev.target.result);};
+      r.readAsDataURL(blob); return;
+    }
+  }
+});
+
+/* CHECK MY WRITING */
+function getWritingUsed() {
+  var month=new Date().toISOString().slice(0,7);
+  if(localStorage.getItem('bnd_w_month')!==month){
+    localStorage.setItem('bnd_w_month',month);
+    localStorage.setItem('bnd_w_used','0');
+    return 0;
+  }
+  return parseInt(localStorage.getItem('bnd_w_used')||'0');
+}
+function getWritingLimit() {
+  return parseInt(localStorage.getItem('bnd_w_limit')||'2');
+}
+function addWritingUsed(){
+  localStorage.setItem('bnd_w_used',String(getWritingUsed()+1));
+  if(window.fbAddWritingUsed) window.fbAddWritingUsed();
+}
+
+function updateChkBadge() {
+  var used=getWritingUsed();
+  var limit=getWritingLimit();
+  var left=Math.max(0,limit-used);
+  var el=document.getElementById('chk-badge-txt');
+  if(!el) return;
+  if(left>0){el.textContent=left+' free check'+(left!==1?'s':'')+' remaining this month';}
+  else{el.textContent='Free limit reached';}
+}
+
+var chkImgData = null;
+
+function chkTask(t) {
+  chkType=t;
+  document.getElementById('chk-t1').classList.toggle('on',t==='task1');
+  document.getElementById('chk-t2').classList.toggle('on',t==='task2');
+  document.getElementById('chkImgField').style.display = t==='task1'?'':'none';
+}
+
+function setChkImg(src) {
+  chkImgData=src;
+  document.getElementById('chkImgPreview').src=src;
+  document.getElementById('chkImgPreview').style.display='block';
+  document.getElementById('chkImgPlaceholder').style.display='none';
+  document.getElementById('chkImgRemove').style.display='inline-block';
+  document.getElementById('chkImgDrop').style.borderColor='#2a9d68';
+}
+function removeChkImg() {
+  chkImgData=null;
+  document.getElementById('chkImgPreview').src='';
+  document.getElementById('chkImgPreview').style.display='none';
+  document.getElementById('chkImgPlaceholder').style.display='block';
+  document.getElementById('chkImgRemove').style.display='none';
+  document.getElementById('chkImgDrop').style.borderColor='#d8d5d0';
+  document.getElementById('chkImgFile').value='';
+}
+function handleChkFile(inp) {
+  var file=inp.files[0]; if(!file||!file.type.startsWith('image/')) return;
+  var r=new FileReader(); r.onload=function(e){setChkImg(e.target.result);}; r.readAsDataURL(file);
+}
+function handleChkPaste(e) {
+  var items=(e.clipboardData||e.originalEvent.clipboardData).items;
+  for(var i=0;i<items.length;i++){
+    if(items[i].type.startsWith('image')){
+      var f=items[i].getAsFile();
+      var r=new FileReader(); r.onload=function(ev){setChkImg(ev.target.result);}; r.readAsDataURL(f);
+      e.preventDefault(); break;
+    }
+  }
+}
+function handleChkDrop(e) {
+  e.preventDefault();
+  document.getElementById('chkImgDrop').style.borderColor='#d8d5d0';
+  var file=e.dataTransfer.files[0]; if(!file||!file.type.startsWith('image/')) return;
+  var r=new FileReader(); r.onload=function(ev){setChkImg(ev.target.result);}; r.readAsDataURL(file);
+}
+
+function updateChkWC() {
+  var txt=document.getElementById('chk-essay').value.trim();
+  document.getElementById('chk-wc-num').textContent=txt?txt.split(/\s+/).length:0;
+}
+
+// ── GEMINI API KEY (paste yours here) ──────────────────────────
+var GEMINI_API_KEY = 'AIzaSyBxocPz6HohCCQkpLl85WUw9jlggu1pJco';
+var GEMINI_MODEL   = 'gemini-3-flash-preview';
+var GEMINI_URL     = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent?key=' + GEMINI_API_KEY;
+
+var SYSTEM_PROMPT = `You are a Senior IELTS Writing Examiner with 20+ years of experience. Your role is to evaluate IELTS Task 1 (Academic Reports) and Task 2 (Essays) based on official public band descriptors.
+
+SCORING CRITERIA:
+Provide individual whole-band scores (0-9, NO half bands) for each of the four criteria:
+1. Task Response (Task 2) / Task Achievement (Task 1)
+2. Coherence and Cohesion
+3. Lexical Resource
+4. Grammatical Range and Accuracy
+
+FINAL SCORE CALCULATION:
+- Add the four whole-band scores and divide by 4
+- Round DOWN to the nearest 0.5 band
+- Examples: 7.25 → 7.0 | 7.75 → 7.5 | 8.75 → 8.5 | 8.0 → 8.0
+
+TONE: Professional, encouraging, and balanced. Neither too strict nor too lenient.
+
+OUTPUT FORMAT: Return valid JSON only. No markdown. No extra text. No code fences.
+{
+  "task_type": "Task 1 or Task 2",
+  "scores": {
+    "task_response": 0,
+    "coherence_cohesion": 0,
+    "lexical_resource": 0,
+    "grammatical_range": 0
+  },
+  "overall_band": 0.0,
+  "examiner_why": {
+    "task_response": "2-3 sentences with specific examples from the essay",
+    "coherence_cohesion": "2-3 sentences with specific examples from the essay",
+    "lexical_resource": "2-3 sentences with specific examples from the essay",
+    "grammatical_range": "2-3 sentences with specific examples from the essay"
+  },
+  "top_3_improvements": [
+    "Specific actionable improvement 1 with example from their writing",
+    "Specific actionable improvement 2 with example from their writing",
+    "Specific actionable improvement 3 with example from their writing"
+  ]
+}
+
+FEW-SHOT REFERENCE EXAMPLES:
+
+--- BAND 7 ESSAY (TR:7 CC:7 LR:7 GR:7) ---
+"True, preventing diseases is more effective than curing them. Despite this view, I believe that allocating a significant portion of resources to preventive healthcare in comparison to treatment is an impractical idea since certain illnesses are non-preventable. Proponents of spending money on preventing diseases might argue that it can improve the longevity. There are some illnesses, such as asthma, which are somewhat hazardous to have. These can even lead to fatal consequences, often killing individuals before their true destiny. Such diseases, however, can easily be blocked by reducing air pollution and maintaining a healthy lifestyle. Otherwise, the price of recovery might come at a substantial cost for people, normally imposing a significant financial burden. Therefore, some might contend that preventing serious diseases is a far more beneficial idea. Notwithstanding this argument, I would argue that it would be poor allocation of resources if a great deal of money were to spend on averting particular diseases. It is true that there are certain illnesses that pass through generations, such as cancer and diabetes. Detecting them is nearly impossible unless they show their symptoms. A good example of this is a cancer, which has puzzled numerous scientists, yet it is still extremely challenging to detect until it shows its side effects. So, money should instead be spent on curable illnesses. In conclusion, some diseases are easily detectable and that is why it is better to cure before they have adverse health effects. However, I believe that allocation of a considerable amount of money to prevent them is unreasonable due to the aforementioned reasons."
+Standard: Clear position, relevant but limited development. Some sophistication ("notwithstanding", "aforementioned") but errors ("a cancer", "were to spend", "before their true destiny"). Adequate but mechanical cohesion.
+
+--- BAND 8 ESSAY (TR:9 CC:8 LR:8 GR:8, Overall:8.0) ---
+"Due to rural to urban migration, urbanization has become increasingly prevalent. Therefore, it is argued that this shift has caused several pressing issues, such as overcrowding and deforestation. Yet they can effectively be addressed by sustainable urban planning and developing rural areas. One of the main drawbacks of urbanization is closely related to overcrowding. When many individuals from rural places migrate to cities, urban areas become increasingly crowded, making the movement around cities somewhat challenging and even resulting in traffic bottleneck. Consequently, the cost of accommodation is likely to rise, often leading to housing shortages. Another compelling concern is deforestation. To accommodate a flow of rural dwellers, city developers might resort to destroying forests to build more houses and keep the prices balanced. This, in turn, can destroy a wide range of plants and make certain animals vulnerable. For example, forests are home to many rare, vulnerable inhabitants, including tigers and deer. If forests are destroyed, such animals might even go extinct altogether. However, once certain solutions are implemented, these urgent problems can be avoided. One major solution is associated with sustainable urban planning. Cities should design long-term plans for housing, transport, and infrastructure. In China, for example, many buildings are skyscrapers, meaning they can accommodate a number of people, often avoiding deforestation. Similarly, to mitigate traffic congestion, Chinese have enhanced their road infrastructure and even constructed dedicated cycling lanes. Another contributing solution is rural development. It is true that many rural inhabitants lack comfort and migrate to urban areas mainly because of enhanced facilities, including better education system, job opportunities, and healthcare. If governments provide these facilities and amenities, they can reduce excessive migration and balance population distribution. In fact, this could also aid in the preservation of flora and fauna, as we could avoid deforestation. In conclusion, although overcrowding and deforestation can occur due to rapid urbanization, the most feasible solutions would be logical urban planning and rural development."
+Standard: Well-developed, clear cohesion, good examples, range of vocabulary and structures. Minor imprecision does not impede.
+
+--- BAND 8.5 ESSAY ---
+"How to make cities better places to live is a major concern for many government departments. Among the various approaches proposed, one that stands out is investing in the installation of well-known art pieces and statues throughout urban areas. While investment in such projects offers certain benefits, allocating government resources to urban beautification efforts would ultimately be a waste. It can be argued that investing in public art and beautification projects can foster national pride and contribute to a city's unique identity. Well-designed public spaces that incorporate art can make cities more attractive, drawing tourists, encouraging social interaction, and improving residents' emotional connection to their surroundings. In fact, aesthetically pleasing environments have been shown to reduce stress levels, providing residents with a more uplifting and positive urban experience. This argument notwithstanding, other more important matters should take precedence. First and foremost, cities today face more pressing problems that demand immediate attention and funding. Issues such as housing shortages, traffic congestion, pollution, and inadequate public transportation systems have a direct and daily impact on residents' quality of life. Investing public money into solving these problems would provide tangible, long-term benefits, whereas art installations, although visually appealing, offer no practical improvement to the urban experience. Moreover, beautification through statues and artwork often serves only a small segment of the population, particularly tourists or art enthusiasts, rather than addressing the broader needs of all residents. Public funds should prioritize inclusive projects that benefit the majority, such as building parks, upgrading healthcare facilities, or creating safer pedestrian zones. In conclusion, although investment in public art and beautification projects can offer certain cultural and emotional benefits, it should not be prioritized over addressing the more urgent challenges that cities face today."
+Standard: Sophisticated argument, wide natural vocabulary, good structural control. Minor issues only.
+
+--- BAND 9 ESSAY ---
+"There is a view that government should abolish taxes and allow citizens to keep all the money they earn. While this suggestion sounds fair on the face of it, it entails several flaws. I therefore believe, the elimination of taxes is not the most sensible course of action. Advocates of tax abolition are often critical of how the government funds are expended. It is not rare to see governments prioritize matters that do not serve the best interests of the public, and allocate excessive funds for projects of little to no significant impact. Space exploration can be a good case in point. The US government, for example, spent a whopping $250 billion on the moon expedition, with the public almost entirely footing the bill through its taxes. Such seemingly careless allocation of public funds raises question for many people about the necessity of paying taxes to the state. In my opinion, however, taxes still remain an important element of a democratic and thriving society. It is through the taxes that citizens pay that government can perform civil operations. These services include but not limited to infrastructure development, education, healthcare, defense, and social welfare. If people were not obliged to pay taxes, this would be a major burden on government's resources, preventing it from carrying out its responsibilities and providing essential services to the public. An argument could be made that governments' revenue streams are not limited to taxation and they can cover the funds for public services without relying on the tax-payer money. While this is true, these resources are not infinite and could be depleted as the population grows. If governments face constant revenue shortfalls due to tax evasion, they may resort to borrowing to meet their financial obligations. This can contribute to an increase in national debt over time. In conclusion, it is true occasional misallocation of the tax-payer money can occur but to me this is not strong enough grounding to abolish taxes. Taxes help governments run the country, contributing to its overall functioning and maintenance."
+Standard: Masterful argument, sophisticated precise vocabulary, wide complex structures, rare errors. Exemplary Band 9.
+
+--- BAND 7-7.5 TASK 1 REPORT ---
+"The line graph compares the changes in population of three various counties in the U.S state of Oregon. In general, there was an upward trend in the population of all three counties, albeit at varying degrees, but the biggest growth was in Washington, maintaining its prevalence throughout the entire period. Notably, all figures followed nearly similar patterns. In 1940, Washington's population was 75 000, after which the birth rate apparently skyrocketed, as the number of people living there increased rapidly to over 120 000 in 1970. A further considerable growth was observed there, soaring to its peak of around 245 000 in the eventual year. Yarmhill and Columbia, by contrast, showed more moderate rises. Initially, both counties had nearly the same population of 30 000. Yarmhill's population then rose minimally to 45 000 in 1970, while the number of individuals in Columbia rose a bit slower, reaching well over 30 000. These two figures then rose significantly to 90 000 and 75 000 in the final year, respectively."
+Standard: Clear overview, accurate data, good comparison language. Some imprecision ("birth rate apparently skyrocketed" — unsupported inference, "eventual year" — awkward). Good Task 1 overall.
+
+--- BAND 8 TASK 1 REPORT ---
+"The bar chart compares the proportion of male and female teachers in six various types of educational settings in the UK in 2010. In general, while the share of women was higher in schools, men worked more in private institutions and universities. In college, on the other hand, their percentage was equal. Notably, women accounted for the highest percentage. Focusing on the bigger figures first, in 2010, around 96% of females worked in nursery/pre-school as teachers, considerably higher than that of men, at a mere 4%, accounting for the lowest proportion. Primary school was the second most popular workplace for women, as nearly 90% of them labored, while men's figure was at about 10%. Then came university, with men constituting 70% and women making up 30%. With regard to the remaining sections, they exhibited somewhat smaller figures. 55% of males worked for private training institute, whereas 45% of them were females. The figures for working college, by contrast, was the same, each representing 50%. Lastly, 45% of men worked in secondary school, whilst 55% of them were females."
+Standard: Good overview and grouping, accurate data, range of reporting verbs. Some awkward phrasing ("worked for private training institute", "figures for working college").
+
+--- BAND 9 TASK 1 REPORT ---
+"The process by which leather is produced consists of 12 consecutive steps. Overall, there are three main stages: the initial preparation of animal skins, their refinement, and the final treatment of the leather. Throughout the process, a range of key materials is used, including salt, water, acid, chemicals, dye, and oil. Notably, most stages are carried out manually, although several steps require specialized machinery. Initially, animal skins are transported from farms to a factory, where they are first sorted according to size. The skins are then trimmed to remove excess material and ensure uniform dimensions. After this, they are stacked with layers of salt placed between them in order to prevent decay. This is followed by the curing stage, which lasts for 30 days. Once curing is complete, the skins are soaked in water for 12 to 24 hours to prepare them for hair removal. In the next stage, the skins are pickled in a rotating cylindrical container containing a solution of salt and acid. Then begins the tanning process, during which additional chemicals are added to the same container, which continues to rotate for 48 hours. After tanning, the semi-processed leather is dyed and softened before being dried using fans. The final step in the process is waxing, which gives the leather a smooth and shiny finish."
+Standard: Perfect overview, precise sequencing, sophisticated passive structures throughout, zero errors, wide process vocabulary. Exemplary Band 9 Task 1.`;
+
+async function doCheck() {
+  var q   = document.getElementById('chk-q').value.trim();
+  var ess = document.getElementById('chk-essay').value.trim();
+  if(!q)  {alert('Please paste the question.');return;}
+  if(!ess){alert('Please paste your essay.');return;}
+
+  var res = document.getElementById('chkResult');
+  var btn = document.getElementById('chkBtn');
+
+  // Block if Gemini key missing
+  if(GEMINI_API_KEY === 'PASTE_YOUR_GEMINI_API_KEY_HERE'){
+    alert('Gemini API key not set yet.');
+    return;
+  }
+
+  // Show checking while Firebase validates
+  res.style.display='block';
+  btn.disabled=true;
+  res.innerHTML='<div style="text-align:center;padding:1.5rem;color:#888;font-size:.86rem;">Verifying your account...</div>';
+
+  // Server-side Firebase limit check
+  if(!window.checkWritingLimit){
+    res.innerHTML='<div class="limit-box"><div class="limit-text"><strong>Sign in required</strong>Please sign in to check your writing.</div><a class="upgrade-link" href="bandio-login.html">Sign in</a></div>';
+    btn.disabled=false; return;
+  }
+
+  var check = await window.checkWritingLimit();
+  if(!check.allowed){
+    if(check.reason==='login'){
+      res.innerHTML='<div class="limit-box"><div class="limit-text"><strong>Sign in required</strong>Please sign in to use this feature.</div><a class="upgrade-link" href="bandio-login.html">Sign in</a></div>';
+    } else if(check.reason==='limit'){
+      var isPrem = check.plan && check.plan!=='free';
+      res.innerHTML='<div class="limit-box"><div class="limit-text"><strong>Monthly limit reached</strong>You have used all '+check.limit+' checks this month. Resets on the 1st.</div><a class="upgrade-link" href="bandio-pricing.html">'+(isPrem?'See plans':'Upgrade for more')+'</a></div>';
+    } else {
+      res.innerHTML='<div class="limit-box"><div class="limit-text"><strong>Connection error</strong>Could not verify your account. Check your internet and try again.</div></div>';
+    }
+    btn.disabled=false; return;
+  }
+
+  // Record usage in Firestore BEFORE calling AI
+  await window.recordWritingCheck();
+  updateChkBadge();
+  btn.textContent = 'Analysing your writing...';
+  btn.disabled = true;
+  res.style.display = 'block';
+  res.innerHTML = '<div style="text-align:center;padding:2.5rem;color:#888;">'
+    + '<div style="font-size:2rem;margin-bottom:.75rem">&#128269;</div>'
+    + '<div style="font-size:.95rem;font-weight:600;color:#1a1a1a;margin-bottom:.3rem">Your Senior IELTS Examiner is reviewing your '+(chkType==='task1'?'report':'essay')+'...</div>'
+    + '<div style="font-size:.8rem;color:#aaa;">Checking all 4 official IELTS criteria &middot; Usually takes 10-20 seconds</div>'
+    + '<div style="margin-top:1rem;height:3px;background:#f0eeea;border-radius:3px;overflow:hidden;max-width:200px;margin-left:auto;margin-right:auto;">'
+    + '<div style="height:100%;background:#c8102e;border-radius:3px;animation:prog 15s linear forwards;" id="prog-bar"></div></div>'
+    + '</div>'
+    + '<style>@keyframes prog{from{width:0%}to{width:95%}}</style>';
+
+  var words   = ess.trim().split(/\s+/).length;
+  var isT1    = chkType === 'task1';
+  var taskStr = isT1 ? 'Task 1 (Academic Report)' : 'Task 2 (Essay)';
+  var userMsg = 'QUESTION:\n' + q + '\n\nSTUDENT ' + taskStr.toUpperCase() + ' (' + words + ' words):\n' + ess;
+
+  // Build parts array — add image if Task 1 and image provided
+  var parts = [];
+  if (isT1 && chkImgData) {
+    var imgMime = chkImgData.split(';')[0].replace('data:','');
+    var imgB64  = chkImgData.split(',')[1];
+    parts.push({ inline_data: { mime_type: imgMime, data: imgB64 } });
+    parts.push({ text: 'Above is the chart/diagram the student was asked to describe.\n\n' + userMsg });
+  } else {
+    parts.push({ text: userMsg });
+  }
+
+  try {
+    var response = await fetch(GEMINI_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents: [{ role: 'user', parts: parts }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 2048,
+          responseMimeType: 'application/json'
+        }
+      })
+    });
+
+    if(!response.ok){
+      var errText = await response.text();
+      throw new Error('API error ' + response.status + ': ' + errText);
+    }
+
+    var data = await response.json();
+    var raw  = data.candidates[0].content.parts[0].text;
+    // Aggressively strip any markdown fences or extra text before JSON
+    raw = raw.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+    // Find the JSON object boundaries in case there is surrounding text
+    var jsonStart = raw.indexOf('{');
+    var jsonEnd   = raw.lastIndexOf('}');
+    if (jsonStart !== -1 && jsonEnd !== -1) raw = raw.slice(jsonStart, jsonEnd + 1);
+    var result = JSON.parse(raw);
+    renderFeedback(result, words, isT1);
+
+  } catch(err) {
+    res.innerHTML = '<div style="background:#fee2e2;border-radius:12px;padding:1.25rem;font-size:.86rem;color:#991b1b;">'
+      + '<strong style="display:block;margin-bottom:.4rem;">Something went wrong</strong>'
+      + 'Our Senior Examiner could not process your writing. Please check your internet connection and try again in a moment.<br>'
+      + '<button onclick="doCheck()" style="margin-top:.75rem;padding:.4rem 1rem;background:#c8102e;color:#fff;border:none;border-radius:8px;font-family:\'DM Sans\',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;">Try again</button>'
+      + '</div>';
+    console.error('Writing check error:', err);
+  }
+
+  btn.textContent = 'Check my writing \u2192';
+  btn.disabled = false;
+}
+
+function renderFeedback(r, words, isT1) {
+  var res = document.getElementById('chkResult');
+  var sc  = r.scores || {};
+  var why = r.examiner_why || {};
+  var imps = r.top_3_improvements || [];
+  var overall = r.overall_band || '—';
+
+  var critNames = {
+    task_response:      isT1 ? 'Task Achievement' : 'Task Response',
+    coherence_cohesion: 'Coherence & Cohesion',
+    lexical_resource:   'Lexical Resource',
+    grammatical_range:  'Grammatical Range & Accuracy'
+  };
+
+  var bandColor = overall >= 8 ? '#2a9d68' : overall >= 7 ? '#d4541a' : overall >= 6 ? '#f59e0b' : '#e24b4a';
+
+  var html = ''
+    // Hero band
+    + '<div style="background:#0e0e0e;border-radius:14px;padding:1.75rem;margin-bottom:1rem;text-align:center;">'
+    + '<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.4rem;">Overall Band Score</div>'
+    + '<div style="font-family:\'Syne\',sans-serif;font-weight:800;font-size:4rem;color:'+bandColor+';line-height:1;margin-bottom:.2rem;">'+overall+'</div>'
+    + '<div style="font-size:.78rem;color:rgba(255,255,255,.35);">'+(isT1?'Task 1 Report':'Task 2 Essay')+' &middot; '+words+' words</div>'
+    + '</div>'
+
+    // Score table
+    + '<div style="background:#fff;border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1rem;">'
+    + '<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:.75rem;">Score breakdown</div>'
+    + '<table style="width:100%;border-collapse:collapse;">'
+    + '<thead><tr>'
+    + '<th style="text-align:left;font-size:.75rem;color:#888;font-weight:600;padding:.35rem 0;border-bottom:1px solid #f0eeea;">Criterion</th>'
+    + '<th style="text-align:center;font-size:.75rem;color:#888;font-weight:600;padding:.35rem 0;border-bottom:1px solid #f0eeea;">Band</th>'
+    + '</tr></thead><tbody>'
+    + ['task_response','coherence_cohesion','lexical_resource','grammatical_range'].map(function(k){
+        var s = sc[k] || '—';
+        var col = s>=8?'#2a9d68':s>=7?'#d4541a':s>=6?'#f59e0b':'#e24b4a';
+        return '<tr>'
+          +'<td style="font-size:.84rem;color:#1a1a1a;padding:.45rem 0;border-bottom:.5px solid #f5f3f0;">'+critNames[k]+'</td>'
+          +'<td style="text-align:center;font-family:\'Syne\',sans-serif;font-weight:800;font-size:1.1rem;color:'+col+';border-bottom:.5px solid #f5f3f0;">'+s+'</td>'
+          +'</tr>';
+      }).join('')
+    + '<tr><td style="font-size:.84rem;font-weight:700;padding:.5rem 0;">Overall Writing Band</td>'
+    + '<td style="text-align:center;font-family:\'Syne\',sans-serif;font-weight:800;font-size:1.25rem;color:'+bandColor+';">'+overall+'</td></tr>'
+    + '</tbody></table></div>'
+
+    // Examiner Why
+    + '<div style="background:#fff;border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1rem;">'
+    + '<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:.85rem;">Examiner\'s analysis</div>'
+    + ['task_response','coherence_cohesion','lexical_resource','grammatical_range'].map(function(k){
+        return '<div style="margin-bottom:.9rem;padding-bottom:.9rem;border-bottom:.5px solid #f5f3f0;">'
+          +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem;">'
+          +'<span style="font-size:.82rem;font-weight:600;color:#1a1a1a;">'+critNames[k]+'</span>'
+          +'<span style="font-family:\'Syne\',sans-serif;font-weight:800;font-size:.95rem;color:#d4541a;">'+( sc[k]||'—')+'</span>'
+          +'</div>'
+          +'<p style="font-size:.82rem;color:#555;line-height:1.7;">'+( why[k]||'')+'</p>'
+          +'</div>';
+      }).join('')
+    + '</div>'
+
+    // Top 3 improvements
+    + '<div style="background:#fff;border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1rem;">'
+    + '<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:.85rem;">Top 3 improvements</div>'
+    + imps.map(function(tip, i){
+        return '<div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.75rem;">'
+          +'<div style="width:24px;height:24px;border-radius:50%;background:#0e0e0e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;margin-top:1px;">'+(i+1)+'</div>'
+          +'<p style="font-size:.84rem;color:#444;line-height:1.7;margin:0;">'+tip+'</p>'
+          +'</div>';
+      }).join('')
+    + '</div>';
+
+  res.innerHTML = html;
+}
+
+function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(function(){});else document.exitFullscreen();}
+
+// Init
+renderList();
+updateChkBadge();
+// Init mode panels
+['practice','yours','check'].forEach(function(m){
+  var el=document.getElementById('panel-'+m);
+  el.style.display=m==='practice'?'flex':'none';
+  el.style.flexDirection='column';
+});
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",
+    authDomain: "bandio-53433.firebaseapp.com",
+    projectId: "bandio-53433",
+    storageBucket: "bandio-53433.firebasestorage.app",
+    messagingSenderId: "161548316253",
+    appId: "1:161548316253:web:a7746750b2ea6d239d67b4"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // ── FIREBASE LIMIT ENFORCEMENT ─────────────────────────────────
+  // All limits are enforced server-side via Firestore.
+  // localStorage is only used as a display cache — never trusted for access control.
+
+  let _currentUser  = null;
+  let _userData     = null;
+  let _limitLoaded  = false;
+
+  const FB_CONFIG = {
+    apiKey: "AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",
+    authDomain: "bandio-53433.firebaseapp.com",
+    projectId: "bandio-53433",
+    storageBucket: "bandio-53433.firebasestorage.app",
+    messagingSenderId: "161548316253",
+    appId: "1:161548316253:web:a7746750b2ea6d239d67b4"
+  };
+
+  const _app  = initializeApp(FB_CONFIG);
+  const _auth = getAuth(_app);
+  const _db   = getFirestore(_app);
+
+  onAuthStateChanged(_auth, async user => {
+    _currentUser = user;
+    if (!user) {
+      // Not logged in — show login prompt, block access
+      _userData = null;
+      _limitLoaded = true;
+      updateChkBadge();
+      return;
+    }
+
+    try {
+      const snap = await getDoc(doc(_db, 'users', user.uid));
+      _userData = snap.exists() ? snap.data() : {};
+
+      const plan        = _userData.plan || 'free';
+      const bonusEssays = _userData.aiWritingBonus || 0;
+      const limit       = plan === 'intensive' ? 65 + bonusEssays
+                        : plan === 'premium'   ? 30 + bonusEssays
+                        : 2  + bonusEssays;
+
+      const month       = new Date().toISOString().slice(0,7);
+      const storedMonth = _userData.writingCheckMonth || '';
+      const used        = storedMonth === month ? (_userData.writingChecksUsed || 0) : 0;
+
+      // Cache for display only
+      localStorage.setItem('bnd_w_month', month);
+      localStorage.setItem('bnd_w_used',  String(used));
+      localStorage.setItem('bnd_w_limit', String(limit));
+      _limitLoaded = true;
+      updateChkBadge();
+    } catch(e) {
+      console.log('Firebase error:', e.message);
+      _limitLoaded = true;
+    }
+  });
+
+  // Called by doCheck() — returns {allowed, used, limit, reason}
+  window.checkWritingLimit = async function() {
+    // Must be logged in
+    if (!_currentUser) {
+      return { allowed: false, reason: 'login' };
+    }
+
+    // Re-fetch from Firestore every time — no trusting localStorage
+    try {
+      const snap = await getDoc(doc(_db, 'users', _currentUser.uid));
+      const data = snap.exists() ? snap.data() : {};
+      const plan        = data.plan || 'free';
+      const bonusEssays = data.aiWritingBonus || 0;
+      const limit       = plan === 'intensive' ? 65 + bonusEssays
+                        : plan === 'premium'   ? 30 + bonusEssays
+                        : 2  + bonusEssays;
+      const month       = new Date().toISOString().slice(0,7);
+      const storedMonth = data.writingCheckMonth || '';
+      const used        = storedMonth === month ? (data.writingChecksUsed || 0) : 0;
+
+      if (used >= limit) {
+        return { allowed: false, reason: 'limit', used, limit, plan };
+      }
+      return { allowed: true, used, limit, plan };
+    } catch(e) {
+      // On error — block access, do not give free pass
+      return { allowed: false, reason: 'error', message: e.message };
+    }
+  };
+
+  // Called after successful check — increments in Firestore
+  window.recordWritingCheck = async function() {
+    if (!_currentUser) return;
+    try {
+      const snap  = await getDoc(doc(_db, 'users', _currentUser.uid));
+      const data  = snap.exists() ? snap.data() : {};
+      const month = new Date().toISOString().slice(0,7);
+      const storedMonth = data.writingCheckMonth || '';
+      const prev  = storedMonth === month ? (parseInt(data.writingChecksUsed)||0) : 0;
+      const newCount = prev + 1;
+      await updateDoc(doc(_db, 'users', _currentUser.uid), {
+        writingChecksUsed:  newCount,
+        writingCheckMonth:  month
+      });
+      localStorage.setItem('bnd_w_used',  String(newCount));
+      localStorage.setItem('bnd_w_month', month);
+      _userData = { ...(data||{}), writingChecksUsed: newCount, writingCheckMonth: month };
+      updateChkBadge();
+    } catch(e) {
+      // If Firestore update fails (e.g. rules), still allow the check — log for debugging
+      console.warn('recordWritingCheck failed (non-fatal):', e.message);
+      // Fallback: track in localStorage only
+      const month = new Date().toISOString().slice(0,7);
+      const prev = parseInt(localStorage.getItem('bnd_w_used')||'0');
+      localStorage.setItem('bnd_w_used', String(prev+1));
+      localStorage.setItem('bnd_w_month', month);
+      updateChkBadge();
+    }
+  };
+</script></body></html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bandio — Send Feedback</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#f0eeea;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;}
+nav{background:#0e0e0e;padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#f5f2eb;text-decoration:none;}
+.logo span{color:#d4541a;}
+.nav-back{margin-left:auto;padding:.38rem .85rem;border:.5px solid rgba(255,255,255,.2);border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.78rem;color:rgba(255,255,255,.6);text-decoration:none;}
+.nav-back:hover{background:rgba(255,255,255,.08);color:#fff;}
+.page{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;}
+.card{background:#fff;border-radius:20px;max-width:520px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.1);padding:2.25rem 2rem;}
+.card-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-.02em;margin-bottom:.35rem;}
+.card-sub{font-size:.88rem;color:#888;line-height:1.6;margin-bottom:1.75rem;}
+.field{margin-bottom:1.1rem;}
+label{font-size:.82rem;font-weight:600;color:#555;display:block;margin-bottom:.4rem;}
+.field input,.field select,.field textarea{width:100%;border:1px solid #d8d5d0;border-radius:8px;padding:.6rem .85rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:#1a1a1a;outline:none;background:#fafaf9;transition:border-color .12s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#999;background:#fff;}
+.field input::placeholder,.field textarea::placeholder{color:#bbb;}
+.field textarea{resize:vertical;min-height:130px;line-height:1.7;}
+.rating-row{display:flex;gap:.5rem;flex-wrap:wrap;}
+.star{width:38px;height:38px;border:1.5px solid #d8d5d0;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;transition:all .12s;user-select:none;}
+.star:hover,.star.on{background:#fef9c3;border-color:#fde68a;}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.cat-item{padding:.55rem .75rem;border:1.5px solid #d8d5d0;border-radius:8px;font-size:.82rem;cursor:pointer;transition:all .12s;text-align:center;user-select:none;}
+.cat-item:hover,.cat-item.on{background:#dbeafe;border-color:#93c5fd;color:#1e40af;}
+.submit-btn{width:100%;padding:.75rem;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:background .15s;margin-top:.5rem;}
+.submit-btn:hover{background:#d4541a;}
+.submit-btn:disabled{background:#ccc;cursor:not-allowed;}
+
+/* Success state */
+.success{display:none;text-align:center;padding:1rem 0;}
+.success-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.success-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:.5rem;}
+.success-sub{font-size:.88rem;color:#666;line-height:1.65;margin-bottom:1.5rem;}
+.back-btn{display:inline-block;padding:.6rem 1.5rem;background:#1a1a1a;color:#fff;border-radius:100px;text-decoration:none;font-size:.86rem;font-weight:600;}
+.back-btn:hover{background:#d4541a;}
+</style>
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const app=initializeApp({apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"});
+  onAuthStateChanged(getAuth(app),function(u){if(!u)location.replace("bandio-login.html");});
+</script>
+</head>
+<body>
+<nav>
+  <a class="logo" href="bandio-home.html">Band<span>io</span></a>
+  <a class="nav-back" href="bandio-dashboard.html">← Dashboard</a>
+</nav>
+<div class="page">
+  <div class="card">
+
+    <!-- FORM -->
+    <div id="fb-form">
+      <div class="card-title">💬 Send feedback</div>
+      <div class="card-sub">We read every message. Tell us what you love, what to improve, or anything else on your mind.</div>
+
+      <div class="field">
+        <label>Your name (optional)</label>
+        <input type="text" id="fb-name" placeholder="e.g. Aisha"/>
+      </div>
+
+      <div class="field">
+        <label>Your email (optional)</label>
+        <input type="email" id="fb-email" placeholder="so we can reply to you"/>
+      </div>
+
+      <div class="field">
+        <label>Category</label>
+        <div class="cat-grid" id="cat-grid">
+          <div class="cat-item on" onclick="pickCat(this)">💡 Suggestion</div>
+          <div class="cat-item" onclick="pickCat(this)">🐛 Bug report</div>
+          <div class="cat-item" onclick="pickCat(this)">❤️ Compliment</div>
+          <div class="cat-item" onclick="pickCat(this)">❓ Question</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>How would you rate Bandio?</label>
+        <div class="rating-row" id="stars">
+          <div class="star" onclick="pickStar(1)">⭐</div>
+          <div class="star" onclick="pickStar(2)">⭐</div>
+          <div class="star" onclick="pickStar(3)">⭐</div>
+          <div class="star on" onclick="pickStar(4)">⭐</div>
+          <div class="star on" onclick="pickStar(5)">⭐</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Your message <span style="color:#e24b4a">*</span></label>
+        <textarea id="fb-msg" placeholder="Write your feedback here..."></textarea>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitFeedback()">Send feedback</button>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success" id="fb-success">
+      <span class="success-emoji">🙏</span>
+      <div class="success-title">Thank you so much!</div>
+      <div class="success-sub">Your feedback has been received. I personally read every message and your thoughts help make Bandio better every day. It means a lot!</div>
+      <a class="back-btn" href="bandio-dashboard.html">← Back to dashboard</a>
+    </div>
+
+  </div>
+</div>
+<script>
+var rating = 4;
+var category = 'Suggestion';
+
+function pickStar(n) {
+  rating = n;
+  var stars = document.getElementById('stars').children;
+  for (var i = 0; i < stars.length; i++) {
+    stars[i].classList.toggle('on', i < n);
+  }
+}
+
+function pickCat(el) {
+  document.querySelectorAll('.cat-item').forEach(function(c){ c.classList.remove('on'); });
+  el.classList.add('on');
+  category = el.textContent.replace(/[^a-zA-Z ]/g,'').trim();
+}
+
+function submitFeedback() {
+  var msg = document.getElementById('fb-msg').value.trim();
+  if (!msg) { alert('Please write your feedback before sending.'); return; }
+
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  var feedback = {
+    id: Date.now(),
+    name:     document.getElementById('fb-name').value.trim() || 'Anonymous',
+    email:    document.getElementById('fb-email').value.trim() || '—',
+    category: category,
+    rating:   rating,
+    message:  msg,
+    date:     new Date().toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}),
+    time:     new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+    read:     false
+  };
+
+  // Save to localStorage so admin can see it (will move to Firebase later)
+  try {
+    var existing = JSON.parse(localStorage.getItem('bnd_feedback') || '[]');
+    existing.unshift(feedback);
+    localStorage.setItem('bnd_feedback', JSON.stringify(existing));
+  } catch(e) {}
+
+  setTimeout(function() {
+    document.getElementById('fb-form').style.display = 'none';
+    document.getElementById('fb-success').style.display = 'block';
+  }, 600);
+}
+</script>
+</body>
+</html>

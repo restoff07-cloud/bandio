@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bandio — Speaking Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  :root {
+    --ink:#0e0e0e; --paper:#f5f2eb; --cream:#ede9df;
+    --accent:#d4541a; --muted:#7a7468; --card:#ffffff;
+    --green:#2a9d68; --blue:#1a6bd4; --purple:#7F77DD;
+  }
+  body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; display:flex; flex-direction:column; }
+
+  /* TOP BAR */
+  .topbar { background:var(--ink); padding:.75rem 1.5rem; display:flex; align-items:center; gap:.75rem; position:sticky; top:0; z-index:200; flex-wrap:wrap; flex-shrink:0; }
+  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:var(--paper); text-decoration:none; flex-shrink:0; }
+  .logo span { color:var(--accent); }
+  .tb-sep { width:1px; height:18px; background:rgba(255,255,255,.15); }
+  .tb-title { font-size:.82rem; color:rgba(245,242,235,.45); flex:1; }
+  .tb-right { display:flex; align-items:center; gap:.5rem; margin-left:auto; flex-wrap:wrap; }
+  .tb-btn { display:flex; align-items:center; gap:.35rem; padding:.4rem .85rem; border-radius:100px; font-family:'DM Sans',sans-serif; font-size:.76rem; font-weight:500; cursor:pointer; border:0.5px solid rgba(255,255,255,.18); background:transparent; color:rgba(245,242,235,.65); transition:all .15s; white-space:nowrap; text-decoration:none; }
+  .tb-btn:hover { background:rgba(255,255,255,.09); color:var(--paper); }
+
+  /* PART TABS */
+  .part-tabs { background:var(--card); border-bottom:0.5px solid rgba(14,14,14,.08); padding:.65rem 1.5rem; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; flex-shrink:0; }
+  .part-tab { padding:.42rem 1.1rem; border-radius:100px; font-size:.8rem; font-weight:500; cursor:pointer; border:0.5px solid rgba(14,14,14,.15); background:transparent; color:var(--muted); transition:all .15s; font-family:'DM Sans',sans-serif; white-space:nowrap; }
+  .part-tab.on { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .part-info { font-size:.76rem; color:var(--muted); margin-left:auto; }
+
+  /* MAIN */
+  .main { flex:1; display:grid; grid-template-columns:1fr 1fr; min-height:0; }
+
+  /* LEFT — QUESTION PANEL */
+  .q-panel { background:var(--card); border-right:0.5px solid rgba(14,14,14,.1); overflow-y:auto; padding:2rem; }
+  .q-label { font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:.5rem; }
+  .q-part-title { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:800; letter-spacing:-.02em; margin-bottom:.35rem; }
+  .q-part-desc { font-size:.82rem; color:var(--muted); line-height:1.6; margin-bottom:1.5rem; padding-bottom:1.25rem; border-bottom:0.5px solid var(--cream); }
+
+  /* Question cards */
+  .q-list { display:flex; flex-direction:column; gap:.65rem; }
+  .q-card { border:0.5px solid rgba(14,14,14,.1); border-radius:12px; overflow:hidden; transition:border-color .15s; }
+  .q-card.active-q { border-color:var(--accent); }
+  .q-card-header { display:flex; align-items:center; gap:.75rem; padding:.85rem 1rem; cursor:pointer; background:var(--paper); transition:background .15s; }
+  .q-card-header:hover { background:var(--cream); }
+  .q-card.active-q .q-card-header { background:rgba(212,84,26,.05); }
+  .q-num-badge { width:26px; height:26px; border-radius:50%; background:rgba(14,14,14,.08); display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; flex-shrink:0; transition:all .15s; }
+  .q-card.active-q .q-num-badge { background:var(--accent); color:white; }
+  .q-card-text { font-size:.87rem; font-weight:500; flex:1; line-height:1.4; }
+  .q-card-status { font-size:.68rem; font-weight:600; padding:.18rem .55rem; border-radius:5px; flex-shrink:0; white-space:nowrap; }
+  .status-not-started { background:var(--cream); color:var(--muted); }
+  .status-recorded    { background:#EAF3DE; color:#27500A; }
+  .status-active      { background:rgba(212,84,26,.12); color:var(--accent); }
+
+  /* Part 2 cue card */
+  .cue-card { background:var(--ink); border-radius:14px; padding:1.4rem 1.6rem; margin-bottom:1.25rem; }
+  .cue-title { font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; color:var(--paper); margin-bottom:.85rem; line-height:1.3; }
+  .cue-say { font-size:.76rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:rgba(245,242,235,.4); margin-bottom:.5rem; }
+  .cue-bullets { list-style:none; }
+  .cue-bullets li { font-size:.82rem; color:rgba(245,242,235,.7); padding:.22rem 0; display:flex; align-items:flex-start; gap:.5rem; line-height:1.5; }
+  .cue-bullets li::before { content:"•"; color:var(--accent); flex-shrink:0; }
+  .cue-and { font-size:.82rem; color:rgba(245,242,235,.5); margin-top:.5rem; font-style:italic; }
+  .prep-timer { display:flex; align-items:center; gap:.75rem; padding:.65rem .9rem; background:rgba(255,255,255,.06); border-radius:9px; margin-top:.85rem; }
+  .prep-icon { font-size:1rem; }
+  .prep-text { font-size:.8rem; color:rgba(245,242,235,.65); flex:1; }
+  .prep-time { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:var(--paper); min-width:38px; text-align:right; }
+  .btn-start-prep { padding:.38rem .85rem; background:var(--accent); color:white; border:none; border-radius:100px; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:600; cursor:pointer; transition:opacity .15s; flex-shrink:0; }
+  .btn-start-prep:hover { opacity:.85; }
+
+  /* RIGHT — RECORDER PANEL */
+  .rec-panel { display:flex; flex-direction:column; overflow:hidden; background:var(--cream); }
+
+  /* Recorder area */
+  .recorder-area { flex:1; overflow-y:auto; padding:1.5rem; display:flex; flex-direction:column; gap:1.1rem; }
+
+  /* Active question display */
+  .active-q-display { background:var(--card); border-radius:14px; border:0.5px solid rgba(14,14,14,.08); padding:1.25rem 1.4rem; }
+  .aqd-label { font-size:.7rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:.45rem; }
+  .aqd-question { font-size:.95rem; font-weight:600; line-height:1.5; color:var(--ink); }
+  .aqd-hint { font-size:.78rem; color:var(--muted); margin-top:.35rem; line-height:1.5; }
+
+  /* Recording widget */
+  .rec-widget { background:var(--card); border-radius:16px; border:0.5px solid rgba(14,14,14,.07); padding:1.5rem; text-align:center; }
+  .rec-state-label { font-size:.76rem; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin-bottom:1.25rem; }
+
+  /* Waveform */
+  .waveform { display:flex; align-items:center; justify-content:center; gap:3px; height:48px; margin-bottom:1.25rem; }
+  .wave-bar { width:4px; border-radius:2px; background:rgba(14,14,14,.15); transition:height .1s ease; }
+  .waveform.recording .wave-bar { background:var(--accent); animation:wave var(--delay, .5s) ease-in-out infinite alternate; }
+  @keyframes wave { from { height:4px; } to { height:44px; } }
+
+  /* Big record button */
+  .rec-btn-wrap { display:flex; align-items:center; justify-content:center; gap:1.25rem; margin-bottom:1.1rem; }
+  .btn-record {
+    width:72px; height:72px; border-radius:50%;
+    border:none; cursor:pointer; transition:all .2s;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.5rem; flex-shrink:0;
+    box-shadow:0 0 0 0 rgba(212,84,26,.25);
+  }
+  .btn-record.idle    { background:var(--ink); color:var(--paper); }
+  .btn-record.idle:hover { background:var(--accent); transform:scale(1.05); }
+  .btn-record.recording { background:var(--accent); color:white; animation:recpulse 1.4s ease-in-out infinite; }
+  @keyframes recpulse { 0%,100%{box-shadow:0 0 0 0 rgba(212,84,26,.35)} 50%{box-shadow:0 0 0 16px rgba(212,84,26,0)} }
+  .btn-record.has-recording { background:#EAF3DE; color:#27500A; }
+  .rec-timer { font-family:'Syne',sans-serif; font-weight:800; font-size:1.5rem; letter-spacing:.04em; color:var(--accent); min-width:52px; text-align:left; }
+  .rec-timer.idle { color:var(--muted); }
+
+  /* Playback */
+  .playback-row { display:flex; align-items:center; gap:.75rem; padding:.75rem 1rem; background:var(--cream); border-radius:10px; margin-bottom:.85rem; }
+  .btn-play { width:34px; height:34px; border-radius:50%; background:var(--ink); color:var(--paper); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.85rem; flex-shrink:0; transition:background .15s; }
+  .btn-play:hover { background:var(--accent); }
+  .play-progress-wrap { flex:1; display:flex; flex-direction:column; gap:.3rem; }
+  .play-track { width:100%; height:4px; background:rgba(14,14,14,.12); border-radius:4px; cursor:pointer; overflow:hidden; }
+  .play-fill { height:100%; background:var(--ink); border-radius:4px; width:0%; transition:width .1s; pointer-events:none; }
+  .play-times { display:flex; justify-content:space-between; font-size:.7rem; color:var(--muted); }
+  .playback-row.hidden { display:none; }
+
+  /* Action buttons */
+  .rec-actions { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+  .btn-rec-action { padding:.5rem 1.1rem; border-radius:100px; font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:500; cursor:pointer; transition:all .15s; border:0.5px solid rgba(14,14,14,.14); background:var(--card); color:var(--ink); }
+  .btn-rec-action:hover { border-color:var(--ink); }
+  .btn-rec-action.primary { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .btn-rec-action.primary:hover { background:var(--accent); border-color:var(--accent); }
+  .btn-rec-action:disabled { opacity:.35; pointer-events:none; }
+  .rec-hint { font-size:.75rem; color:var(--muted); text-align:center; line-height:1.6; margin-top:.35rem; }
+
+  /* Saved recordings list */
+  .saved-section { background:var(--card); border-radius:14px; border:0.5px solid rgba(14,14,14,.07); padding:1.1rem 1.3rem; }
+  .saved-title { font-size:.82rem; font-weight:600; margin-bottom:.75rem; display:flex; align-items:center; justify-content:space-between; }
+  .saved-count { font-size:.72rem; background:var(--ink); color:var(--paper); padding:.15rem .55rem; border-radius:10px; }
+  .saved-list { display:flex; flex-direction:column; gap:.55rem; }
+  .saved-item { display:flex; align-items:center; gap:.75rem; padding:.65rem .85rem; background:var(--cream); border-radius:9px; }
+  .saved-q-label { font-size:.78rem; font-weight:500; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .saved-duration { font-size:.72rem; color:var(--muted); flex-shrink:0; }
+  .saved-actions { display:flex; gap:.35rem; flex-shrink:0; }
+  .saved-btn { padding:.25rem .6rem; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:.7rem; cursor:pointer; border:0.5px solid rgba(14,14,14,.12); background:var(--card); transition:all .15s; }
+  .saved-btn:hover { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .saved-btn.del:hover { background:#e24b4a; color:white; border-color:#e24b4a; }
+  .saved-empty { font-size:.8rem; color:var(--muted); text-align:center; padding:.75rem 0; }
+
+  /* Sample answer */
+  .sample-card { background:var(--card); border-radius:14px; border:0.5px solid rgba(14,14,14,.07); overflow:hidden; }
+  .sample-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.3rem; cursor:pointer; background:var(--paper); border-bottom:0.5px solid rgba(14,14,14,.06); }
+  .sample-header:hover { background:var(--cream); }
+  .sh-left { display:flex; align-items:center; gap:.65rem; }
+  .sh-icon { width:30px; height:30px; border-radius:8px; background:#EAF3DE; display:flex; align-items:center; justify-content:center; font-size:.95rem; flex-shrink:0; }
+  .sh-title { font-size:.88rem; font-weight:600; }
+  .sh-sub   { font-size:.73rem; color:var(--muted); margin-top:.1rem; }
+  .sh-chevron { font-size:.75rem; color:var(--muted); transition:transform .2s; }
+  .sample-card.open .sh-chevron { transform:rotate(90deg); }
+  .sample-body { display:none; padding:1.1rem 1.3rem; }
+  .sample-card.open .sample-body { display:block; }
+  .sample-band { display:inline-block; background:#EAF3DE; color:#27500A; font-size:.72rem; font-weight:600; padding:.18rem .6rem; border-radius:5px; margin-bottom:.75rem; }
+  .sample-text { font-size:.86rem; line-height:1.8; color:var(--ink); white-space:pre-wrap; }
+  .sample-tips { margin-top:.85rem; padding-top:.85rem; border-top:0.5px solid var(--cream); }
+  .st-title { font-size:.76rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-bottom:.5rem; }
+  .st-list { display:flex; flex-direction:column; gap:.4rem; }
+  .st-item { display:flex; align-items:flex-start; gap:.55rem; font-size:.8rem; line-height:1.55; color:var(--ink); }
+  .st-item::before { content:"→"; color:var(--accent); font-weight:700; flex-shrink:0; }
+
+  /* No question selected */
+  .no-q { text-align:center; padding:3rem 1.5rem; color:var(--muted); }
+  .no-q-icon { font-size:2rem; margin-bottom:.75rem; }
+  .no-q-text { font-size:.88rem; line-height:1.6; }
+
+  /* Prep overlay */
+  .prep-overlay { position:absolute; inset:0; background:var(--ink); z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; border-radius:0; }
+  .prep-overlay.hidden { display:none; }
+  .po-label { font-size:.76rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:rgba(245,242,235,.4); }
+  .po-time { font-family:'Syne',sans-serif; font-weight:800; font-size:5rem; color:var(--paper); letter-spacing:-.04em; line-height:1; }
+  .po-sub { font-size:.84rem; color:rgba(245,242,235,.5); text-align:center; max-width:240px; line-height:1.6; }
+  .po-skip { padding:.5rem 1.25rem; border-radius:100px; background:rgba(255,255,255,.1); color:rgba(245,242,235,.7); border:0.5px solid rgba(255,255,255,.2); font-family:'DM Sans',sans-serif; font-size:.8rem; cursor:pointer; transition:all .15s; }
+  .po-skip:hover { background:rgba(255,255,255,.2); color:var(--paper); }
+
+  .rec-panel { position:relative; }
+
+  @media(max-width:820px) { .main{grid-template-columns:1fr} .q-panel{max-height:42vh;border-right:none;border-bottom:0.5px solid rgba(14,14,14,.1)} }
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,getDocs}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const db=getFirestore(app);
+onAuthStateChanged(auth,function(u){if(!u)location.replace("bandio-login.html");});
+
+// Load admin-added speaking questions from Firestore and inject into PARTS
+async function loadFirestoreSpeaking(){
+  try{
+    const snap=await getDocs(collection(db,'speaking_questions'));
+    if(snap.empty)return;
+    snap.forEach(function(d){
+      var q=d.data();
+      // q must have: part (1/2/3), id, text, hint, sample, tips (array)
+      if(!q.part||!q.text)return;
+      var part=parseInt(q.part);
+      if(!PARTS[part])return;
+      // Only add if not already there
+      var exists=PARTS[part].questions.find(function(x){return x.id===q.id;});
+      if(!exists){
+        PARTS[part].questions.push({
+          id:    q.id||('fs_'+d.id),
+          text:  q.text,
+          hint:  q.hint||'',
+          sample:q.sample||'',
+          tips:  q.tips||[]
+        });
+      }
+    });
+    // Re-render if a part is already showing
+    if(typeof renderQuestions==='function') renderQuestions();
+  }catch(e){console.log('Firestore speaking load error:',e.message);}
+}
+loadFirestoreSpeaking();
+</script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a class="logo" href="bandio-home.html">Band<span>io</span></a>
+  <div class="tb-sep"></div>
+  <span class="tb-title">Speaking Practice</span>
+  <div class="tb-right">
+    <a class="tb-btn" href="bandio-dashboard.html">&#8592; Dashboard</a>
+  </div>
+</div>
+
+<!-- PART TABS -->
+<div class="part-tabs">
+  <button class="part-tab on" id="ptab-1" onclick="switchPart(1)">Part 1 — Interview</button>
+  <button class="part-tab" id="ptab-2" onclick="switchPart(2)">Part 2 — Cue Card</button>
+  <button class="part-tab" id="ptab-3" onclick="switchPart(3)">Part 3 — Discussion</button>
+  <span class="part-info" id="part-info">4–5 min · General questions about yourself</span>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT — QUESTIONS -->
+  <div class="q-panel" id="q-panel">
+    <div class="q-label">Speaking · Part <span id="q-part-num">1</span></div>
+    <div class="q-part-title" id="q-part-title">Introduction &amp; Interview</div>
+    <div class="q-part-desc" id="q-part-desc">The examiner asks general questions about familiar topics — your home, family, work, studies and interests. Click a question to start practising.</div>
+    <div class="q-list" id="q-list"></div>
+  </div>
+
+  <!-- RIGHT — RECORDER -->
+  <div class="rec-panel" id="rec-panel">
+
+    <!-- Prep time overlay (Part 2 only) -->
+    <div class="prep-overlay hidden" id="prep-overlay">
+      <div class="po-label">Preparation time</div>
+      <div class="po-time" id="po-time">60</div>
+      <div class="po-sub">Make notes on paper. Recording starts automatically when time is up.</div>
+      <button class="po-skip" onclick="skipPrep()">Skip — start recording now</button>
+    </div>
+
+    <div class="recorder-area" id="recorder-area">
+
+      <!-- No question selected state -->
+      <div class="no-q" id="no-q-state">
+        <div class="no-q-icon">🎤</div>
+        <div class="no-q-text">Select a question on the left<br>to start practising.</div>
+      </div>
+
+      <!-- Active question (hidden until question selected) -->
+      <div id="active-content" style="display:none; display:flex; flex-direction:column; gap:1.1rem;">
+
+        <div class="active-q-display">
+          <div class="aqd-label">Current question</div>
+          <div class="aqd-question" id="aqd-question">—</div>
+          <div class="aqd-hint" id="aqd-hint"></div>
+        </div>
+
+        <!-- Recording widget -->
+        <div class="rec-widget">
+          <div class="rec-state-label" id="rec-state-label">Ready to record</div>
+          <div class="waveform" id="waveform">
+            <div class="wave-bar" style="--delay:.3s;height:6px"></div>
+            <div class="wave-bar" style="--delay:.5s;height:10px"></div>
+            <div class="wave-bar" style="--delay:.7s;height:8px"></div>
+            <div class="wave-bar" style="--delay:.4s;height:14px"></div>
+            <div class="wave-bar" style="--delay:.6s;height:6px"></div>
+            <div class="wave-bar" style="--delay:.3s;height:18px"></div>
+            <div class="wave-bar" style="--delay:.5s;height:10px"></div>
+            <div class="wave-bar" style="--delay:.7s;height:6px"></div>
+            <div class="wave-bar" style="--delay:.4s;height:14px"></div>
+            <div class="wave-bar" style="--delay:.6s;height:8px"></div>
+            <div class="wave-bar" style="--delay:.3s;height:6px"></div>
+            <div class="wave-bar" style="--delay:.5s;height:12px"></div>
+          </div>
+          <div class="rec-btn-wrap">
+            <div class="rec-timer idle" id="rec-timer">0:00</div>
+            <button class="btn-record idle" id="btn-record" onclick="toggleRecord()" title="Press to record">🎤</button>
+            <div style="min-width:52px"></div>
+          </div>
+          <div class="playback-row hidden" id="playback-row">
+            <button class="btn-play" id="btn-play" onclick="togglePlay()">▶</button>
+            <div class="play-progress-wrap">
+              <div class="play-track" onclick="seekAudio(event)">
+                <div class="play-fill" id="play-fill"></div>
+              </div>
+              <div class="play-times">
+                <span id="play-current">0:00</span>
+                <span id="play-duration">0:00</span>
+              </div>
+            </div>
+          </div>
+          <div class="rec-actions">
+            <button class="btn-rec-action" id="btn-discard" onclick="discardRecording()" disabled>🗑 Discard</button>
+            <button class="btn-rec-action primary" id="btn-save" onclick="saveRecording()" disabled>💾 Save recording</button>
+          </div>
+          <div class="rec-hint" id="rec-hint">Press the microphone button to start recording your answer.</div>
+        </div>
+
+        <!-- Saved recordings -->
+        <div class="saved-section" id="saved-section" style="display:none">
+          <div class="saved-title">
+            Saved recordings
+            <span class="saved-count" id="saved-count">0</span>
+          </div>
+          <div class="saved-list" id="saved-list"></div>
+        </div>
+
+        <!-- Sample answer -->
+        <div class="sample-card" id="sample-card">
+          <div class="sample-header" onclick="toggleSample()">
+            <div class="sh-left">
+              <div class="sh-icon">✦</div>
+              <div>
+                <div class="sh-title">Sample answer</div>
+                <div class="sh-sub">Band 7–8 example — uploaded by your teacher</div>
+              </div>
+            </div>
+            <span class="sh-chevron">▶</span>
+          </div>
+          <div class="sample-body">
+            <span class="sample-band">Band 7–8 example</span>
+            <div class="sample-text" id="sample-text"></div>
+            <div class="sample-tips" id="sample-tips"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────
+const PARTS = {
+  1: {
+    title: 'Introduction & Interview',
+    desc: 'The examiner asks general questions about familiar topics. Click a question to start practising.',
+    info: '4–5 min · General questions about yourself',
+    questions: [
+      {
+        id: 'p1q1',
+        text: 'Do you work or are you a student?',
+        hint: 'Talk about your current occupation and what you enjoy about it.',
+        sample: `I'm currently a student at university, studying Business Administration in my second year. I genuinely enjoy my course because it covers a wide range of subjects — from marketing and finance to management. The most interesting part for me is learning how real companies make strategic decisions. Outside of studying, I also do some part-time tutoring to earn extra money, which I find quite rewarding.`,
+        tips: ['Give a direct answer first, then expand.', 'Aim for 30–45 seconds — not too short, not too long.', 'Use phrases like "I genuinely enjoy..." or "The most interesting part is..."']
+      },
+      {
+        id: 'p1q2',
+        text: 'What do you like about your hometown?',
+        hint: 'Describe one or two things you genuinely appreciate about where you grew up.',
+        sample: `I grew up in Tashkent, which is a really vibrant city with a fascinating mix of modern architecture and traditional markets. What I particularly love about it is the food culture — there are incredible local restaurants serving traditional Uzbek dishes like plov and samsa. The city also has beautiful parks and public squares where people gather in the evenings. I think what makes it special is that despite being a large city, it still has a strong sense of community.`,
+        tips: ['Be specific — mention real places, foods, or features.', 'Use sensory language — what does it look like, smell like, feel like?', 'Show genuine enthusiasm — examiners notice authentic responses.']
+      },
+      {
+        id: 'p1q3',
+        text: 'Do you enjoy cooking? Why or why not?',
+        hint: 'Give an honest answer and support it with a personal example.',
+        sample: `To be honest, I have a mixed relationship with cooking. I do enjoy it when I have enough time — there's something quite satisfying about preparing a meal from scratch and sharing it with family. However, on busy weekdays I find it quite stressful because I'm always rushing. I've been trying to learn some quick recipes recently, which has made it more enjoyable. I think my favourite thing to cook is pasta because it's simple but you can make it taste really impressive with the right ingredients.`,
+        tips: ['It\'s perfectly fine to say "To be honest..." — it sounds natural.', 'Give a reason AND a personal example.', 'Contrasting ideas ("I enjoy it BUT...") show good language range.']
+      },
+      {
+        id: 'p1q4',
+        text: 'How do you usually spend your weekends?',
+        hint: 'Describe your typical weekend and mention what you enjoy most.',
+        sample: `My weekends tend to be a mix of socialising and recharging. On Saturday mornings I usually go for a walk or do some exercise, which helps me clear my head after a busy week. In the afternoon I might meet friends for coffee or explore different parts of the city. Sundays are more relaxed — I often spend the morning reading or catching up on study, and in the evening I cook a proper meal and watch something on television. I really value having that balance between being active and having quiet time.`,
+        tips: ['Use time expressions: "On Saturday mornings...", "In the evenings..."', 'Show range by mentioning different activities.', '"I really value..." is a great expression for speaking.']
+      },
+    ]
+  },
+  2: {
+    title: 'Individual Long Turn',
+    desc: 'You have 1 minute to prepare, then speak for 1–2 minutes on the cue card topic. Click the card to start your preparation timer.',
+    info: '3–4 min · 1 min prep · 1–2 min speaking',
+    questions: [
+      {
+        id: 'p2q1',
+        text: 'Describe a place you have visited that you found particularly interesting.',
+        hint: 'Cue card — speak for 1–2 minutes after your preparation time.',
+        isCueCard: true,
+        bullets: ['where this place is', 'when you went there', 'what you saw or did there'],
+        cueAnd: 'explain why you found it particularly interesting.',
+        sample: `I'd like to talk about Samarkand, a city in Uzbekistan that I visited last summer with my family. Samarkand is one of the oldest cities in Central Asia and it has an almost magical atmosphere because of its stunning Islamic architecture.
+
+When we arrived, the first thing we visited was the Registan — a huge square surrounded by three beautifully decorated madrasas covered in intricate blue and turquoise tilework. I remember standing there completely overwhelmed by how impressive it was. We also visited the Shah-i-Zinda necropolis, which is a long avenue of tombs, each with incredibly detailed mosaic decorations.
+
+What I found particularly fascinating was the sense of history — the city has been visited by figures like Alexander the Great and Tamerlane, and you can genuinely feel that weight of history while walking through it. The contrast between these ancient buildings and modern life happening around them was quite striking.
+
+I'd absolutely recommend it to anyone interested in history or architecture. It genuinely exceeded my expectations.`,
+        tips: ['Structure: where → when → what → why.', 'Start speaking immediately — don\'t pause too long at the beginning.', 'Use discourse markers: "The first thing...", "What I found particularly..."', 'Aim for a full 2 minutes — keep going until the examiner stops you.']
+      },
+    ]
+  },
+  3: {
+    title: 'Two-way Discussion',
+    desc: 'The examiner asks more abstract questions linked to the Part 2 topic. These require deeper opinions and ideas.',
+    info: '4–5 min · Abstract discussion · Linked to Part 2',
+    questions: [
+      {
+        id: 'p3q1',
+        text: 'Do you think it is important for people to travel to different places? Why?',
+        hint: 'Give a developed opinion with reasons and an example.',
+        sample: `Yes, I think travel is genuinely valuable for a number of reasons. Most importantly, it exposes people to different cultures, perspectives, and ways of life that they simply wouldn't encounter at home. This kind of exposure tends to make people more open-minded and empathetic, which I think is increasingly important in a globalised world.
+
+From a personal development perspective, travel also pushes people outside their comfort zone — navigating an unfamiliar city or communicating in a foreign language builds confidence and problem-solving skills. There's also an argument that experiencing different educational and social systems can give people a broader perspective on how societies function.
+
+That said, I do think the environmental impact of tourism is a growing concern, and people should try to travel more responsibly — perhaps choosing fewer, longer trips over frequent short-haul flights.
+
+Overall, though, I believe the benefits of travel — both for individuals and for cross-cultural understanding — outweigh the downsides.`,
+        tips: ['Start with your main position clearly: "Yes, I think..."', 'Use "Most importantly...", "From a ... perspective..."', 'Show critical thinking: acknowledge another side of the argument.', 'Aim for 60–90 seconds — this is a discussion, not a monologue.']
+      },
+      {
+        id: 'p3q2',
+        text: 'How has tourism changed in your country over the past decade?',
+        hint: 'Discuss changes you have noticed — be specific about what has changed and why.',
+        sample: `Tourism in my country has changed quite dramatically over the past decade. The most significant change has been the sheer increase in visitor numbers — particularly from East Asia and Western Europe — largely driven by improved infrastructure and greater international awareness of our cultural heritage sites.
+
+The government has invested heavily in making historical cities like Samarkand and Bukhara more accessible — there are better roads, more international flights, and a growing number of hotels and restaurants catering to foreign visitors. Social media has also played a huge role — these ancient sites are now widely shared online, which has attracted a younger, more internationally-connected generation of tourists.
+
+However, this growth has brought some challenges. There are concerns about over-tourism in certain heritage sites, and some residents feel that local culture is being commercialised for visitors. Striking the right balance between growing the tourism industry and preserving authenticity is something that policymakers are actively debating.
+
+Overall, I'd say the changes have been largely positive economically, but there are important questions about sustainability that still need to be addressed.`,
+        tips: ['Signal change with: "The most significant change has been..."', 'Give specific examples — vague answers score lower.', 'Discuss both positive AND negative aspects to show balance.', 'Phrases like "Striking the right balance..." impress examiners.']
+      },
+    ]
+  }
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let currentPart = 1;
+let currentQId = null;
+let mediaRecorder = null;
+let audioChunks = [];
+let recordingInterval = null;
+let recordingSeconds = 0;
+let audioBlob = null;
+let audioUrl = null;
+let audioElement = null;
+let isRecording = false;
+let isPlaying = false;
+let prepInterval = null;
+let prepSeconds = 60;
+let savedRecordings = {}; // { qId: [ { blob, url, duration, timestamp } ] }
+
+// ── PART SWITCH ───────────────────────────────────────────────────────────
+function switchPart(part) {
+  currentPart = part;
+  currentQId = null;
+  [1,2,3].forEach(p => document.getElementById('ptab-'+p).classList.toggle('on', p===part));
+  const pd = PARTS[part];
+  document.getElementById('q-part-num').textContent = part;
+  document.getElementById('q-part-title').textContent = pd.title;
+  document.getElementById('q-part-desc').textContent = pd.desc;
+  document.getElementById('part-info').textContent = pd.info;
+  renderQuestions();
+  resetRecorder();
+  document.getElementById('no-q-state').style.display = 'block';
+  document.getElementById('active-content').style.display = 'none';
+}
+
+// ── RENDER QUESTIONS ──────────────────────────────────────────────────────
+function renderQuestions() {
+  const list = document.getElementById('q-list');
+  const qs = PARTS[currentPart].questions;
+  list.innerHTML = '';
+  qs.forEach((q, i) => {
+    const saved = savedRecordings[q.id] || [];
+    const status = q.id === currentQId ? 'active' : saved.length > 0 ? 'recorded' : 'not-started';
+    const card = document.createElement('div');
+    card.className = 'q-card' + (status === 'active' ? ' active-q' : '');
+    card.id = 'qcard-' + q.id;
+    let statusHtml = '';
+    if (status === 'recorded') statusHtml = `<span class="q-card-status status-recorded">✓ ${saved.length} saved</span>`;
+    else if (status === 'active') statusHtml = `<span class="q-card-status status-active">● Active</span>`;
+    else statusHtml = `<span class="q-card-status status-not-started">Not started</span>`;
+    card.innerHTML = `
+      <div class="q-card-header" onclick="selectQuestion('${q.id}')">
+        <div class="q-num-badge">${i+1}</div>
+        <div class="q-card-text">${q.text}</div>
+        ${statusHtml}
+      </div>`;
+    list.appendChild(card);
+  });
+}
+
+// ── SELECT QUESTION ───────────────────────────────────────────────────────
+function selectQuestion(qId) {
+  currentQId = qId;
+  resetRecorder();
+  renderQuestions();
+
+  const q = PARTS[currentPart].questions.find(q => q.id === qId);
+  if (!q) return;
+
+  document.getElementById('no-q-state').style.display = 'none';
+  const ac = document.getElementById('active-content');
+  ac.style.display = 'flex';
+
+  document.getElementById('aqd-question').textContent = q.text;
+  document.getElementById('aqd-hint').textContent = q.hint;
+
+  // Sample answer
+  document.getElementById('sample-text').textContent = q.sample;
+  document.getElementById('sample-card').classList.remove('open');
+  const tipsEl = document.getElementById('sample-tips');
+  if (q.tips && q.tips.length) {
+    tipsEl.innerHTML = `<div class="st-title">Examiner tips</div><div class="st-list">${q.tips.map(t => `<div class="st-item">${t}</div>`).join('')}</div>`;
+  } else {
+    tipsEl.innerHTML = '';
+  }
+
+  // Saved recordings
+  renderSavedRecordings(qId);
+
+  // Part 2 prep timer
+  if (q.isCueCard && currentPart === 2) {
+    document.getElementById('aqd-hint').textContent = 'Press "Start preparation" to begin your 1-minute preparation time, then record your answer.';
+  }
+}
+
+function toggleSample() {
+  document.getElementById('sample-card').classList.toggle('open');
+}
+
+// ── RECORDER ─────────────────────────────────────────────────────────────
+function toggleRecord() {
+  if (isRecording) stopRecording();
+  else startRecording();
+}
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      audioBlob = new Blob(audioChunks, { type:'audio/webm' });
+      audioUrl  = URL.createObjectURL(audioBlob);
+      stream.getTracks().forEach(t => t.stop());
+      onRecordingReady();
+    };
+    mediaRecorder.start();
+    isRecording = true;
+    recordingSeconds = 0;
+    updateRecBtn('recording');
+    document.getElementById('rec-state-label').textContent = 'Recording…';
+    document.getElementById('rec-hint').textContent = 'Press the button again to stop recording.';
+    document.getElementById('waveform').classList.add('recording');
+    recordingInterval = setInterval(() => {
+      recordingSeconds++;
+      document.getElementById('rec-timer').textContent = formatTime(recordingSeconds);
+      document.getElementById('rec-timer').classList.remove('idle');
+    }, 1000);
+  } catch(err) {
+    alert('Microphone access is required to record. Please allow microphone access in your browser and try again.');
+  }
+}
+
+function stopRecording() {
+  if (!mediaRecorder) return;
+  isRecording = false;
+  mediaRecorder.stop();
+  clearInterval(recordingInterval);
+  document.getElementById('waveform').classList.remove('recording');
+  updateRecBtn('idle');
+  document.getElementById('rec-state-label').textContent = 'Processing…';
+}
+
+function onRecordingReady() {
+  audioElement = new Audio(audioUrl);
+  audioElement.ontimeupdate = updatePlayProgress;
+  audioElement.onended = () => { isPlaying = false; document.getElementById('btn-play').textContent = '▶'; };
+  document.getElementById('playback-row').classList.remove('hidden');
+  document.getElementById('play-duration').textContent = formatTime(recordingSeconds);
+  document.getElementById('btn-discard').disabled = false;
+  document.getElementById('btn-save').disabled = false;
+  document.getElementById('rec-state-label').textContent = 'Recording ready — ' + formatTime(recordingSeconds);
+  document.getElementById('rec-hint').textContent = 'Listen back, then save or discard your recording.';
+  updateRecBtn('has-recording');
+}
+
+function updateRecBtn(state) {
+  const btn = document.getElementById('btn-record');
+  btn.className = 'btn-record ' + state;
+  btn.textContent = state === 'recording' ? '⏹' : '🎤';
+  btn.title = state === 'recording' ? 'Stop recording' : 'Start recording';
+}
+
+// ── PLAYBACK ──────────────────────────────────────────────────────────────
+function togglePlay() {
+  if (!audioElement) return;
+  if (isPlaying) { audioElement.pause(); isPlaying = false; document.getElementById('btn-play').textContent = '▶'; }
+  else           { audioElement.play();  isPlaying = true;  document.getElementById('btn-play').textContent = '⏸'; }
+}
+
+function updatePlayProgress() {
+  if (!audioElement || !audioElement.duration) return;
+  const pct = (audioElement.currentTime / audioElement.duration) * 100;
+  document.getElementById('play-fill').style.width = pct + '%';
+  document.getElementById('play-current').textContent = formatTime(Math.floor(audioElement.currentTime));
+}
+
+function seekAudio(e) {
+  if (!audioElement || !audioElement.duration) return;
+  const track = e.currentTarget;
+  const pct = e.offsetX / track.offsetWidth;
+  audioElement.currentTime = pct * audioElement.duration;
+}
+
+// ── SAVE / DISCARD ────────────────────────────────────────────────────────
+function saveRecording() {
+  if (!audioBlob || !currentQId) return;
+  if (!savedRecordings[currentQId]) savedRecordings[currentQId] = [];
+  savedRecordings[currentQId].unshift({
+    blob: audioBlob, url: audioUrl,
+    duration: recordingSeconds,
+    timestamp: new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
+  });
+  discardRecording();
+  renderSavedRecordings(currentQId);
+  renderQuestions();
+  // Auto-open sample after saving
+  if (!document.getElementById('sample-card').classList.contains('open')) {
+    setTimeout(() => document.getElementById('sample-card').classList.add('open'), 400);
+  }
+}
+
+function discardRecording() {
+  if (audioElement) { audioElement.pause(); audioElement = null; }
+  if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
+  audioBlob = null; audioChunks = [];
+  isPlaying = false; isRecording = false;
+  recordingSeconds = 0;
+  clearInterval(recordingInterval);
+  document.getElementById('playback-row').classList.add('hidden');
+  document.getElementById('play-fill').style.width = '0%';
+  document.getElementById('play-current').textContent = '0:00';
+  document.getElementById('play-duration').textContent = '0:00';
+  document.getElementById('btn-discard').disabled = true;
+  document.getElementById('btn-save').disabled = true;
+  document.getElementById('rec-timer').textContent = '0:00';
+  document.getElementById('rec-timer').classList.add('idle');
+  document.getElementById('rec-state-label').textContent = 'Ready to record';
+  document.getElementById('rec-hint').textContent = 'Press the microphone button to start recording your answer.';
+  document.getElementById('waveform').classList.remove('recording');
+  updateRecBtn('idle');
+}
+
+function resetRecorder() {
+  discardRecording();
+  if (mediaRecorder && isRecording) { mediaRecorder.stop(); }
+  mediaRecorder = null;
+}
+
+// ── SAVED RECORDINGS ─────────────────────────────────────────────────────
+function renderSavedRecordings(qId) {
+  const recs = savedRecordings[qId] || [];
+  const section = document.getElementById('saved-section');
+  const list    = document.getElementById('saved-list');
+  const count   = document.getElementById('saved-count');
+  count.textContent = recs.length;
+  if (!recs.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = '';
+  const q = PARTS[currentPart].questions.find(q => q.id === qId);
+  recs.forEach((rec, i) => {
+    const item = document.createElement('div');
+    item.className = 'saved-item';
+    item.innerHTML = `
+      <div class="saved-q-label">Take ${recs.length - i} · ${rec.timestamp}</div>
+      <div class="saved-duration">${formatTime(rec.duration)}</div>
+      <div class="saved-actions">
+        <button class="saved-btn" onclick="playSaved(${i},'${qId}')">▶ Play</button>
+        <button class="saved-btn" onclick="downloadSaved(${i},'${qId}')">⬇ Save</button>
+        <button class="saved-btn del" onclick="deleteSaved(${i},'${qId}')">🗑</button>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+
+function playSaved(idx, qId) {
+  const rec = (savedRecordings[qId] || [])[idx];
+  if (!rec) return;
+  const a = new Audio(rec.url);
+  a.play();
+}
+
+function downloadSaved(idx, qId) {
+  const rec = (savedRecordings[qId] || [])[idx];
+  if (!rec) return;
+  const a = document.createElement('a');
+  a.href = rec.url;
+  a.download = `bandio-speaking-${qId}-take${idx+1}.webm`;
+  a.click();
+}
+
+function deleteSaved(idx, qId) {
+  if (!confirm('Delete this recording?')) return;
+  savedRecordings[qId].splice(idx, 1);
+  renderSavedRecordings(qId);
+  renderQuestions();
+}
+
+// ── PART 2 PREP TIMER ─────────────────────────────────────────────────────
+function startPrepTimer() {
+  prepSeconds = 60;
+  document.getElementById('prep-overlay').classList.remove('hidden');
+  document.getElementById('po-time').textContent = prepSeconds;
+  prepInterval = setInterval(() => {
+    prepSeconds--;
+    document.getElementById('po-time').textContent = prepSeconds;
+    if (prepSeconds <= 0) { skipPrep(); }
+  }, 1000);
+}
+
+function skipPrep() {
+  clearInterval(prepInterval);
+  document.getElementById('prep-overlay').classList.add('hidden');
+  startRecording();
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  return m + ':' + String(s % 60).padStart(2, '0');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+switchPart(1);
+</script>
+</body>
+</html>

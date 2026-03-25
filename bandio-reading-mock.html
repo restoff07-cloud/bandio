@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IELTS — Reading Mock Test</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex;flex-direction:column;font-size:15px;}
+#sel{display:flex;flex-direction:column;height:100%;overflow:hidden;}
+#sel.hide{display:none;}
+.ftabs{display:flex;background:#fff;border-bottom:1px solid #e0e0e0;flex-shrink:0;}
+.ft{flex:1;padding:.85rem 1rem;text-align:center;font-size:.88rem;font-weight:500;color:#666;cursor:pointer;border-bottom:3px solid transparent;border-right:1px solid #e8e8e8;display:flex;align-items:center;justify-content:center;gap:.35rem;transition:all .15s;}
+.ft:last-child{border-right:none;}
+.ft:hover{background:#fafafa;}
+.ft.on{color:#c8102e;border-bottom-color:#c8102e;font-weight:600;background:#fff8f8;}
+.frow{display:flex;align-items:center;padding:.85rem 1.25rem;background:#fff;border-bottom:1px solid #eee;flex-shrink:0;flex-wrap:wrap;gap:.65rem;}
+.sbox{display:flex;align-items:center;gap:.45rem;border:1px solid #d8d5d0;border-radius:7px;padding:.42rem .8rem;flex:1;min-width:150px;background:#fff;}
+.sbox input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.84rem;color:#1a1a1a;width:100%;background:transparent;}
+.sbox input::placeholder{color:#bbb;}
+.dd-wrap{display:flex;align-items:center;border:1px solid #d8d5d0;border-radius:7px;padding:.4rem .75rem;background:#fff;}
+.dd-wrap select{border:none;outline:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:.82rem;color:#444;cursor:pointer;appearance:none;padding-right:.5rem;}
+.dd-arrow{font-size:.65rem;color:#aaa;pointer-events:none;}
+.larea{flex:1;overflow-y:auto;padding:1.25rem 1.5rem;}
+.lhead{font-size:1.25rem;font-weight:700;margin-bottom:1rem;}
+.tcard{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:1.1rem 1.25rem;margin-bottom:.75rem;display:flex;align-items:center;gap:1rem;transition:box-shadow .15s;}
+.tcard:hover{box-shadow:0 2px 12px rgba(0,0,0,.08);}
+.tcard-info{flex:1;min-width:0;}
+.tcard-top{display:flex;align-items:center;gap:.55rem;margin-bottom:.28rem;flex-wrap:wrap;}
+.tcard-name{font-size:.95rem;font-weight:700;}
+.tbadge{font-size:.68rem;font-weight:600;padding:.17rem .55rem;border-radius:100px;display:inline-flex;align-items:center;gap:.22rem;}
+.tbadge.free{background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9;}
+.tbadge.prem{background:#fff8e1;color:#f57f17;border:1px solid #ffe082;}
+.tcard-sub{font-size:.78rem;color:#777;margin-bottom:.45rem;}
+.tcard-meta{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;}
+.tmeta{font-size:.76rem;color:#555;}
+.tmeta-sep{color:#ccc;}
+.start-btn{padding:.55rem 1.35rem;background:#c8102e;color:#fff;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.start-btn:hover{opacity:.88;}
+.start-btn.locked{background:#9e9e9e;cursor:default;}
+.nores{text-align:center;padding:3rem 1rem;color:#aaa;font-size:.88rem;}
+#exam{display:none;flex-direction:column;height:100%;overflow:hidden;}
+#exam.show{display:flex;}
+.topbar{height:54px;background:#fff;border-bottom:1px solid #d8d5d0;display:flex;align-items:center;padding:0 1rem;flex-shrink:0;position:relative;}
+.tb-l{display:flex;align-items:center;gap:.6rem;}
+.tb-m{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:.6rem;}
+.tb-r{display:flex;align-items:center;gap:.8rem;margin-left:auto;}
+.btn-back{display:flex;align-items:center;gap:.3rem;padding:.3rem .8rem;border:1px solid #ccc;border-radius:5px;background:#fff;font-family:inherit;font-size:.82rem;color:#444;cursor:pointer;}
+.btn-back:hover{background:#f5f3f0;}
+.ielts{background:#c8102e;color:#fff;font-weight:700;font-size:.88rem;padding:.28rem .65rem;border-radius:4px;}
+.tid{font-size:.82rem;color:#888;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tval{font-size:1.1rem;font-weight:600;color:#1a1a1a;min-width:48px;text-align:right;}
+.tval.warn{color:#c8102e;}
+.tbtn{padding:.32rem 1rem;background:#c8102e;color:#fff;border:none;border-radius:5px;font-family:inherit;font-size:.84rem;font-weight:600;cursor:pointer;}
+.tbtn.on{background:#555;}
+.ico{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#888;cursor:pointer;border-radius:4px;}
+.ico:hover{background:#f0eeea;}
+.phdr{background:#f0eeea;border-bottom:1px solid #d8d5d0;padding:.8rem 1.5rem;flex-shrink:0;}
+.ph1{font-size:.92rem;font-weight:700;margin-bottom:.12rem;}
+.ph2{font-size:.82rem;color:#d4541a;}
+.main{flex:1;display:flex;overflow:hidden;padding:.65rem;background:#e0ddd8;}
+.box{flex:1;display:flex;background:#fff;border:1px solid #ccc;border-radius:3px;overflow:hidden;position:relative;}
+.pass{width:50%;overflow-y:auto;padding:1.4rem 1.6rem;border-right:1px solid #d8d5d0;font-size:.9rem;line-height:1.85;}
+.pass h2{font-size:1rem;font-weight:700;margin-bottom:.8rem;}
+.pass p{margin-bottom:.95rem;}
+.divider{position:absolute;left:calc(50% - 11px);top:50%;transform:translateY(-50%);width:22px;height:22px;background:#fff;border:1px solid #ccc;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:#999;cursor:col-resize;z-index:5;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.qs{flex:1;overflow-y:auto;padding:1.4rem 1.6rem;}
+.qs-hd{font-size:.95rem;font-weight:700;margin-bottom:.45rem;}
+.qs-inst{font-size:.85rem;line-height:1.65;margin-bottom:1.2rem;}
+.qs-inst b{font-weight:700;}
+.qi{margin-bottom:1.5rem;}
+.qrow{display:flex;align-items:flex-start;gap:.7rem;margin-bottom:.6rem;}
+.qn{width:22px;height:22px;background:#f0eeea;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.qt{font-size:.89rem;line-height:1.55;flex:1;}
+.ropts{display:flex;flex-direction:column;gap:.4rem;padding-left:2rem;}
+.ropt{display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.28rem 0;user-select:none;}
+.ropt:hover .rc{border-color:#d4541a;}
+.rc{width:20px;height:20px;border-radius:50%;border:1.5px solid #bbb;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .1s;}
+.ropt.sel .rc{border-color:#d4541a;border-width:2px;}
+.ropt.sel .rc::after,.ropt.ok .rc::after,.ropt.bad .rc::after{content:'';width:8px;height:8px;border-radius:50%;}
+.ropt.sel .rc::after{background:#d4541a;}
+.ropt.ok .rc{border-color:#2a9d68;}.ropt.ok .rc::after{background:#2a9d68;}
+.ropt.bad .rc{border-color:#e24b4a;}.ropt.bad .rc::after{background:#e24b4a;}
+.rl{font-size:.88rem;}
+.mopts{display:flex;flex-direction:column;gap:.3rem;padding-left:2rem;}
+.mopt{display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.28rem 0;user-select:none;}
+.mopt:hover .mc{border-color:#d4541a;color:#d4541a;}
+.mc{width:20px;height:20px;border-radius:50%;border:1.5px solid #bbb;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.64rem;font-weight:700;color:#aaa;transition:all .1s;}
+.mopt.sel .mc{border-color:#d4541a;color:#d4541a;border-width:2px;}
+.mopt.ok .mc{border-color:#2a9d68;color:#2a9d68;}
+.mopt.bad .mc{border-color:#e24b4a;color:#e24b4a;}
+.ml{font-size:.88rem;}
+.gap{display:inline-block;min-width:88px;height:25px;border:1px solid #b0aca6;background:#f0eeea;border-radius:3px;padding:0 6px;font-family:inherit;font-size:.82rem;color:#1a1a1a;outline:none;vertical-align:middle;}
+.gap:focus{border-color:#777;background:#fff;}
+.gap.ok{background:#e8f5ee;border-color:#2a9d68;color:#155724;}
+.gap.bad{background:#fef2f2;border-color:#e24b4a;color:#721c24;}
+.qdiv{border:none;border-top:1px solid #f0eeea;margin:1.4rem 0;}
+.part-nav{flex:1;padding:0 .25rem;min-height:48px;background:transparent;border:none;border-top:3px solid transparent;font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:500;color:#666;cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;justify-content:center;}
+.part-nav:hover{background:#e8e5e0;color:#1a1a1a;}
+.part-nav.on{border-top-color:#c8102e;color:#c8102e;font-weight:600;background:#fff8f8;}
+.botbar{height:50px;background:#f0eeea;border-top:1px solid #d8d5d0;display:flex;align-items:center;padding:0;flex-shrink:0;gap:0;}
+.pseg{display:flex;align-items:center;gap:.35rem;flex:1;min-width:0;overflow:hidden;}
+.plbl{font-size:.76rem;font-weight:600;white-space:nowrap;flex-shrink:0;}
+.pscr{font-size:.7rem;color:#666;white-space:nowrap;flex-shrink:0;}
+.pdots{display:flex;gap:2px;overflow:hidden;}
+.qdot{width:22px;height:22px;border-radius:3px;border:1px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:600;color:#aaa;cursor:pointer;flex-shrink:0;}
+.qdot.ans{background:#1a1a1a;border-color:#1a1a1a;color:#fff;}
+.pdiv{width:1px;height:28px;background:#d8d5d0;margin:0 .6rem;flex-shrink:0;}
+.arr{width:36px;height:36px;border-radius:5px;border:1px solid #bbb;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;margin-left:.35rem;}
+.arr:hover,.arr.dk{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.subbtn{padding:.4rem .9rem;height:32px;border-radius:100px;background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:.78rem;font-weight:600;font-family:'DM Sans',sans-serif;margin:0 .5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;white-space:nowrap;}
+.subbtn:hover{background:#2a9d68;}
+.ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;}
+.ovl.show{display:flex;}
+.scard{background:#fff;border-radius:16px;padding:2.2rem 2rem;max-width:380px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.sband{font-weight:700;font-size:3rem;color:#d4541a;line-height:1;}
+.ssub{font-size:.8rem;color:#666;margin:.3rem 0 1.4rem;}
+.srow{display:flex;justify-content:center;gap:2.5rem;margin-bottom:1.6rem;}
+.snum{font-weight:700;font-size:1.4rem;}
+.slbl{font-size:.7rem;color:#666;margin-top:.1rem;}
+.sbtns{display:flex;gap:.6rem;justify-content:center;}
+.sbtn{padding:.6rem 1.4rem;border-radius:100px;font-family:inherit;font-size:.84rem;font-weight:500;cursor:pointer;border:none;}
+.sbtn.s{background:#f0eeea;color:#1a1a1a;}
+.sbtn.p{background:#1a1a1a;color:#fff;}
+.sbtn.p:hover{background:#d4541a;}
+@media(max-width:640px){.box{flex-direction:column;}.pass{width:100%!important;height:42vh;border-right:none;border-bottom:1px solid #d8d5d0;}.divider{display:none;}.tb-m{position:static;transform:none;margin:0 auto;}.tcard{flex-wrap:wrap;}.start-btn{width:100%;margin-top:.5rem;}}
+
+.hl-yellow { background: yellow; }
+.hl-note { background: #ff4d4d; color: #fff; }
+.popup-tools {
+  position: absolute;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  display: none;
+  gap: 8px;
+  z-index: 9999;
+}
+.popup-tools span { cursor: pointer; }
+.popup-tools span:hover { text-decoration: underline; }
+
+</style>
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import{getFirestore,collection,getDocs,query,where}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
+  const app=initializeApp(cfg);
+  const auth=getAuth(app);
+  const db=getFirestore(app);
+  onAuthStateChanged(auth,function(u){if(!u)location.replace("bandio-login.html");});
+  // Load admin-added reading tests from Firestore and merge into TESTS list
+  async function loadFirestoreTests(){
+    try{
+      const q=query(collection(db,'tests'),where('kind','==','reading'));
+      const snap=await getDocs(q);
+      if(snap.empty)return;
+      snap.forEach(function(d){
+        var t=d.data();
+        if(!t.name)return;
+        // Only add if not already in hardcoded list
+        if(!TESTS.find(function(x){return x.name===t.name;})){
+          TESTS.push(t);
+        }
+      });
+      if(typeof renderList==='function')renderList();
+    }catch(e){console.log('Firestore tests load error:',e.message);}
+  }
+  loadFirestoreTests();
+</script>
+</head>
+<body>
+<div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
+  <div class="scard" style="max-width:540px;width:100%;margin:auto;padding:2rem;">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;">
+      <div style="font-size:1.75rem;">📖</div>
+      <div>
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;">Reading — Results</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:#1a1a1a;">Your test is complete</div>
+      </div>
+    </div>
+
+    <!-- Band score -->
+    <div style="background:#1a1a1a;border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+      <div>
+        <div class="sband" id="sband" style="font-size:3.5rem;">—</div>
+        <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:.15rem;">Band score</div>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:.84rem;color:rgba(255,255,255,.65);line-height:1.6;" id="band-desc">Complete your answers and submit to see your score.</div>
+      </div>
+    </div>
+
+    <!-- Score breakdown -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.25rem;">
+      <div style="background:#dcfce7;border-radius:10px;padding:1rem;text-align:center;">
+        <div class="snum" id="sc" style="color:#166534;font-size:1.8rem;font-weight:800;">0</div>
+        <div style="font-size:.74rem;color:#166534;font-weight:600;margin-top:.2rem;">Correct ✓</div>
+      </div>
+      <div style="background:#fee2e2;border-radius:10px;padding:1rem;text-align:center;">
+        <div class="snum" id="sw" style="color:#991b1b;font-size:1.8rem;font-weight:800;">0</div>
+        <div style="font-size:.74rem;color:#991b1b;font-weight:600;margin-top:.2rem;">Wrong ✗</div>
+      </div>
+      <div style="background:#f5f3f0;border-radius:10px;padding:1rem;text-align:center;">
+        <div class="snum" id="sb" style="color:#555;font-size:1.8rem;font-weight:800;">0</div>
+        <div style="font-size:.74rem;color:#555;font-weight:600;margin-top:.2rem;">Blank —</div>
+      </div>
+    </div>
+
+    <!-- Total -->
+    <div style="background:#f5f3f0;border-radius:9px;padding:.75rem 1rem;text-align:center;margin-bottom:1.25rem;font-size:.9rem;color:#1a1a1a;">
+      You got <strong id="stotal" style="font-size:1.05rem;">0/40</strong> questions correct
+    </div>
+
+    <!-- Answer key note -->
+    <div style="background:#fef9c3;border:1px solid #fde68a;border-radius:9px;padding:.75rem 1rem;margin-bottom:1.25rem;font-size:.82rem;color:#78350f;line-height:1.6;">
+      <strong>Correct answers</strong> are highlighted in <span style="color:#166534;font-weight:700;">green</span> &nbsp;·&nbsp; <strong>Wrong answers</strong> in <span style="color:#991b1b;font-weight:700;">red</span>. Press "Review test" to go through each question and find the right answers.
+    </div>
+
+    <!-- Buttons -->
+    <div style="display:flex;gap:.65rem;flex-wrap:wrap;">
+      <button style="flex:1;padding:.72rem;background:#1a1a1a;color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;" onclick="reviewTest()">Review test →</button>
+      <button style="padding:.72rem 1.1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;" onclick="goBack()">Choose another</button>
+      <button style="padding:.72rem 1.1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;" onclick="location.href='bandio-dashboard.html'">Dashboard</button>
+    </div>
+  </div>
+</div>
+<div id="sel">
+  <div style="background:#0e0e0e;padding:.5rem 1.25rem;display:flex;align-items:center;"><a href="bandio-mocktest.html" style="font-family:'DM Sans',sans-serif;font-size:.78rem;color:rgba(255,255,255,.6);text-decoration:none;">← Mock tests</a><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;color:#f5f2eb;margin-left:.85rem;">Band<span style="color:#d4541a;">io</span></span></div>
+<div class="ftabs">
+    <div class="ft on" onclick="setTab('all',this)">All Tests</div>
+    <div class="ft" onclick="setTab('free',this)">🎁 Free</div>
+    <div class="ft" onclick="setTab('premium',this)">🔒 Premium</div>
+  </div>
+  <div class="frow">
+    <div class="sbox"><span style="color:#bbb">🔍</span><input type="text" id="srch" placeholder="Search tests..." oninput="renderList()"/></div>
+    <div class="dd-wrap"><select id="ddLv" onchange="renderList()"><option value="">All Levels</option><option>EASY</option><option>MEDIUM</option><option>HARD</option></select><span class="dd-arrow">▾</span></div>
+    <div class="dd-wrap"><select id="ddTy" onchange="renderList()"><option value="">All Types</option><option value="tfng">True/False/NG</option><option value="mcq">Multiple choice</option><option value="gap">Gap fill</option></select><span class="dd-arrow">▾</span></div>
+  </div>
+  <div class="larea"><div class="lhead">Choose a test</div><div id="tlist"></div></div>
+</div>
+<div id="exam">
+  <div class="topbar">
+    <div class="tb-l">
+      <button class="btn-back" onclick="goBack()">← Back</button>
+      <span class="ielts">IELTS</span>
+      <span class="tid" id="test-title">Reading Practice</span>
+    </div>
+    <div class="tb-m">
+      <span class="tval" id="tv">20:00</span>
+      <button class="tbtn" id="bt" onclick="toggleTimer()">Start</button>
+    </div>
+    <div class="tb-r">
+      <div class="ico" onclick="if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()">⛶</div>
+      <div class="ico" onclick="chk()">✓</div>
+    </div>
+  </div>
+  <div class="phdr"><div class="ph1">Part 1</div><div class="ph2">Read the text and answer questions 1–13.</div></div>
+  <div class="main">
+    <div class="box">
+      <div class="pass" id="pp">
+        <h2>The Psychology of Urban Green Spaces</h2>
+        <p>For decades, urban planners have debated the role of green spaces in cities. Parks, tree-lined avenues and community gardens were long considered aesthetic luxuries — pleasant additions, but not necessities. That view is now fundamentally changing, driven by a growing body of research linking access to nature with measurable improvements in human mental and physical health.</p>
+        <p>A landmark 2019 study published in <em>Scientific Reports</em> found that people who spend at least two hours per week in natural settings report significantly higher levels of wellbeing than those who do not. Crucially, this effect held regardless of whether the time was spent in a single two-hour visit or spread across shorter exposures. The researchers, led by Dr Matthew White of the University of Exeter, concluded that urban green spaces — even small neighbourhood parks — could serve as vital infrastructure for public health.</p>
+        <p>The psychological mechanisms behind this effect are still being explored. One prominent theory, known as Attention Restoration Theory (ART), proposes that natural environments replenish the capacity for focused attention, which is depleted by the constant cognitive demands of urban life. According to this framework, the soft stimulation of natural environments — birdsong, rustling leaves, shifting light — engages what psychologists call "involuntary attention," allowing the directed attention system to recover.</p>
+        <p>A second framework, Stress Recovery Theory (SRT), developed by Roger Ulrich, emphasises the physiological dimension. Ulrich's research demonstrated that exposure to natural scenes produces measurable reductions in cortisol levels, heart rate and blood pressure within minutes. In one frequently cited experiment, participants who viewed nature scenes after a stressful task recovered their baseline physiological state significantly faster than those who viewed urban scenes.</p>
+        <p>Critics note that most studies rely on self-reported wellbeing measures, which are inherently subjective. Furthermore, access to green spaces is not evenly distributed: wealthier urban neighbourhoods consistently feature more parks and tree cover than lower-income areas. Urban ecologist Jennifer Wolch has described this disparity as "green gentrification" — a process by which green infrastructure can inadvertently raise property values and displace lower-income residents.</p>
+        <p>Despite these critiques, city governments worldwide are increasingly investing in urban greening. Melbourne has committed to tripling its urban tree canopy by 2040. London's Green Infrastructure Task Force has argued that every pound invested in urban nature returns an estimated £27 in public health benefits.</p>
+      </div>
+      <div class="divider" id="dv">⟨⟩</div>
+      <div class="qs">
+        <div class="qs-hd">Questions 1–6</div>
+        <div class="qs-inst">Choose <b>TRUE</b> if the statement agrees, <b>FALSE</b> if it contradicts, or <b>NOT GIVEN</b> if there is no information.</div>
+        <div class="qi" id="qi1"><div class="qrow"><div class="qn">1</div><div class="qt">Urban green spaces were traditionally seen as essential to city planning.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,1,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,1,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,1,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <div class="qi" id="qi2"><div class="qrow"><div class="qn">2</div><div class="qt">The 2019 study found benefits only when two hours were spent in a single visit.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,2,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,2,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,2,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <div class="qi" id="qi3"><div class="qrow"><div class="qn">3</div><div class="qt">ART suggests natural environments help restore directed attention.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,3,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,3,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,3,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <div class="qi" id="qi4"><div class="qrow"><div class="qn">4</div><div class="qt">Ulrich showed nature scenes reduced blood pressure faster than urban scenes.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,4,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,4,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,4,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <div class="qi" id="qi5"><div class="qrow"><div class="qn">5</div><div class="qt">Critics argue green space benefits are equally accessible to all income groups.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,5,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,5,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,5,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <div class="qi" id="qi6"><div class="qrow"><div class="qn">6</div><div class="qt">Jennifer Wolch coined the term "green gentrification".</div></div><div class="ropts"><div class="ropt" onclick="pr(this,6,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,6,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,6,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <hr class="qdiv"/>
+        <div class="qs-hd">Questions 7–9</div>
+        <div class="qs-inst">Choose the correct letter, <b>A</b>, <b>B</b>, <b>C</b> or <b>D</b>.</div>
+        <div class="qi" id="qi7"><div class="qrow"><div class="qn">7</div><div class="qt">What did the 2019 study conclude about urban parks?</div></div><div class="mopts"><div class="mopt" onclick="pm(this,7,'A')"><div class="mc">A</div><span class="ml">They are only beneficial if larger than a certain size.</span></div><div class="mopt" onclick="pm(this,7,'B')"><div class="mc">B</div><span class="ml">Even small neighbourhood parks can support public health.</span></div><div class="mopt" onclick="pm(this,7,'C')"><div class="mc">C</div><span class="ml">They should replace hospitals as primary health infrastructure.</span></div><div class="mopt" onclick="pm(this,7,'D')"><div class="mc">D</div><span class="ml">Their benefits are limited to physical health only.</span></div></div></div>
+        <div class="qi" id="qi8"><div class="qrow"><div class="qn">8</div><div class="qt">What does the writer suggest about distribution of green spaces?</div></div><div class="mopts"><div class="mopt" onclick="pm(this,8,'A')"><div class="mc">A</div><span class="ml">Wealthier areas have fewer parks than poorer areas.</span></div><div class="mopt" onclick="pm(this,8,'B')"><div class="mc">B</div><span class="ml">Green spaces are spread equally across all neighbourhoods.</span></div><div class="mopt" onclick="pm(this,8,'C')"><div class="mc">C</div><span class="ml">Wealthier areas tend to have more parks and tree cover.</span></div><div class="mopt" onclick="pm(this,8,'D')"><div class="mc">D</div><span class="ml">Lower-income areas are targeted for urban greening projects.</span></div></div></div>
+        <div class="qi" id="qi9"><div class="qrow"><div class="qn">9</div><div class="qt">What does London's Green Infrastructure Task Force claim?</div></div><div class="mopts"><div class="mopt" onclick="pm(this,9,'A')"><div class="mc">A</div><span class="ml">Investment costs more than benefits justify.</span></div><div class="mopt" onclick="pm(this,9,'B')"><div class="mc">B</div><span class="ml">Every pound invested returns £27 in public health benefits.</span></div><div class="mopt" onclick="pm(this,9,'C')"><div class="mc">C</div><span class="ml">Returns are unpredictable and vary by location.</span></div><div class="mopt" onclick="pm(this,9,'D')"><div class="mc">D</div><span class="ml">Investment should focus on tree planting exclusively.</span></div></div></div>
+        <hr class="qdiv"/>
+        <div class="qs-hd">Questions 10–13</div>
+        <div class="qs-inst">Complete the sentences. Write <b>NO MORE THAN TWO WORDS</b> from the text.</div>
+        <div class="qi"><div class="qrow"><div class="qn">10</div><div class="qt">The study was led by Dr Matthew White from the University of <input class="gap" id="g10" oninput="ma(10,this.value)" autocomplete="off" style="min-width:95px"/>.</div></div></div>
+        <div class="qi"><div class="qrow"><div class="qn">11</div><div class="qt">ART proposes natural environments replenish <input class="gap" id="g11" oninput="ma(11,this.value)" autocomplete="off" style="min-width:110px"/> attention.</div></div></div>
+        <div class="qi"><div class="qrow"><div class="qn">12</div><div class="qt">Ulrich found nature reduced <input class="gap" id="g12" oninput="ma(12,this.value)" autocomplete="off" style="min-width:95px"/> levels within minutes.</div></div></div>
+        <div class="qi"><div class="qrow"><div class="qn">13</div><div class="qt">Melbourne pledged to triple its urban <input class="gap" id="g13" oninput="ma(13,this.value)" autocomplete="off" style="min-width:110px"/> by 2040.</div></div></div>
+        <div style="height:1.5rem"></div>
+      </div>
+    </div>
+  </div>
+  <div class="botbar">
+    <button class="part-nav on" id="pnav1" onclick="goToPart(1)">Passage 1 · Q1–13</button>
+    <button class="part-nav" id="pnav2" onclick="goToPart(2)">Passage 2 · Q14–26</button>
+    <button class="part-nav" id="pnav3" onclick="goToPart(3)">Passage 3 · Q27–40</button>
+    <button class="subbtn" onclick="chk()">Submit ✓</button>
+  </div>
+</div>
+<script>
+function sanitize(str) {
+  var d = document.createElement('div');
+  d.textContent = String(str || '');
+  return d.innerHTML;
+}
+var TESTS=[
+  {name:'Cambridge 16 TEST_4',topic:'Passages 1, 2, 3',level:'MEDIUM',time:'60 minutes',questions:40,type:'tfng',tier:'free'},
+  {name:'Cambridge 17 TEST_3',topic:'Passages 1, 2, 3',level:'MEDIUM',time:'60 minutes',questions:40,type:'mcq',tier:'free'},
+  {name:'Cambridge 17 TEST_4',topic:'Passages 1, 2, 3',level:'MEDIUM',time:'60 minutes',questions:40,type:'gap',tier:'free'},
+  {name:'Cambridge 18 TEST_1',topic:'Passages 1, 2, 3',level:'MEDIUM',time:'60 minutes',questions:40,type:'tfng',tier:'free'},
+  {name:'Cambridge 18 TEST_2',topic:'Passages 1, 2, 3',level:'HARD',time:'60 minutes',questions:40,type:'mcq',tier:'premium'},
+  {name:'Cambridge 18 TEST_3',topic:'Passages 1, 2, 3',level:'HARD',time:'60 minutes',questions:40,type:'mcq',tier:'premium'},
+];
+var activeTab='all';
+function setTab(t,el){activeTab=t;document.querySelectorAll('.ft').forEach(function(x){x.classList.remove('on');});el.classList.add('on');renderList();}
+function renderList(){
+  var s=(document.getElementById('srch').value||'').toLowerCase();
+  var lv=document.getElementById('ddLv').value;
+  var ty=document.getElementById('ddTy').value;
+  var f=TESTS.filter(function(t){
+    if(activeTab==='free'&&t.tier!=='free')return false;
+    if(activeTab==='premium'&&t.tier!=='premium')return false;
+    if(s&&t.name.toLowerCase().indexOf(s)===-1&&t.topic.toLowerCase().indexOf(s)===-1)return false;
+    if(lv&&t.level!==lv)return false;
+    if(ty&&t.type!==ty)return false;
+    return true;
+  });
+  var w=document.getElementById('tlist');
+  if(!f.length){w.innerHTML='<div class="nores">No tests match your filters.</div>';return;}
+  w.innerHTML=f.map(function(t){return'<div class="tcard"><div class="tcard-info"><div class="tcard-top"><span class="tcard-name">'+t.name+'</span><span class="tbadge '+(t.tier==='free'?'free':'prem')+'">'+(t.tier==='free'?'🎁 Free':'🔒 Premium')+'</span></div><div class="tcard-sub">Passages: '+t.topic+' – '+t.level+' Level</div><div class="tcard-meta"><span class="tmeta">📊 '+t.level+'</span><span class="tmeta-sep">|</span><span class="tmeta">⏱ '+t.time+'</span><span class="tmeta-sep">|</span><span class="tmeta">✓ '+t.questions+' questions</span></div></div>'+(t.tier==='premium'?'<button class="start-btn locked" onclick="alert(\'Upgrade to Premium to access this test.\')">🔒 Premium</button>':'<button class="start-btn" onclick="startTest(\''+t.name+'\')">Start test</button>')+'</div>';}).join('');
+}
+function startTest(name){
+  document.getElementById('test-title').textContent=name;
+  document.getElementById('sel').classList.add('hide');
+  document.getElementById('exam').classList.add('show');
+  resetTimer();buildDots();
+}
+function goBack(){
+  clearInterval(ti);tr=false;
+  document.getElementById('exam').classList.remove('show');
+  document.getElementById('sel').classList.remove('hide');
+  document.getElementById('ovl').classList.remove('show');
+}
+var K={1:'FALSE',2:'FALSE',3:'TRUE',4:'TRUE',5:'FALSE',6:'TRUE',7:'B',8:'C',9:'B',10:'exeter',11:'focused',12:'cortisol',13:'tree canopy'};
+var T=13;var A={};
+function buildDots(){var w=document.getElementById('dots');w.innerHTML='';for(var q=1;q<=T;q++){var d=document.createElement('div');d.className='qdot';d.id='dd'+q;d.textContent=q;w.appendChild(d);}}
+function ma(q,v){if(v.trim()){A[q]=v.trim();dot(q,true);}else{delete A[q];dot(q,false);}up();}
+function dot(q,on){var d=document.getElementById('dd'+q);if(d)d.classList.toggle('ans',on);}
+function up(){document.getElementById('scr').textContent=Object.keys(A).length+'/'+T;}
+function pr(el,q,v){el.closest('.ropts').querySelectorAll('.ropt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');A[q]=v;dot(q,true);up();}
+function pm(el,q,v){el.closest('.mopts').querySelectorAll('.mopt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');A[q]=v;dot(q,true);up();}
+function chk(){
+  var c=0,b=0;
+  for(var q=1;q<=6;q++){var e=document.getElementById('qi'+q);if(!e)continue;e.querySelectorAll('.ropt').forEach(function(o){o.classList.remove('ok','bad');var l=o.querySelector('.rl').textContent.trim();if(A[q]===l)o.classList.add(l===K[q]?'ok':'bad');else if(l===K[q])o.classList.add('ok');});if(!A[q])b++;else if(A[q]===K[q])c++;}
+  for(var q=7;q<=9;q++){var e=document.getElementById('qi'+q);if(!e)continue;e.querySelectorAll('.mopt').forEach(function(o){o.classList.remove('ok','bad');var l=o.querySelector('.mc').textContent.trim();if(A[q]===l)o.classList.add(l===K[q]?'ok':'bad');else if(l===K[q])o.classList.add('ok');});if(!A[q])b++;else if(A[q]===K[q])c++;}
+  for(var q=10;q<=13;q++){var i=document.getElementById('g'+q);if(!i)continue;i.classList.remove('ok','bad');if(!A[q]){b++;continue;}var ok=(A[q]||'').toLowerCase().trim()===(K[q]||'').toLowerCase();i.classList.add(ok?'ok':'bad');if(ok)c++;}
+  var w=T-c-b;
+  var band=c>=39?'9.0':c>=37?'8.5':c>=35?'8.0':c>=33?'7.5':c>=30?'7.0':c>=27?'6.5':c>=23?'6.0':c>=19?'5.5':c>=15?'5.0':c>=13?'4.5':c>=10?'4.0':'3.5';
+  document.getElementById('sband').textContent=band;
+  document.getElementById('sc').textContent=c;
+  document.getElementById('sw').textContent=w;
+  document.getElementById('sb').textContent=b;
+  document.getElementById('stotal').textContent=c+'/'+T;
+  // Save and redirect to results page
+  try { sessionStorage.setItem('bnd_last_result', JSON.stringify({skill:'reading',correct:c,wrong:w,blank:b,total:T,band:band})); } catch(e){}
+  setTimeout(function(){
+    window.location.href='bandio-results.html?skill=reading&correct='+c+'&wrong='+w+'&blank='+b+'&name=Reading+Mock+Test&review=bandio-reading-mock.html';
+  }, 1500);
+  var descs = {
+    '9.0':'Expert user. Outstanding performance.',
+    '8.5':'Very good user. Excellent result.',
+    '8.0':'Very good user. Strong performance.',
+    '7.5':'Good user. Above average result.',
+    '7.0':'Good user. Solid performance.',
+    '6.5':'Competent user. Good result.',
+    '6.0':'Competent user. Keep practising.',
+    '5.5':'Modest user. More practice needed.',
+    '5.0':'Modest user. Focus on weaker areas.',
+    '4.5':'Limited user. Significant practice needed.',
+    '4.0':'Limited user. Keep going.',
+    '3.5':'Extremely limited user. Keep studying.'
+  };
+  var bandEl = document.getElementById('band-desc');
+  if (bandEl) bandEl.textContent = descs[band] || 'Keep practising to improve your score.';
+  // Build answers array from A (user answers) and K (correct answers)
+  var answersArr = [];
+  for (var qi=1; qi<=T; qi++) {
+    var yours   = A[qi] || '';
+    var correct = K[qi] || '';
+    var status  = !yours ? 'blank' : (yours.toLowerCase().trim()===correct.toLowerCase().trim() ? 'correct' : 'wrong');
+    answersArr.push({q:qi, yours:yours, correct:correct, status:status});
+  }
+  localStorage.setItem('bnd_last_result', JSON.stringify({
+    skill:     'Reading Mock',
+    testName:  '',
+    reviewUrl: 'bandio-reading-mock.html',
+    total:     T,
+    correct:   c,
+    wrong:     w,
+    blank:     b,
+    band:      band,
+    answers:   answersArr
+  }));
+  // Redirect to results page
+  setTimeout(function(){ window.location.href = 'bandio-results.html'; }, 300);
+  document.getElementById('ovl').classList.add('show');
+}
+var ts=60*60,tr=false,ti=null;
+function resetTimer(){clearInterval(ti);tr=false;ts=60*60;document.getElementById('tv').textContent='60:00';document.getElementById('bt').textContent='Start';document.getElementById('bt').className='tbtn';document.getElementById('tv').classList.remove('warn');}
+function toggleTimer(){if(tr){clearInterval(ti);tr=false;document.getElementById('bt').textContent='Resume';document.getElementById('bt').classList.remove('on');}else{tr=true;document.getElementById('bt').textContent='Pause';document.getElementById('bt').classList.add('on');ti=setInterval(function(){ts--;var m=Math.floor(ts/60),s=ts%60;var el=document.getElementById('tv');el.textContent=m+':'+(s<10?'0':'')+s;el.classList.toggle('warn',ts<=300&&ts>0);if(ts<=0){clearInterval(ti);tr=false;chk();}},1000);}}
+var dv=document.getElementById('dv'),pp=document.getElementById('pp');
+var drag=false,sx=0,sw=0;
+dv.addEventListener('mousedown',function(e){drag=true;sx=e.clientX;sw=pp.offsetWidth;document.body.style.cursor='col-resize';document.body.style.userSelect='none';});
+document.addEventListener('mousemove',function(e){if(!drag)return;pp.style.width=Math.max(180,Math.min(sw+(e.clientX-sx),window.innerWidth-180))+'px';});
+document.addEventListener('mouseup',function(){drag=false;document.body.style.cursor='';document.body.style.userSelect='';});
+
+function reviewTest() {
+  // Hide overlay, leave all answers highlighted so student can review
+  document.getElementById('ovl').classList.remove('show');
+  // Scroll to top of exam
+  window.scrollTo(0,0);
+  var qs = document.querySelector('.qs');
+  if (qs) qs.scrollTop = 0;
+}
+
+function goToPart(n) {
+  document.querySelectorAll('.part-nav').forEach(function(b,i){ b.classList.toggle('on', i+1===n); });
+  var ranges = ['1–13','14–26','27–40'];
+  var ph1 = document.querySelector('.ph1');
+  var ph2 = document.querySelector('.ph2');
+  if (ph1) ph1.textContent = 'Passage ' + n;
+  if (ph2) ph2.textContent = 'Read the text and answer questions ' + ranges[n-1] + '.';
+  // Scroll both panels to top
+  var qs = document.querySelector('.qs');
+  var pass = document.getElementById('pp');
+  if (qs)   qs.scrollTop = 0;
+  if (pass) pass.scrollTop = 0;
+}
+
+renderList();
+
+
+let selectedRange = null;
+
+document.addEventListener("mouseup", function () {
+  let selection = window.getSelection();
+  if (selection.toString().length > 0) {
+    selectedRange = selection.getRangeAt(0);
+    let rect = selectedRange.getBoundingClientRect();
+    let popup = document.getElementById("popup");
+
+    popup.style.top = (rect.top + window.scrollY - 40) + "px";
+    popup.style.left = (rect.left + window.scrollX) + "px";
+    popup.style.display = "flex";
+  } else {
+    document.getElementById("popup").style.display = "none";
+  }
+});
+
+function highlightText() {
+  if (!selectedRange) return;
+  let span = document.createElement("span");
+  span.className = "hl-yellow";
+  selectedRange.surroundContents(span);
+  window.getSelection().removeAllRanges();
+  document.getElementById("popup").style.display = "none";
+}
+
+function addNote() {
+  if (!selectedRange) return;
+  let note = prompt("Write your note:");
+  if (!note) return;
+  let span = document.createElement("span");
+  span.className = "hl-note";
+  span.title = note;
+  selectedRange.surroundContents(span);
+  window.getSelection().removeAllRanges();
+  document.getElementById("popup").style.display = "none";
+}
+
+function removeHighlight() {
+  if (!selectedRange) return;
+
+  let container = selectedRange.commonAncestorContainer;
+
+  // find parent span
+  let span = container.nodeType === 3 ? container.parentNode : container;
+
+  if (span.classList && (span.classList.contains("hl-yellow") || span.classList.contains("hl-note"))) {
+    let parent = span.parentNode;
+    while (span.firstChild) {
+      parent.insertBefore(span.firstChild, span);
+    }
+    parent.removeChild(span);
+  }
+
+  window.getSelection().removeAllRanges();
+  document.getElementById("popup").style.display = "none";
+}
+
+</script>
+
+
+<div id="popup" class="popup-tools">
+  <span onclick="highlightText()">Highlight</span>
+  <span onclick="addNote()">Note</span>
+  <span onclick="removeHighlight()">Remove</span>
+</div>
+
+
+</body>
+</html>

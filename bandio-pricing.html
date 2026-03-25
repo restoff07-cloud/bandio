@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bandio — Pricing</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#f5f3f0;color:#1a1a1a;font-size:15px;min-height:100vh;}
+nav{background:#0e0e0e;padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#f5f2eb;text-decoration:none;}
+.logo span{color:#d4541a;}
+.nav-back{margin-left:auto;padding:.38rem .85rem;border:.5px solid rgba(255,255,255,.2);border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.78rem;color:rgba(255,255,255,.6);text-decoration:none;}
+.nav-back:hover{background:rgba(255,255,255,.08);color:#fff;}
+.hero{text-align:center;padding:3.5rem 1.5rem 2rem;}
+.hero-label{font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#d4541a;margin-bottom:.75rem;}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:2.4rem;letter-spacing:-.03em;line-height:1.15;margin-bottom:.85rem;}
+.hero-sub{font-size:1rem;color:#666;max-width:500px;margin:0 auto 1.75rem;line-height:1.65;}
+.toggle-wrap{display:flex;align-items:center;justify-content:center;gap:.75rem;margin-bottom:.5rem;}
+.tgl{font-size:.84rem;color:#666;font-weight:500;}
+.tgl.on{color:#1a1a1a;font-weight:600;}
+.tgl-track{width:44px;height:24px;background:#d8d5d0;border-radius:100px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.tgl-track.on{background:#d4541a;}
+.tgl-thumb{width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.tgl-track.on .tgl-thumb{transform:translateX(20px);}
+.save-b{font-size:.72rem;font-weight:700;background:#dcfce7;color:#166534;padding:.18rem .55rem;border-radius:100px;border:1px solid #c8e6c9;}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;max-width:960px;margin:0 auto;padding:0 1.5rem 2rem;}
+.plan{background:#fff;border:1px solid #e0ddd8;border-radius:16px;padding:2rem;position:relative;}
+.plan:hover{box-shadow:0 6px 24px rgba(0,0,0,.08);}
+.plan.pop{border:2px solid #0e0e0e;box-shadow:0 8px 32px rgba(0,0,0,.12);}
+.pop-tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:#0e0e0e;color:#fff;font-size:.72rem;font-weight:700;padding:.28rem .85rem;border-radius:100px;white-space:nowrap;letter-spacing:.04em;}
+.plan-name{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:.5rem;}
+.plan-price{display:flex;align-items:flex-end;gap:.3rem;margin-bottom:.3rem;}
+.plan-amt{font-family:'Syne',sans-serif;font-weight:800;font-size:2.2rem;letter-spacing:-.02em;line-height:1;}
+.plan-per{font-size:.82rem;color:#888;margin-bottom:.3rem;}
+.plan-bill{font-size:.74rem;color:#aaa;margin-bottom:1.25rem;min-height:1.1rem;}
+.plan-desc{font-size:.84rem;color:#666;line-height:1.6;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #f0eeea;}
+.plan-btn{width:100%;padding:.75rem;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .15s;margin-bottom:1.5rem;}
+.plan-btn.free{background:#f0eeea;color:#1a1a1a;}
+.plan-btn.free:hover{background:#e0ddd8;}
+.plan-btn.dark{background:#0e0e0e;color:#fff;}
+.plan-btn.dark:hover{background:#d4541a;}
+.plan-btn.acc{background:#d4541a;color:#fff;}
+.plan-btn.acc:hover{background:#b84316;}
+.ft-title{font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#aaa;margin-bottom:.85rem;}
+.ft{display:flex;align-items:flex-start;gap:.65rem;margin-bottom:.65rem;}
+.ft-ic{font-size:.85rem;flex-shrink:0;margin-top:.05rem;}
+.ft-tx{font-size:.84rem;color:#444;line-height:1.5;}
+.ft-tx strong{color:#1a1a1a;}
+.ft.dim .ft-ic{opacity:.35;}
+.ft.dim .ft-tx{color:#bbb;}
+.cmp{max-width:860px;margin:0 auto;padding:0 1.5rem 3rem;}
+.cmp-t{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;text-align:center;margin-bottom:.5rem;}
+.cmp-s{text-align:center;font-size:.88rem;color:#666;margin-bottom:2rem;}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+th{padding:.85rem 1.1rem;text-align:left;font-size:.8rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #f0eeea;}
+th:not(:first-child){text-align:center;}
+td{padding:.8rem 1.1rem;font-size:.86rem;color:#444;border-bottom:.5px solid #f5f3f0;vertical-align:middle;}
+td:not(:first-child){text-align:center;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fafaf9;}
+.ck{color:#2a9d68;font-size:1rem;}
+.cx{color:#ccc;font-size:.9rem;}
+.faq-s{max-width:640px;margin:0 auto;padding:0 1.5rem 4rem;}
+.faq-t{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;text-align:center;margin-bottom:2rem;}
+.faq-i{background:#fff;border-radius:12px;margin-bottom:.75rem;border:1px solid #e8e5e0;overflow:hidden;}
+.faq-q{padding:1rem 1.25rem;font-size:.9rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.faq-q:hover{background:#fafaf9;}
+.faq-arr{color:#aaa;transition:transform .2s;font-size:.8rem;}
+.faq-i.open .faq-arr{transform:rotate(180deg);}
+.faq-a{display:none;padding:0 1.25rem 1rem;font-size:.85rem;color:#666;line-height:1.65;}
+.faq-i.open .faq-a{display:block;}
+.contact-s{background:#0e0e0e;padding:2.5rem 1.5rem;text-align:center;}
+.cs-t{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:#f5f2eb;margin-bottom:.5rem;}
+.cs-s{font-size:.86rem;color:rgba(245,242,235,.5);margin-bottom:1.25rem;}
+.cs-btn{display:inline-block;padding:.7rem 2rem;background:#d4541a;color:#fff;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;text-decoration:none;}
+.cs-btn:hover{opacity:.88;}
+@media(max-width:600px){.hero-title{font-size:1.75rem;}.plans{grid-template-columns:1fr;}table{font-size:.78rem;}td,th{padding:.65rem .75rem;}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="bandio-home.html">Band<span>io</span></a>
+  <a class="nav-back" href="bandio-dashboard.html">&#8592; Dashboard</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">Simple pricing</div>
+  <div class="hero-title">Invest in your Band 7+</div>
+  <div class="hero-sub">Start free. Upgrade when you're ready. Every plan includes full access to practice tests and vocabulary games.</div>
+  <div class="toggle-wrap">
+    <span class="tgl on" id="lbl-m">Monthly</span>
+    <div class="tgl-track" id="tglTrack" onclick="toggleBilling()">
+      <div class="tgl-thumb"></div>
+    </div>
+    <span class="tgl" id="lbl-a">Annual</span>
+    <span class="save-b">Save 30%</span>
+  </div>
+</div>
+
+<!-- PLANS -->
+<div class="plans">
+
+  <!-- FREE -->
+  <div class="plan">
+    <div class="plan-name">Free</div>
+    <div class="plan-price"><span class="plan-amt">0</span><span class="plan-per">&nbsp;so'm</span></div>
+    <div class="plan-bill">forever free</div>
+    <div class="plan-desc">Everything you need to start practising IELTS on your own.</div>
+    <button class="plan-btn free" onclick="location.href='bandio-dashboard.html'">Start for free</button>
+    <div class="ft-title">What's included</div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Reading practice &amp; mock tests</div></div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Listening practice &amp; mock tests</div></div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Writing practice (all questions)</div></div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Speaking practice with sample answers</div></div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx"><strong>2 AI writing checks</strong> — band score on all 4 criteria</div></div>
+    <div class="ft dim"><span class="ft-ic">&#10007;</span><div class="ft-tx">Unlimited AI writing feedback</div></div>
+    <div class="ft dim"><span class="ft-ic">&#10007;</span><div class="ft-tx">Mock tests &amp; vocabulary</div></div>
+  </div>
+
+  <!-- PREMIUM -->
+  <div class="plan pop">
+    <div class="pop-tag">&#127381; Most popular</div>
+    <div class="plan-name">Premium</div>
+    <div style="font-size:.8rem;color:#aaa;text-decoration:line-through;margin-bottom:.15rem;">110,000 so'm</div>
+    <div class="plan-price">
+      <span class="plan-amt">80,000</span>
+      <span class="plan-per">&nbsp;so'm</span>
+    </div>
+    <div class="plan-bill">One-time payment — yours forever &nbsp;<span style="background:#dcfce7;color:#166534;font-size:.72rem;font-weight:700;padding:.1rem .45rem;border-radius:5px;">Save 27%</span></div>
+    <div class="plan-desc">Everything you need to reach your target band score — pay once, keep forever.</div>
+    <button class="plan-btn dark" onclick="buyPlan('premium')">Get Premium</button>
+    <div class="ft-title">Everything in Free, plus</div>
+    <div class="ft"><span class="ft-ic">&#127919;</span><div class="ft-tx"><strong>25 AI writing checks</strong> — band score on all 4 criteria</div></div>
+    <div class="ft"><span class="ft-ic">&#127919;</span><div class="ft-tx"><strong>Unlimited authentic mock tests</strong> — Reading, Listening, Writing</div></div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx"><strong>Topic-specific high-level vocabulary</strong> — curated for IELTS</div></div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Model band 8 answers for every question</div></div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Priority support</div></div>
+  </div>
+
+  <!-- INTENSIVE -->
+  <div class="plan">
+    <div class="plan-name">Intensive</div>
+    <div style="font-size:.8rem;color:#aaa;text-decoration:line-through;margin-bottom:.15rem;">180,000 so'm</div>
+    <div class="plan-price">
+      <span class="plan-amt">130,000</span>
+      <span class="plan-per">&nbsp;so'm</span>
+    </div>
+    <div class="plan-bill">One-time payment — yours forever &nbsp;<span style="background:#dcfce7;color:#166534;font-size:.72rem;font-weight:700;padding:.1rem .45rem;border-radius:5px;">Save 28%</span></div>
+    <div class="plan-desc">Maximum preparation for students targeting a high band score with personalised support.</div>
+    <button class="plan-btn acc" onclick="buyPlan('intensive')">Get Intensive</button>
+    <div class="ft-title">Everything in Premium, plus</div>
+    <div class="ft"><span class="ft-ic">&#127919;</span><div class="ft-tx"><strong>60 AI writing checks</strong> total</div></div>
+    <div class="ft"><span class="ft-ic">&#127775;</span><div class="ft-tx"><strong>2 real speaking mock tests with the founder</strong> — first 50 students only</div></div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Priority Telegram support from the teacher</div></div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Exam strategy &amp; personalised roadmap</div></div>
+  </div>
+
+</div>
+
+<!-- COMPARE TABLE -->
+<div class="cmp">
+  <div class="cmp-t">Compare plans</div>
+  <div class="cmp-s">Everything you get on each plan at a glance.</div>
+  <table>
+    <thead>
+      <tr><th>Feature</th><th>Free</th><th>Premium</th><th>Intensive</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Reading practice &amp; mock</td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
+      <tr><td>Listening practice &amp; mock</td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
+      <tr><td>Writing practice</td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
+      <tr><td>Speaking practice</td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
+      <tr><td>Vocabulary practice</td><td>100 words/mo</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>AI writing checks</td><td>2 checks</td><td>25 checks</td><td>60 checks</td></tr>
+      <tr><td>Unlimited mock tests</td><td><span class="cx">&#10007;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
+      <tr><td>Topic-specific vocabulary</td><td><span class="cx">&#10007;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
+      <tr><td>Band score (all 4 criteria)</td><td><span class="cx">&#10007;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
+      <tr><td>Model band 8 answers</td><td><span class="cx">&#10007;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
+      <tr><td>2 speaking mocks with founder</td><td><span class="cx">&#10007;</span></td><td><span class="cx">&#10007;</span></td><td>&#127775; First 50 only</td></tr>
+      <tr><td>Priority Telegram support</td><td><span class="cx">&#10007;</span></td><td><span class="cx">&#10007;</span></td><td><span class="ck">&#10003;</span></td></tr>
+      <tr><td>Payment</td><td>Free forever</td><td>One-time 80,000 so'm</td><td>One-time 130,000 so'm</td></tr>
+      <tr>
+        <td></td>
+        <td><button class="plan-btn free" style="padding:.45rem .65rem;font-size:.76rem;margin:0" onclick="location.href='bandio-dashboard.html'">Start free</button></td>
+        <td><button class="plan-btn dark" style="padding:.45rem .65rem;font-size:.76rem;margin:0" onclick="buyPlan('premium')">Get Premium</button></td>
+        <td><button class="plan-btn acc" style="padding:.45rem .65rem;font-size:.76rem;margin:0" onclick="buyPlan('intensive')">Get Intensive</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FAQ -->
+<div class="faq-s">
+  <div class="faq-t">Questions &amp; answers</div>
+  <div class="faq-i">
+    <div class="faq-q" onclick="faq(this)">How do I pay? <span class="faq-arr">&#9660;</span></div>
+    <div class="faq-a">Click "Get Premium" or "Get Intensive". You will see our Uzcard number to transfer to. After paying, send a screenshot of the transfer to our Telegram <strong>@abduganiev9009</strong> along with the email you used to register. Your account will be upgraded within 24 hours.</div>
+  </div>
+  <div class="faq-i">
+    <div class="faq-q" onclick="faq(this)">How accurate is the AI band score? <span class="faq-arr">&#9660;</span></div>
+    <div class="faq-a">Our AI is trained on thousands of IELTS essays and calibrated against the official IELTS marking criteria. Scores are typically within 0.5 bands of a human examiner. It is the best preparation tool available, though the official exam is always marked by a certified examiner.</div>
+  </div>
+  <div class="faq-i">
+    <div class="faq-q" onclick="faq(this)">What is included in the AI writing feedback? <span class="faq-arr">&#9660;</span></div>
+    <div class="faq-a">You receive a band score for each of the 4 official IELTS criteria: Task Achievement, Coherence &amp; Cohesion, Lexical Resource, and Grammatical Range &amp; Accuracy. Each criterion includes specific, actionable feedback and suggestions to improve your score.</div>
+  </div>
+  <div class="faq-i">
+    <div class="faq-q" onclick="faq(this)">Is there a free trial for Premium? <span class="faq-arr">&#9660;</span></div>
+    <div class="faq-a">The Free plan gives you access to all practice materials without a time limit. Premium features like AI feedback are available immediately when you upgrade. Contact us on Telegram if you have any questions.</div>
+  </div>
+  <div class="faq-i">
+    <div class="faq-q" onclick="faq(this)">What is the difference between Premium and Intensive? <span class="faq-arr">&#9660;</span></div>
+    <div class="faq-a">Both plans include AI writing and speaking feedback. Intensive gives you more than double the monthly usage (65 writing feedbacks vs 30, and 350 speaking minutes vs 150), plus priority Telegram support from the teacher and exam strategy sessions — ideal if your exam is coming up soon.</div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="contact-s">
+  <div class="cs-t">Questions? Message us on Telegram.</div>
+  <div class="cs-s">We typically reply within a few hours.</div>
+  <a class="cs-btn" href="https://t.me/abduganiev9009" target="_blank">&#128172; @abduganiev9009</a>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div id="payModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
+  <div style="background:#fff;border-radius:16px;padding:2rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);margin:auto;">
+
+    <div style="font-size:1.1rem;font-weight:700;margin-bottom:.3rem" id="modalTitle">Upgrade to Premium</div>
+    <div style="font-size:.84rem;color:#666;margin-bottom:1.25rem;line-height:1.6">Transfer the amount below to our Uzcard, then send your screenshot and email to Telegram.</div>
+
+    <!-- Card block -->
+    <div style="background:#0e0e0e;border-radius:12px;padding:1.25rem 1.35rem;margin-bottom:1rem;">
+      <div style="font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.5rem">Uzcard — Transfer to</div>
+      <div style="font-size:1.35rem;font-weight:700;letter-spacing:.12em;color:#fff;margin-bottom:.3rem;font-family:monospace" id="cardDisplay">9860 1606 1624 3459</div>
+      <div style="font-size:.82rem;color:rgba(255,255,255,.55);margin-bottom:.85rem">Abdug'aniyev Asilbek</div>
+      <button id="copyCardBtn" onclick="doCopyCard()" style="display:inline-flex;align-items:center;gap:.4rem;padding:.38rem .9rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:100px;color:rgba(255,255,255,.65);font-family:'DM Sans',sans-serif;font-size:.76rem;cursor:pointer;">
+        &#128203; Copy card number
+      </button>
+    </div>
+
+    <!-- Amount -->
+    <div style="background:#f0eeea;border-radius:10px;padding:.85rem 1rem;margin-bottom:1.1rem;display:flex;align-items:center;justify-content:space-between;font-size:.88rem;">
+      <span style="color:#666">Amount:</span>
+      <strong id="modalAmount" style="font-size:1rem;color:#1a1a1a">80,000 so'm</strong>
+    </div>
+
+    <!-- Steps -->
+    <div style="font-size:.84rem;color:#555;margin-bottom:1.1rem;line-height:1.75;">
+      <div style="font-weight:600;color:#1a1a1a;margin-bottom:.55rem">After transferring:</div>
+      <div style="display:flex;align-items:flex-start;gap:.55rem;margin-bottom:.45rem;">
+        <span style="width:20px;height:20px;background:#c8102e;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:2px">1</span>
+        <span>Send a <strong>screenshot</strong> of the transfer to Telegram: <a href="https://t.me/abduganiev9009" target="_blank" style="color:#c8102e;font-weight:600;text-decoration:none">@abduganiev9009</a></span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:.55rem;">
+        <span style="width:20px;height:20px;background:#c8102e;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:2px">2</span>
+        <span>Include the <strong>email address</strong> you used when registering on Bandio</span>
+      </div>
+    </div>
+
+    <div style="background:#fef9c3;border-radius:8px;padding:.65rem .9rem;font-size:.78rem;color:#854d0e;margin-bottom:1.25rem;">
+      &#9200; Account upgraded within <strong>24 hours</strong> of receiving your screenshot.
+    </div>
+
+    <div style="display:flex;gap:.65rem;">
+      <a href="https://t.me/abduganiev9009" target="_blank" style="flex:1;padding:.65rem;background:#0e0e0e;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:.4rem;">
+        &#128172; Open Telegram
+      </a>
+      <button onclick="document.getElementById('payModal').style.display='none'" style="padding:.65rem 1.1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.86rem;cursor:pointer;">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+var annual = false;
+
+function toggleBilling() {
+  annual = !annual;
+  document.getElementById('tglTrack').classList.toggle('on', annual);
+  document.getElementById('lbl-m').classList.toggle('on', !annual);
+  document.getElementById('lbl-a').classList.toggle('on', annual);
+  // One-time pricing — no toggle needed
+  document.getElementById('prem-amt').textContent = '80,000';
+  document.getElementById('int-amt').textContent  = '130,000';
+  document.getElementById('prem-bill').textContent = annual ? "Billed 1,009,800 so'm/year (save 178,200)" : 'Billed monthly';
+  document.getElementById('int-bill').textContent  = annual ? "Billed 1,621,800 so'm/year (save 286,200)" : 'Billed monthly';
+}
+
+function buyPlan(plan) {
+  var titles  = { premium: 'Upgrade to Premium', intensive: 'Upgrade to Intensive' };
+  var amounts = { premium: "80,000 so'm", intensive: "130,000 so'm" };
+  document.getElementById('modalTitle').textContent  = titles[plan];
+  document.getElementById('modalAmount').textContent = amounts[plan];
+  document.getElementById('payModal').style.display  = 'flex';
+}
+
+function doCopyCard() {
+  var num = '9860160616243459';
+  var btn = document.getElementById('copyCardBtn');
+  function showCopied() {
+    btn.innerHTML = '&#10003; Copied!';
+    btn.style.borderColor = '#2a9d68';
+    btn.style.color = '#2a9d68';
+    setTimeout(function() {
+      btn.innerHTML = '&#128203; Copy card number';
+      btn.style.borderColor = 'rgba(255,255,255,.2)';
+      btn.style.color = 'rgba(255,255,255,.65)';
+    }, 2000);
+  }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(num).then(showCopied).catch(function() {
+      fallbackCopy(num); showCopied();
+    });
+  } else {
+    fallbackCopy(num); showCopied();
+  }
+}
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+}
+
+function faq(el) {
+  el.parentElement.classList.toggle('open');
+}
+</script>
+</body>
+</html>

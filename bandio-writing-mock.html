@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IELTS Writing Mock Test</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex;flex-direction:column;font-size:15px;}
+
+/* SELECTION */
+#sel{display:flex;flex-direction:column;height:100%;overflow:hidden;}
+#sel.hide{display:none;}
+.ftabs{display:flex;background:#fff;border-bottom:1px solid #e0e0e0;flex-shrink:0;}
+.ft{flex:1;padding:.85rem 1rem;text-align:center;font-size:.88rem;font-weight:500;color:#666;cursor:pointer;border-bottom:3px solid transparent;border-right:1px solid #e8e8e8;display:flex;align-items:center;justify-content:center;gap:.35rem;transition:all .15s;}
+.ft:last-child{border-right:none;}
+.ft:hover{background:#fafafa;}
+.ft.on{color:#c8102e;border-bottom-color:#c8102e;font-weight:600;background:#fff8f8;}
+.frow{display:flex;align-items:center;padding:.85rem 1.25rem;background:#fff;border-bottom:1px solid #eee;flex-shrink:0;}
+.sbox{display:flex;align-items:center;gap:.45rem;border:1px solid #d8d5d0;border-radius:7px;padding:.42rem .8rem;flex:1;background:#fff;}
+.sbox input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.84rem;color:#1a1a1a;width:100%;background:transparent;}
+.sbox input::placeholder{color:#bbb;}
+.larea{flex:1;overflow-y:auto;padding:1.25rem 1.5rem;}
+.lhead{font-size:1.25rem;font-weight:700;margin-bottom:1rem;}
+.tc{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:1.1rem 1.25rem;margin-bottom:.75rem;display:flex;align-items:center;gap:1rem;transition:box-shadow .15s;cursor:pointer;}
+.tc:hover{box-shadow:0 2px 12px rgba(0,0,0,.08);}
+.tc-info{flex:1;min-width:0;}
+.tc-top{display:flex;align-items:center;gap:.55rem;margin-bottom:.28rem;flex-wrap:wrap;}
+.tc-name{font-size:.95rem;font-weight:700;}
+.fb{font-size:.68rem;font-weight:600;padding:.17rem .55rem;border-radius:100px;background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9;}
+.tt{font-size:.68rem;font-weight:600;padding:.17rem .55rem;border-radius:100px;border:1px solid #d8d5d0;}
+.tt.t1{background:#e8f0fd;color:#1a56db;border-color:#c3d3f9;}
+.tt.t2{background:#fdeee8;color:#c2410c;border-color:#fbd4c2;}
+.tc-sub{font-size:.78rem;color:#777;margin-bottom:.45rem;line-height:1.55;}
+.tc-meta{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;}
+.tm{font-size:.76rem;color:#555;}
+.tm-sep{color:#ccc;}
+.sbtn{padding:.55rem 1.35rem;background:#c8102e;color:#fff;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.sbtn:hover{opacity:.88;}
+.nores{text-align:center;padding:3rem 1rem;color:#aaa;font-size:.88rem;}
+
+/* EXAM */
+#exam{display:none;flex-direction:column;height:100%;overflow:hidden;}
+#exam.show{display:flex;}
+.topbar{height:54px;background:#fff;border-bottom:1px solid #d8d5d0;display:flex;align-items:center;padding:0 1rem;flex-shrink:0;position:relative;}
+.tbl{display:flex;align-items:center;gap:.6rem;}
+.tbm{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:.6rem;}
+.tbr{display:flex;align-items:center;gap:.8rem;margin-left:auto;}
+.bkbtn{display:flex;align-items:center;gap:.3rem;padding:.3rem .8rem;border:1px solid #ccc;border-radius:5px;background:#fff;font-family:inherit;font-size:.82rem;color:#444;cursor:pointer;}
+.bkbtn:hover{background:#f5f3f0;}
+.ib{background:#c8102e;color:#fff;font-weight:700;font-size:.88rem;padding:.28rem .65rem;border-radius:4px;}
+.tid{font-size:.82rem;color:#888;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tv{font-size:1.1rem;font-weight:600;color:#1a1a1a;min-width:48px;text-align:right;}
+.tv.warn{color:#c8102e;}
+.tbtn{padding:.32rem 1rem;background:#c8102e;color:#fff;border:none;border-radius:5px;font-family:inherit;font-size:.84rem;font-weight:600;cursor:pointer;}
+.tbtn.on{background:#555;}
+.ico{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#888;cursor:pointer;border-radius:4px;}
+.ico:hover{background:#f0eeea;}
+.main{display:flex;flex:1;overflow:hidden;}
+.lp{width:50%;min-width:260px;overflow-y:auto;border-right:1px solid #d8d5d0;padding:1.5rem 1.75rem 2rem;background:#fff;}
+.tbox{background:#f0eeea;border-radius:8px;padding:1rem 1.2rem;margin-bottom:1.2rem;}
+.tbox-t{font-size:.95rem;font-weight:700;margin-bottom:.22rem;}
+.tbox-i{font-size:.85rem;color:#555;line-height:1.55;}
+.chart-ph{border:1px solid #d8d5d0;border-radius:8px;background:#f0eeea;padding:2.25rem 1rem;text-align:center;margin-bottom:1.25rem;}
+.tq{font-size:.93rem;line-height:1.75;color:#1a1a1a;}
+.rp{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#f9f8f7;}
+.ew{flex:1;padding:1.25rem 1.5rem;display:flex;flex-direction:column;overflow:hidden;}
+.eta{flex:1;width:100%;resize:none;border:1px solid #d8d5d0;border-radius:6px;padding:1rem 1.1rem;font-family:'DM Sans',sans-serif;font-size:.94rem;line-height:1.8;color:#1a1a1a;background:#fff;outline:none;}
+.eta:focus{border-color:#999;}
+.eta::placeholder{color:#bbb;}
+.wcr{display:flex;align-items:center;gap:1rem;padding:.6rem 0 0;flex-wrap:wrap;}
+.wct{font-size:.84rem;color:#666;}
+.wcn{font-weight:600;color:#1a1a1a;}
+.wcn.g{color:#2a9d68;}
+.wcbw{flex:1;height:3px;background:#e8e5e0;border-radius:3px;overflow:hidden;min-width:60px;}
+.wcbf{height:100%;background:#d8d5d0;border-radius:3px;width:0%;transition:width .3s,background .3s;}
+.wch{font-size:.78rem;color:#888;}
+.botbar{height:48px;background:#f0eeea;border-top:1px solid #d8d5d0;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+.sub-ck{position:absolute;right:1.25rem;width:32px;height:32px;border-radius:50%;background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;}
+.sub-ck:hover{background:#2a9d68;}
+
+/* RESULT OVERLAY */
+#ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:flex-start;justify-content:center;padding:1.5rem 1rem;overflow-y:auto;}
+#ovl.show{display:flex;}
+.rcard{background:#fff;border-radius:16px;padding:2rem;max-width:640px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);margin:auto;}
+.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem;}
+.rt{font-size:1.05rem;font-weight:700;}
+.rstats{display:flex;gap:1.25rem;}
+.rsv{font-size:1.2rem;font-weight:700;}
+.rsl{font-size:.68rem;color:#888;margin-top:.05rem;text-align:center;}
+.rel-lbl{font-size:.76rem;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.45rem;display:flex;align-items:center;justify-content:space-between;}
+.cpbtn{display:flex;align-items:center;gap:.3rem;padding:.28rem .75rem;border:1px solid #d8d5d0;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.74rem;color:#555;background:#fff;cursor:pointer;}
+.cpbtn:hover{border-color:#999;background:#f5f3f0;}
+.cpbtn.copied{border-color:#2a9d68;color:#2a9d68;background:#e8f5ee;}
+.reta{width:100%;min-height:160px;max-height:250px;border:1px solid #d8d5d0;border-radius:8px;padding:.85rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;line-height:1.8;color:#1a1a1a;background:#fafaf9;outline:none;resize:vertical;}
+.reta:focus{border-color:#999;background:#fff;}
+.reh{font-size:.72rem;color:#aaa;margin-top:.35rem;margin-bottom:1rem;}
+.rsect{font-size:.76rem;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin:.9rem 0 .5rem;}
+.rci{display:flex;align-items:flex-start;gap:.6rem;padding:.45rem 0;border-bottom:.5px solid #f0eeea;font-size:.84rem;line-height:1.55;}
+.rci:last-child{border-bottom:none;}
+.rdot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:1px;}
+.dok{background:#dcfce7;color:#166534;}
+.dwn{background:#fef9c3;color:#854d0e;}
+.din{background:#dbeafe;color:#1e40af;}
+.scta{border:1.5px solid #e0ddd8;border-radius:14px;padding:1.4rem 1.5rem;margin:1.25rem 0;background:#fafaf9;}
+.scta-top{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;}
+.scta-ico{width:46px;height:46px;border-radius:12px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.scta-title{font-size:1rem;font-weight:700;margin-bottom:.2rem;}
+.scta-sub{font-size:.82rem;color:#666;line-height:1.5;}
+.crit-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem;}
+.crit{background:#fff;border:1px solid #e8e5e0;border-radius:8px;padding:.6rem .75rem;display:flex;align-items:flex-start;gap:.5rem;}
+.crit-ico{font-size:.95rem;flex-shrink:0;}
+.crit-n{font-size:.78rem;font-weight:600;margin-bottom:.08rem;}
+.crit-d{font-size:.71rem;color:#888;line-height:1.45;}
+.csbtn{width:100%;padding:.7rem;background:#c8102e;color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.csbtn:hover{opacity:.88;}
+.csnote{font-size:.72rem;color:#aaa;text-align:center;margin-top:.45rem;}
+.rbtns{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.75rem;}
+.rbtn{padding:.58rem 1.3rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:500;cursor:pointer;border:1px solid #d8d5d0;background:#fff;color:#444;}
+.rbtn:hover{border-color:#999;background:#f5f3f0;}
+.rbtn.p{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.rbtn.p:hover{background:#d4541a;border-color:#d4541a;}
+
+@media(max-width:640px){.main{flex-direction:column;}.lp{width:100%!important;height:45vh;border-right:none;border-bottom:1px solid #d8d5d0;}.tbm{position:static;transform:none;margin:0 auto;}.tc{flex-wrap:wrap;}.sbtn{width:100%;margin-top:.5rem;}.crit-grid{grid-template-columns:1fr;}}
+</style>
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const app=initializeApp({apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"});
+  onAuthStateChanged(getAuth(app),function(u){if(!u)location.replace("bandio-login.html");});
+</script>
+</head>
+<body>
+
+<!-- RESULT OVERLAY -->
+<div id="ovl">
+  <div class="rcard" id="rcard"></div>
+</div>
+
+<!-- SELECTION -->
+<div id="sel">
+  <div style="background:#0e0e0e;padding:.5rem 1.25rem;display:flex;align-items:center;"><a href="bandio-mocktest.html" style="font-family:'DM Sans',sans-serif;font-size:.78rem;color:rgba(255,255,255,.6);text-decoration:none;">← Mock tests</a><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;color:#f5f2eb;margin-left:.85rem;">Band<span style="color:#d4541a;">io</span></span></div>
+<div class="ftabs">
+    <div class="ft on" id="tab-all" onclick="setTab('all',this)">All Questions</div>
+    <div class="ft" id="tab-task1" onclick="setTab('task1',this)">Task 1</div>
+    <div class="ft" id="tab-task2" onclick="setTab('task2',this)">Task 2</div>
+  </div>
+  <div class="frow">
+    <div class="sbox">
+      <span style="color:#bbb">&#128269;</span>
+      <input type="text" id="srch" placeholder="Search questions..." oninput="renderList()"/>
+    </div>
+  </div>
+  <div class="larea">
+    <div class="lhead">Writing Mock — Choose a question</div>
+    <div id="qlist"></div>
+  </div>
+</div>
+
+<!-- EXAM -->
+<div id="exam">
+  <div class="topbar">
+    <div class="tbl">
+      <button class="bkbtn" onclick="goBack()">&#8592; Back</button>
+      <span class="ib">IELTS</span>
+      <span class="tid" id="etitle">Writing Practice</span>
+    </div>
+    <div class="tbm">
+      <span class="tv" id="tvEl">40:00</span>
+      <button class="tbtn" id="tBtn" onclick="toggleTimer()">Start</button>
+    </div>
+    <div class="tbr">
+      <div class="ico" onclick="toggleFS()">&#9635;</div>
+      <div class="ico" onclick="doSubmit()">&#10003;</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="lp">
+      <div class="tbox">
+        <div class="tbox-t" id="tboxTitle">Task 2</div>
+        <div class="tbox-i" id="tboxInst">You should spend about 40 minutes on this task. Write at least 250 words.</div>
+      </div>
+      <div class="chart-ph" id="chartPh" style="display:none">
+        <div style="font-size:1.6rem;margin-bottom:.4rem">&#128202;</div>
+        <div style="font-size:.8rem;color:#888;line-height:1.6">Chart image uploaded by teacher<br>via admin panel will appear here</div>
+      </div>
+      <div class="tq" id="tqEl">Select a question to begin.</div>
+    </div>
+    <div class="rp">
+      <div class="ew">
+        <textarea class="eta" id="essayTA" placeholder="Start writing your essay here..." oninput="updateWC(this.value)"></textarea>
+        <div class="wcr">
+          <span class="wct">Words: <span class="wcn" id="wcNum">0</span></span>
+          <div class="wcbw"><div class="wcbf" id="wcBar"></div></div>
+          <span class="wch" id="wcHint">Minimum: 250 words</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="botbar">
+    <span style="font-size:.84rem;font-weight:500;color:#666" id="botLbl">Task 2</span>
+    <button class="sub-ck" id="subBtn" onclick="doSubmit()" title="Submit">&#10003;</button>
+  </div>
+</div>
+
+<script>
+var QUESTIONS = [
+  {id:1,task:'task1',title:'Bar chart — Internet access',sub:'The bar chart shows household internet access across five countries in 2005 and 2015.',inst:'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',time:20,min:150,chart:true},
+  {id:2,task:'task1',title:'Line graph — CO2 emissions',sub:'The line graph shows CO2 emissions per capita in four countries between 1990 and 2020.',inst:'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',time:20,min:150,chart:true},
+  {id:3,task:'task1',title:'Pie charts — Energy sources',sub:'The pie charts show the percentage of energy produced from different sources in 2000 and 2020.',inst:'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',time:20,min:150,chart:true},
+  {id:4,task:'task1',title:'Table — Tourist arrivals',sub:'The table shows the number of tourists visiting five countries in 2010, 2015 and 2020.',inst:'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',time:20,min:150,chart:true},
+  {id:5,task:'task1',title:'Process diagram — Paper recycling',sub:'The diagram shows the process of recycling paper.',inst:'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',time:20,min:150,chart:true},
+  {id:6,task:'task2',title:'Modern buildings & cultural identity',sub:'Modern buildings change the character and appearance of towns and cities. The government should insist that new buildings be built in traditional styles to protect cultural identity.',inst:'To what extent do you agree or disagree?',time:40,min:250,chart:false},
+  {id:7,task:'task2',title:'Technology & social interaction',sub:'Technology is making people less sociable and face-to-face communication is declining.',inst:'Do you agree or disagree with this view?',time:40,min:250,chart:false},
+  {id:8,task:'task2',title:'University vs vocational training',sub:'Some people think that universities provide more benefits to individuals and society than vocational training. Others think vocational training is more valuable.',inst:'Discuss both views and give your own opinion.',time:40,min:250,chart:false},
+  {id:9,task:'task2',title:'Individual vs government — environment',sub:'Many people believe that individuals, not governments, should be primarily responsible for protecting the environment.',inst:'To what extent do you agree or disagree?',time:40,min:250,chart:false},
+  {id:10,task:'task2',title:'International tourism',sub:'International tourism has brought enormous benefits to many countries, but it has also caused serious problems.',inst:'What are the advantages and disadvantages of international tourism?',time:40,min:250,chart:false},
+  {id:11,task:'task2',title:'Children & technology',sub:'Some people believe that children today are too dependent on technology such as smartphones and computers.',inst:'To what extent do you agree or disagree?',time:40,min:250,chart:false},
+  {id:12,task:'task2',title:'Working from home',sub:'More and more people are working from home rather than in an office. Some say this is positive while others say it has disadvantages.',inst:'Discuss both views and give your own opinion.',time:40,min:250,chart:false}
+];
+
+var activeTab = 'all';
+var currentQ  = null;
+var timerSecs = 0;
+var timerOn   = false;
+var timerInt  = null;
+
+function setTab(tab, el) {
+  activeTab = tab;
+  document.querySelectorAll('.ft').forEach(function(t){ t.classList.remove('on'); });
+  el.classList.add('on');
+  renderList();
+}
+
+function renderList() {
+  var srch = (document.getElementById('srch').value || '').toLowerCase();
+  var filtered = QUESTIONS.filter(function(q) {
+    if (activeTab === 'task1' && q.task !== 'task1') return false;
+    if (activeTab === 'task2' && q.task !== 'task2') return false;
+    if (srch && q.title.toLowerCase().indexOf(srch) === -1 && q.sub.toLowerCase().indexOf(srch) === -1) return false;
+    return true;
+  });
+  var wrap = document.getElementById('qlist');
+  if (!filtered.length) { wrap.innerHTML = '<div class="nores">No questions match your search.</div>'; return; }
+  var html = '';
+  filtered.forEach(function(q) {
+    html += '<div class="tc" onclick="startTest(' + q.id + ')">'
+      + '<div class="tc-info">'
+      + '<div class="tc-top"><span class="tc-name">' + q.title + '</span>'
+      + '<span class="fb">Free</span>'
+      + '<span class="tt ' + (q.task === 'task1' ? 't1' : 't2') + '">' + (q.task === 'task1' ? 'Task 1' : 'Task 2') + '</span></div>'
+      + '<div class="tc-sub">' + q.sub + '</div>'
+      + '<div class="tc-meta"><span class="tm">&#9200; ' + q.time + ' min</span><span class="tm-sep">|</span><span class="tm">Min ' + q.min + ' words</span><span class="tm-sep">|</span><span class="tm">' + q.inst + '</span></div>'
+      + '</div>'
+      + '<button class="sbtn" onclick="event.stopPropagation();startTest(' + q.id + ')">Start &rarr;</button>'
+      + '</div>';
+  });
+  wrap.innerHTML = html;
+}
+
+function startTest(id) {
+  var found = null;
+  for (var i = 0; i < QUESTIONS.length; i++) {
+    if (QUESTIONS[i].id === id) { found = QUESTIONS[i]; break; }
+  }
+  if (!found) return;
+  currentQ = found;
+
+  document.getElementById('etitle').textContent = currentQ.title;
+  document.getElementById('tboxTitle').textContent = currentQ.task === 'task1' ? 'Task 1' : 'Task 2';
+  document.getElementById('tboxInst').textContent = 'You should spend about ' + currentQ.time + ' minutes on this task. Write at least ' + currentQ.min + ' words.';
+  document.getElementById('chartPh').style.display = currentQ.chart ? 'block' : 'none';
+  document.getElementById('tqEl').innerHTML = '<strong>' + currentQ.sub + '</strong><br><br>' + currentQ.inst;
+  document.getElementById('botLbl').textContent = currentQ.task === 'task1' ? 'Task 1' : 'Task 2';
+  document.getElementById('essayTA').value = '';
+  document.getElementById('wcHint').textContent = 'Minimum: ' + currentQ.min + ' words';
+  updateWC('');
+  resetTimer();
+
+  document.getElementById('sel').classList.add('hide');
+  document.getElementById('exam').classList.add('show');
+}
+
+function goBack() {
+  clearInterval(timerInt);
+  timerOn = false;
+  document.getElementById('exam').classList.remove('show');
+  document.getElementById('sel').classList.remove('hide');
+  document.getElementById('ovl').classList.remove('show');
+}
+
+function toggleTimer() {
+  if (timerOn) {
+    clearInterval(timerInt);
+    timerOn = false;
+    document.getElementById('tBtn').textContent = 'Resume';
+    document.getElementById('tBtn').classList.remove('on');
+  } else {
+    timerOn = true;
+    document.getElementById('tBtn').textContent = 'Pause';
+    document.getElementById('tBtn').classList.add('on');
+    timerInt = setInterval(function() {
+      timerSecs--;
+      var m = Math.floor(timerSecs / 60);
+      var s = timerSecs % 60;
+      var el = document.getElementById('tvEl');
+      el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      el.classList.toggle('warn', timerSecs <= 300 && timerSecs > 0);
+      if (timerSecs <= 0) { clearInterval(timerInt); timerOn = false; doSubmit(); }
+    }, 1000);
+  }
+}
+
+function resetTimer() {
+  clearInterval(timerInt);
+  timerOn = false;
+  timerSecs = (currentQ ? currentQ.time : 40) * 60;
+  var m = Math.floor(timerSecs / 60);
+  document.getElementById('tvEl').textContent = m + ':00';
+  document.getElementById('tvEl').classList.remove('warn');
+  document.getElementById('tBtn').textContent = 'Start';
+  document.getElementById('tBtn').className = 'tbtn';
+}
+
+function updateWC(text) {
+  var words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+  var minW = currentQ ? currentQ.min : 250;
+  var target = minW + 80;
+  var pct = Math.min((words / target) * 100, 100);
+  document.getElementById('wcNum').textContent = words;
+  document.getElementById('wcNum').className = 'wcn' + (words >= minW ? ' g' : '');
+  document.getElementById('wcBar').style.width = pct + '%';
+  document.getElementById('wcBar').style.background = words >= minW ? '#2a9d68' : '#b0aca6';
+  if (!words) document.getElementById('wcHint').textContent = 'Minimum: ' + (currentQ ? currentQ.min : 250) + ' words';
+  else if (words < minW) document.getElementById('wcHint').textContent = (minW - words) + ' more words needed';
+  else document.getElementById('wcHint').textContent = 'Good length';
+}
+
+function doSubmit() {
+  var text = document.getElementById('essayTA').value.trim();
+  var minW = currentQ ? currentQ.min : 250;
+  if (!text) { alert('Please write something before submitting.'); return; }
+  var words = text.trim().split(/\s+/).length;
+  if (words < minW && !confirm('Your essay is ' + words + ' words, below the ' + minW + ' word minimum. Submit anyway?')) return;
+
+  clearInterval(timerInt); timerOn = false;
+
+  var paras = text.split(/\n\s*\n/).filter(function(p){ return p.trim(); }).length;
+  var sents = text.split(/[.!?]+/).filter(function(s){ return s.trim(); }).length;
+  var isT1  = currentQ && currentQ.task === 'task1';
+
+  var checks = [
+    {cls: words >= minW ? 'dok' : 'dwn', icon: words >= minW ? 'checkmark' : '!', title: 'Word count: ' + words + ' words', desc: words >= minW ? 'Meets the ' + minW + '-word minimum.' : 'Below the minimum — costs marks in the real exam.'},
+    {cls: paras >= 3 ? 'dok' : 'dwn',   icon: paras >= 3  ? 'checkmark' : '!', title: 'Paragraphs: ' + paras,              desc: paras >= 3 ? 'Good paragraph structure.' : 'Aim for at least 3-4 paragraphs.'},
+    {cls: sents >= 5 ? 'dok' : 'dwn',   icon: sents >= 5  ? 'checkmark' : '!', title: 'Sentences: ' + sents,               desc: sents >= 5 ? 'Good sentence range.' : 'Develop your ideas with more sentences.'},
+    {cls: 'din', icon: 'i', title: isT1 ? 'Did you include an overview?' : 'Did you answer all parts?', desc: isT1 ? 'Make sure you summarised the main trend.' : 'Re-read the question and check every part is addressed.'}
+  ];
+
+  var dotIcons = {checkmark: '&#10003;', '!': '!', 'i': 'i'};
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  var checksHtml = '';
+  for (var i = 0; i < checks.length; i++) {
+    var c = checks[i];
+    checksHtml += '<div class="rci"><div class="rdot ' + c.cls + '">' + dotIcons[c.icon] + '</div>'
+      + '<div><strong style="display:block;font-size:.83rem">' + c.title + '</strong>'
+      + '<span style="font-size:.8rem;color:#666">' + c.desc + '</span></div></div>';
+  }
+
+  var html = '<div class="rh">'
+    + '<div class="rt">Your ' + (isT1 ? 'Task 1 Report' : 'Task 2 Essay') + '</div>'
+    + '<div class="rstats">'
+    + '<div class="rc-stat"><div class="rsv">' + words + '</div><div class="rsl">Words</div></div>'
+    + '<div class="rc-stat"><div class="rsv">' + paras + '</div><div class="rsl">Paragraphs</div></div>'
+    + '<div class="rc-stat"><div class="rsv">' + sents + '</div><div class="rsl">Sentences</div></div>'
+    + '</div></div>'
+
+    + '<div class="rel-lbl"><span>Your essay &mdash; edit or copy</span>'
+    + '<button class="cpbtn" id="cpBtn" onclick="doCopy()">&#128203; Copy</button></div>'
+    + '<textarea class="reta" id="rEssayTA" spellcheck="true">' + escHtml(text) + '</textarea>'
+    + '<div class="reh">You can edit your essay above, then copy it to use elsewhere.</div>'
+
+    + '<div class="rsect">Self-review checklist</div>'
+    + checksHtml
+
+    + '<div class="scta">'
+    + '<div class="scta-top">'
+    + '<div class="scta-ico">&#127919;</div>'
+    + '<div><div class="scta-title">Get your real IELTS band score</div>'
+    + '<div class="scta-sub">Our AI scores your essay on all 4 official IELTS Writing criteria &mdash; just like a real examiner.</div></div>'
+    + '</div>'
+    + '<div class="crit-grid">'
+    + '<div class="crit"><span class="crit-ico">&#128221;</span><div><div class="crit-n">Task Achievement</div><div class="crit-d">Did you answer the question fully?</div></div></div>'
+    + '<div class="crit"><span class="crit-ico">&#128279;</span><div><div class="crit-n">Coherence &amp; Cohesion</div><div class="crit-d">Is your essay logically structured?</div></div></div>'
+    + '<div class="crit"><span class="crit-ico">&#128218;</span><div><div class="crit-n">Lexical Resource</div><div class="crit-d">Variety and accuracy of vocabulary.</div></div></div>'
+    + '<div class="crit"><span class="crit-ico">&#9881;</span><div><div class="crit-n">Grammatical Range</div><div class="crit-d">Range and accuracy of grammar.</div></div></div>'
+    + '</div>'
+    + '<button class="csbtn" onclick="window.location.href=\'bandio-pricing.html\'">&#127919; Check my score &mdash; Upgrade to Premium</button>'
+    + '<div class="csnote">From $9/month &middot; Cancel anytime &middot; Instant AI feedback</div>'
+    + '</div>'
+
+    + '<div class="rbtns">'
+    + '<button class="rbtn" onclick="document.getElementById(\'ovl\').classList.remove(\'show\')">Edit &amp; retry</button>'
+    + '<button class="rbtn" onclick="goBack()">Choose another question</button>'
+    + '<button class="rbtn p" onclick="window.location.href=\'bandio-dashboard.html\'">Dashboard</button>'
+    + '</div>';
+
+  document.getElementById('rcard').innerHTML = html;
+  document.getElementById('ovl').classList.add('show');
+}
+
+function doCopy() {
+  var ta = document.getElementById('rEssayTA');
+  if (!ta) return;
+  ta.select();
+  var btn = document.getElementById('cpBtn');
+  try {
+    navigator.clipboard.writeText(ta.value).then(function() {
+      btn.innerHTML = '&#10003; Copied!';
+      btn.classList.add('copied');
+      setTimeout(function(){ btn.innerHTML = '&#128203; Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  } catch(e) {
+    document.execCommand('copy');
+    btn.innerHTML = '&#10003; Copied!';
+    btn.classList.add('copied');
+    setTimeout(function(){ btn.innerHTML = '&#128203; Copy'; btn.classList.remove('copied'); }, 2000);
+  }
+}
+
+function toggleFS() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(function(){});
+  else document.exitFullscreen();
+}
+
+renderList();
+</script>
+</body>
+</html>
