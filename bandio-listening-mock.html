@@ -144,7 +144,7 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
   const auth=getAuth(app);
   const db=getFirestore(app);
   onAuthStateChanged(auth,function(u){if(!u)location.replace("bandio-login.html");});
-  // Load admin-added listening tests from Firestore and merge into TESTS list
+  // Load test cards from Firestore (admin-added tests appear in the list)
   async function loadFirestoreTests(){
     try{
       const q=query(collection(db,'tests'),where('kind','==','listening'));
@@ -152,14 +152,21 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
       if(snap.empty)return;
       snap.forEach(function(d){
         var t=d.data();
-        if(!t.name)return;
-        // Only add if not already in hardcoded list
-        if(!TESTS.find(function(x){return x.name===t.name;})){
-          TESTS.push(t);
+        if(!t.title)return;
+        if(!TESTS.find(function(x){return x.name===t.title;})){
+          TESTS.push({
+            name:      t.title,
+            sections:  '1, 2, 3, 4',
+            level:     t.level||'MEDIUM',
+            time:      t.time||'30 minutes',
+            questions: t.questions||40,
+            type:      'note',
+            tier:      t.access||'free'
+          });
         }
       });
       if(typeof renderList==='function')renderList();
-    }catch(e){console.log('Firestore tests load error:',e.message);}
+    }catch(e){console.log('Firestore listening load error:',e.message);}
   }
   loadFirestoreTests();
 </script>

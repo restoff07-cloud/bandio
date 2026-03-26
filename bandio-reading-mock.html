@@ -153,7 +153,9 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
   const auth=getAuth(app);
   const db=getFirestore(app);
   onAuthStateChanged(auth,function(u){if(!u)location.replace("bandio-login.html");});
-  // Load admin-added reading tests from Firestore and merge into TESTS list
+
+  // Store full Firestore test docs keyed by title for dynamic rendering
+  // Load test cards from Firestore (admin-added tests appear in the list)
   async function loadFirestoreTests(){
     try{
       const q=query(collection(db,'tests'),where('kind','==','reading'));
@@ -161,10 +163,17 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
       if(snap.empty)return;
       snap.forEach(function(d){
         var t=d.data();
-        if(!t.name)return;
-        // Only add if not already in hardcoded list
-        if(!TESTS.find(function(x){return x.name===t.name;})){
-          TESTS.push(t);
+        if(!t.title)return;
+        if(!TESTS.find(function(x){return x.name===t.title;})){
+          TESTS.push({
+            name:      t.title,
+            topic:     'Passages 1, 2, 3',
+            level:     t.level||'MEDIUM',
+            time:      t.time||'60 minutes',
+            questions: t.questions||40,
+            type:      'mixed',
+            tier:      t.access||'free'
+          });
         }
       });
       if(typeof renderList==='function')renderList();
@@ -344,6 +353,7 @@ function startTest(name){
   document.getElementById('exam').classList.add('show');
   resetTimer();buildDots();
 }
+
 function goBack(){
   clearInterval(ti);tr=false;
   document.getElementById('exam').classList.remove('show');
@@ -439,7 +449,6 @@ function goToPart(n) {
   var ph2 = document.querySelector('.ph2');
   if (ph1) ph1.textContent = 'Passage ' + n;
   if (ph2) ph2.textContent = 'Read the text and answer questions ' + ranges[n-1] + '.';
-  // Scroll both panels to top
   var qs = document.querySelector('.qs');
   var pass = document.getElementById('pp');
   if (qs)   qs.scrollTop = 0;
