@@ -44,8 +44,18 @@ label{font-size:.82rem;font-weight:600;color:#555;display:block;margin-bottom:.4
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   const app=initializeApp({apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"});
-  onAuthStateChanged(getAuth(app),function(u){if(!u)location.replace("bandio-login.html");});
+  const db = getFirestore(app);
+  let currentUser = null;
+  onAuthStateChanged(getAuth(app),function(u){
+    if(!u){location.replace("bandio-login.html");return;}
+    currentUser = u;
+  });
+  window._fbDb = db;
+  window._fbAddDoc = addDoc;
+  window._fbCollection = collection;
+  window._fbServerTimestamp = serverTimestamp;
 </script>
 </head>
 <body>
@@ -137,7 +147,6 @@ function submitFeedback() {
   btn.textContent = 'Sending...';
 
   var feedback = {
-    id: Date.now(),
     name:     document.getElementById('fb-name').value.trim() || 'Anonymous',
     email:    document.getElementById('fb-email').value.trim() || '—',
     category: category,
@@ -145,20 +154,32 @@ function submitFeedback() {
     message:  msg,
     date:     new Date().toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}),
     time:     new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+    createdAt: new Date().toISOString(),
     read:     false
   };
 
-  // Save to localStorage so admin can see it (will move to Firebase later)
-  try {
-    var existing = JSON.parse(localStorage.getItem('bnd_feedback') || '[]');
-    existing.unshift(feedback);
-    localStorage.setItem('bnd_feedback', JSON.stringify(existing));
-  } catch(e) {}
-
-  setTimeout(function() {
-    document.getElementById('fb-form').style.display = 'none';
-    document.getElementById('fb-success').style.display = 'block';
-  }, 600);
+  // Save to Firestore so admin can see it from any device
+  if (window._fbDb && window._fbAddDoc && window._fbCollection) {
+    window._fbAddDoc(window._fbCollection(window._fbDb, 'feedback'), feedback)
+      .then(function() {
+        document.getElementById('fb-form').style.display = 'none';
+        document.getElementById('fb-success').style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Send feedback';
+      })
+      .catch(function(e) {
+        console.log('Feedback save error:', e.message);
+        btn.disabled = false;
+        btn.textContent = 'Send feedback';
+        alert('Could not send feedback. Please try again.');
+      });
+  } else {
+    // Fallback if Firebase not ready yet
+    setTimeout(function() {
+      document.getElementById('fb-form').style.display = 'none';
+      document.getElementById('fb-success').style.display = 'block';
+    }, 600);
+  }
 }
 </script>
 </body>

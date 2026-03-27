@@ -775,10 +775,13 @@ document.addEventListener('DOMContentLoaded', function() {
       const hint = document.getElementById('sp-part-hint');
       if (hint) hint.textContent = SP_HINTS[1];
       renderSpQuestions();
-      // Load students AFTER Firebase Auth is confirmed
-      setTimeout(function() {
-        if (window.loadStudentsFromFirestore) window.loadStudentsFromFirestore();
-      }, 800);
+      // Load students after Firebase Auth confirms sign-in
+      // fbAdminSignIn now resolves only after auth state is confirmed
+      if (window.loadStudentsFromFirestore) {
+        setTimeout(function() {
+          window.loadStudentsFromFirestore();
+        }, 500);
+      }
     } else {
       err.classList.add('show');
       document.getElementById('admin-pw').style.borderColor = '#e24b4a';
@@ -2152,13 +2155,33 @@ renderStudents(STUDENTS);
 // ── FEEDBACK ADMIN ───────────────────────────────────────────────
 var fbActiveFilter = 'all';
 
-function loadFeedback() {
-  try { return JSON.parse(localStorage.getItem('bnd_feedback') || '[]'); }
-  catch(e) { return []; }
+// Feedback loaded from Firestore — cached here after load
+var _feedbackCache = [];
+
+async function loadFeedbackFromFirestore() {
+  try {
+    var fs = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var app = window._adminFirebaseApp;
+    if (!app) return;
+    var db  = fs.getFirestore(app);
+    var snap = await fs.getDocs(fs.query(
+      fs.collection(db, 'feedback'),
+      fs.orderBy('createdAt', 'desc')
+    ));
+    _feedbackCache = [];
+    snap.forEach(function(d) {
+      var data = d.data();
+      data._docId = d.id;
+      _feedbackCache.push(data);
+    });
+    renderFeedback(window.fbActiveFilter || 'all');
+  } catch(e) {
+    console.log('Feedback load error:', e.message);
+  }
 }
-function saveFeedback(data) {
-  try { localStorage.setItem('bnd_feedback', JSON.stringify(data)); } catch(e) {}
-}
+
+function loadFeedback() { return _feedbackCache; }
+function saveFeedback(data) { _feedbackCache = data; }
 
 function renderFeedback(filter) {
   var all    = loadFeedback();
@@ -2198,7 +2221,8 @@ function renderFeedback(filter) {
       'Question':'background:#fef9c3;color:#78350f'
     }[f.category] || 'background:#f0eeea;color:#555';
 
-    return '<div class="card" style="margin-bottom:.75rem;padding:1.25rem 1.4rem;cursor:pointer;border-left:3px solid '+(f.read?'transparent':'#d4541a')+'" onclick="markRead('+f.id+')">'
+    return '<div class="card" style="margin-bottom:.75rem;padding:1.25rem 1.4rem;cursor:pointer;border-left:3px solid '+(f.read?'transparent':'#d4541a')+'" onclick="markRead(\''+f._docId+'\')">'
+
       + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.4rem;">'
       + '<div style="display:flex;align-items:center;gap:.55rem;">'
       + (f.read ? '' : '<span style="width:8px;height:8px;background:#d4541a;border-radius:50%;flex-shrink:0;display:inline-block"></span>')
@@ -2215,25 +2239,54 @@ function renderFeedback(filter) {
   }).join('');
 }
 
-function markRead(id) {
-  var all = loadFeedback();
-  all = all.map(function(f){ if(f.id===id){ f.read=true; } return f; });
-  saveFeedback(all);
-  renderFeedback(fbActiveFilter);
+function markRead(docId) {
+  // Update locally first for instant UI
+  _feedbackCache = _feedbackCache.map(function(f){
+    if(f._docId===docId){ f.read=true; }
+    return f;
+  });
+  renderFeedback(window.fbActiveFilter||'all');
+  // Update in Firestore
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fs){
+    var app = window._adminFirebaseApp;
+    if (!app) return;
+    var db = fs.getFirestore(app);
+    fs.updateDoc(fs.doc(db,'feedback',docId),{read:true}).catch(function(e){
+      console.log('markRead error:',e.message);
+    });
+  });
 }
 
 function markAllRead() {
-  var all = loadFeedback().map(function(f){ f.read=true; return f; });
-  saveFeedback(all);
-  renderFeedback(fbActiveFilter);
+  _feedbackCache = _feedbackCache.map(function(f){ f.read=true; return f; });
+  renderFeedback(window.fbActiveFilter||'all');
   window.showToast('All messages marked as read.');
+  // Update all in Firestore
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fs){
+    var app = window._adminFirebaseApp;
+    if (!app) return;
+    var db = fs.getFirestore(app);
+    _feedbackCache.forEach(function(f){
+      if (f._docId) fs.updateDoc(fs.doc(db,'feedback',f._docId),{read:true}).catch(function(){});
+    });
+  });
 }
 
 function clearAllFeedback() {
   if (!confirm('Delete all feedback messages? This cannot be undone.')) return;
-  saveFeedback([]);
-  renderFeedback(fbActiveFilter);
+  var toDelete = _feedbackCache.slice();
+  _feedbackCache = [];
+  renderFeedback(window.fbActiveFilter||'all');
   window.showToast('All feedback cleared.');
+  // Delete from Firestore
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fs){
+    var app = window._adminFirebaseApp;
+    if (!app) return;
+    var db = fs.getFirestore(app);
+    toDelete.forEach(function(f){
+      if (f._docId) fs.deleteDoc(fs.doc(db,'feedback',f._docId)).catch(function(){});
+    });
+  });
 }
 
 function fbFilter(filter, btn) {
@@ -2342,17 +2395,27 @@ window.showPage = function(name, btn) {
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
+  window._adminFirebaseApp = app; // expose for feedback module
 
   // Sign in as admin when password is entered so Firestore rules pass
   // You must have a Firebase Auth account with isAdmin:true in Firestore
-  window.fbAdminSignIn = async function(email, password) {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      return true;
-    } catch(e) {
-      console.log('Admin auth failed:', e.message);
-      return false;
-    }
+  window.fbAdminSignIn = function(email, password) {
+    return new Promise(function(resolve) {
+      signInWithEmailAndPassword(auth, email, password)
+        .then(function() {
+          // Wait for onAuthStateChanged to confirm sign-in
+          var unsub = auth.onAuthStateChanged(function(user) {
+            if (user) {
+              unsub(); // stop listening
+              resolve(true);
+            }
+          });
+        })
+        .catch(function(e) {
+          console.log('Admin auth failed:', e.message);
+          resolve(false);
+        });
+    });
   };
 
   // Load all students from Firestore
@@ -2493,6 +2556,7 @@ window.showPage = function(name, btn) {
     if (name === 'students') loadStudentsFromFirestore();
     if (name === 'referrals') loadStudentsFromFirestore();
     if (name === 'dashboard') loadStudentsFromFirestore();
+    if (name === 'feedback') loadFeedbackFromFirestore();
     if (name === 'vocab') {
       // Load vocab sets from Firestore
       if (window.fbLoadVocab) {
