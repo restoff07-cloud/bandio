@@ -2063,6 +2063,9 @@ document.addEventListener('DOMContentLoaded', function() {
 window.STUDENTS = window.STUDENTS || [];
 var STUDENTS = window.STUDENTS;
 
+// Keep STUDENTS in sync with window.STUDENTS at render time
+function getStudents() { return window.STUDENTS; }
+
 function planBadge(plan) {
   if (plan === 'premium')   return '<span class="plan-premium">Premium ✦</span>';
   if (plan === 'intensive')  return '<span style="font-weight:600;color:#7c3aed;">Intensive ✦✦</span>';
@@ -2109,18 +2112,19 @@ function renderStudents(list) {
       '</tr>';
   }).join('');
 
-  var total = STUDENTS.length;
-  var prem  = STUDENTS.filter(function(s){ return s.plan==='premium'||s.plan==='intensive'; }).length;
-  var free  = STUDENTS.filter(function(s){ return s.plan==='free'||!s.plan; }).length;
+  var total = window.STUDENTS.filter(function(s){ return s.email && s.name && !s.isAdmin; }).length;
+  var prem  = window.STUDENTS.filter(function(s){ return s.plan==='premium'||s.plan==='intensive'; }).length;
+  var free  = window.STUDENTS.filter(function(s){ return (s.plan==='free'||!s.plan) && s.email && s.name && !s.isAdmin; }).length;
   var ts=document.getElementById('st-total'); if(ts) ts.textContent=total;
   var ps=document.getElementById('st-prem');  if(ps) ps.textContent=prem;
   var fs=document.getElementById('st-free');  if(fs) fs.textContent=free;
 }
 
+window.filterStudents = filterStudents;
 function filterStudents() {
   var q      = (document.getElementById('student-search').value||'').toLowerCase().trim();
   var filter = document.getElementById('student-filter').value;
-  var result = STUDENTS.filter(function(s) {
+  var result = window.STUDENTS.filter(function(s) {
     if (!s.email || !s.name) return false;
     if (s.isAdmin === true) return false;
     var matchQ = !q || (s.name||'').toLowerCase().indexOf(q)!==-1 || (s.email||'').toLowerCase().indexOf(q)!==-1;
