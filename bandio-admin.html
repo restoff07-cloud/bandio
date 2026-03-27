@@ -2429,23 +2429,26 @@ window.showPage = function(name, btn) {
   async function loadStudentsFromFirestore() {
     try {
       const snap = await getDocs(collection(db, 'users'));
-      window.STUDENTS = [];
+      var loaded = [];
       snap.forEach(function(d) {
         var data = d.data();
         data.uid = d.id;
-        window.STUDENTS.push(data);
+        loaded.push(data);
       });
       // Sort by joined date newest first
-      window.STUDENTS.sort(function(a,b) {
+      loaded.sort(function(a,b) {
         var at = a.joinedAt ? a.joinedAt.seconds : 0;
         var bt = b.joinedAt ? b.joinedAt.seconds : 0;
         return bt - at;
       });
       // Sync to local STUDENTS array and re-render
-      if (typeof STUDENTS !== 'undefined') {
-        STUDENTS.length = 0;
-        window.STUDENTS.forEach(function(s){ STUDENTS.push(s); });
-      }
+      // Push into shared array without breaking the reference
+      window.STUDENTS.length = 0;
+      loaded.forEach(function(s){ window.STUDENTS.push(s); });
+
+
+
+
       if (typeof filterStudents === 'function') filterStudents();
       // Update overview stats
       var total = STUDENTS.length;
