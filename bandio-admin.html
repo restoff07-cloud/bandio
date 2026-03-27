@@ -2388,6 +2388,20 @@ window.showPage = function(name, btn) {
   if (name === 'referrals') renderReferrals();
 };
 
+
+// Expose functions to global scope for onclick handlers
+window.clearAllFeedback = clearAllFeedback;
+window.markAllRead = markAllRead;
+window.markRead = markRead;
+window.fbFilter = fbFilter;
+window.giveBonusReward = giveBonusReward;
+window.quickBonus = quickBonus;
+window.deleteVocabSet = deleteVocabSet;
+window.showVocabForm = showVocabForm;
+window.hideVocabForm = hideVocabForm;
+window.addWordRow = addWordRow;
+window.saveVocabSet = saveVocabSet;
+
 }); // end DOMContentLoaded
 
 </script>
