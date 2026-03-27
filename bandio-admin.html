@@ -2134,6 +2134,7 @@ function filterStudents() {
   renderStudents(result);
 }
 
+window.setPlan = setPlan;
 function setPlan(uid, plan) {
   var s = STUDENTS.find(function(x){ return x.uid===uid; });
   if (!s) return;
