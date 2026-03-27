@@ -782,6 +782,11 @@ document.addEventListener('DOMContentLoaded', function() {
           window.loadStudentsFromFirestore();
         }, 500);
       }
+      if (window.loadFeedbackFromFirestore) {
+        setTimeout(function() {
+          window.loadFeedbackFromFirestore();
+        }, 700);
+      }
     } else {
       err.classList.add('show');
       document.getElementById('admin-pw').style.borderColor = '#e24b4a';
@@ -2055,7 +2060,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
 // ── STUDENT MANAGEMENT ───────────────────────────────────────────
-var STUDENTS = [];
+window.STUDENTS = window.STUDENTS || [];
+var STUDENTS = window.STUDENTS;
 
 function planBadge(plan) {
   if (plan === 'premium')   return '<span class="plan-premium">Premium ✦</span>';
@@ -2158,6 +2164,7 @@ var fbActiveFilter = 'all';
 // Feedback loaded from Firestore — cached here after load
 var _feedbackCache = [];
 
+window.loadFeedbackFromFirestore = loadFeedbackFromFirestore;
 async function loadFeedbackFromFirestore() {
   try {
     var fs = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
