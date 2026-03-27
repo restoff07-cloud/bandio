@@ -2121,6 +2121,8 @@ function filterStudents() {
   var q      = (document.getElementById('student-search').value||'').toLowerCase().trim();
   var filter = document.getElementById('student-filter').value;
   var result = STUDENTS.filter(function(s) {
+    if (!s.email || !s.name) return false;
+    if (s.isAdmin === true) return false;
     var matchQ = !q || (s.name||'').toLowerCase().indexOf(q)!==-1 || (s.email||'').toLowerCase().indexOf(q)!==-1;
     var matchF = filter==='all' || (s.plan||'free')===filter;
     return matchQ && matchF;
