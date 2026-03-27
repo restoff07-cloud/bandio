@@ -775,6 +775,10 @@ document.addEventListener('DOMContentLoaded', function() {
       const hint = document.getElementById('sp-part-hint');
       if (hint) hint.textContent = SP_HINTS[1];
       renderSpQuestions();
+      // Load students AFTER Firebase Auth is confirmed
+      setTimeout(function() {
+        if (window.loadStudentsFromFirestore) window.loadStudentsFromFirestore();
+      }, 800);
     } else {
       err.classList.add('show');
       document.getElementById('admin-pw').style.borderColor = '#e24b4a';
@@ -2396,10 +2400,19 @@ window.showPage = function(name, btn) {
   // Set plan in Firestore
   window.fbSetPlan = async function(uid, plan) {
     var expiry = plan === 'free' ? null : getExpiryDate();
+
+    // Writing checks per plan
+    // Premium: 25 total, Intensive: 60 total, Free: 0
+    var writingChecksTotal = 0;
+    if (plan === 'premium')   writingChecksTotal = 25;
+    if (plan === 'intensive') writingChecksTotal = 60;
+
     await updateDoc(doc(db, 'users', uid), {
-      plan: plan,
-      planExpires: plan === 'free' ? '—' : expiry,
-      planUpdatedAt: serverTimestamp()
+      plan:              plan,
+      planExpires:       plan === 'free' ? '—' : expiry,
+      planUpdatedAt:     serverTimestamp(),
+      writingChecksUsed: 0,
+      writingChecksTotal: writingChecksTotal
     });
   };
 
@@ -2491,8 +2504,8 @@ window.showPage = function(name, btn) {
     }
   };
 
-  // Auto-load on init
-  loadStudentsFromFirestore();
+  // Expose loadStudents so doLogin can call it after signing in
+  window.loadStudentsFromFirestore = loadStudentsFromFirestore;
 </script>
 
 <script>

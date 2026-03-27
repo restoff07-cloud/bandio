@@ -210,7 +210,14 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 
 // Auth redirect
-onAuthStateChanged(auth,function(u){if(!u)location.replace("bandio-login.html");});
+onAuthStateChanged(auth,async function(u){
+  if(!u){location.replace("bandio-login.html");return;}
+  try{
+    const {getDoc,doc}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap=await getDoc(doc(db,'users',u.uid));
+    if(snap.exists()) localStorage.setItem('bnd_plan',snap.data().plan||'free');
+  }catch(e){}
+});
 
 // Load vocab sets added by admin from Firestore
 async function loadFirestoreVocab(){
@@ -233,7 +240,16 @@ async function loadFirestoreVocab(){
       var btn=document.createElement('button');
       btn.className='sb-item';
       btn.innerHTML='<span class="sb-icon">'+icon+'</span> '+set.name+' '+badge;
-      btn.onclick=function(){selectSet(set.category||'cambridge',set.name,btn);};
+      btn.onclick=function(){
+        if(set.tier==='premium'){
+          var plan=localStorage.getItem('bnd_plan')||'free';
+          if(plan!=='premium'&&plan!=='intensive'){
+            document.getElementById('premOverlay').classList.add('show');
+            return;
+          }
+        }
+        selectSet(set.category||'cambridge',set.name,btn);
+      };
       list.appendChild(btn);
       added++;
     });
