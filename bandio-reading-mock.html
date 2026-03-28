@@ -363,34 +363,54 @@ function renderList(){
   });
   var w=document.getElementById('tlist');
   if(!f.length){w.innerHTML='<div class="nores">No tests match your filters.</div>';return;}
-  w.innerHTML=f.map(function(t){return'<div class="tcard"><div class="tcard-info"><div class="tcard-top"><span class="tcard-name">'+t.name+'</span><span class="tbadge '+(t.tier==='free'?'free':'prem')+'">'+(t.tier==='free'?'🎁 Free':'🔒 Premium')+'</span></div><div class="tcard-sub">Passages: '+t.topic+' – '+t.level+' Level</div><div class="tcard-meta"><span class="tmeta">📊 '+t.level+'</span><span class="tmeta-sep">|</span><span class="tmeta">⏱ '+t.time+'</span><span class="tmeta-sep">|</span><span class="tmeta">✓ '+t.questions+' questions</span></div></div>'+(t.tier==='premium'?'<button class="start-btn locked" onclick="alert(\'Upgrade to Premium to access this test.\')">🔒 Premium</button>':'<button class="start-btn" onclick="startTest(\''+t.name+'\')">Start test</button>')+'</div>';}).join('');
+  w.innerHTML=f.map(function(t){return'<div class="tcard"><div class="tcard-info"><div class="tcard-top"><span class="tcard-name">'+t.name+'</span><span class="tbadge '+(t.tier==='free'?'free':'prem')+'">'+(t.tier==='free'?'🎁 Free':'🔒 Premium')+'</span></div><div class="tcard-sub">Passages: '+t.topic+' – '+t.level+' Level</div><div class="tcard-meta"><span class="tmeta">📊 '+t.level+'</span><span class="tmeta-sep">|</span><span class="tmeta">⏱ '+t.time+'</span><span class="tmeta-sep">|</span><span class="tmeta">✓ '+t.questions+' questions</span></div></div>'+(t.tier==='premium'?'<button class="start-btn" onclick="alert(\'Upgrade to Premium to access this test.\')">🔒 Start</button>':'<button class="start-btn" onclick="startTest(\''+t.name+'\')">Start test</button>')+'</div>';}).join('');
 }
 function startTest(name){
-  // Check if test is premium and user has access
   var test = TESTS.find(function(t){ return t.name===name; });
-  if (test && test.tier==='premium') {
-    // Fetch plan live from Firestore — don't trust localStorage
-    if (window._currentUserUid && window._checkPlanLive) {
-      window._checkPlanLive(window._currentUserUid).then(function(plan) {
-        if (plan === 'premium' || plan === 'intensive') {
-          _startTestNow(name);
-        } else {
-          alert('This test requires Premium or Intensive. Contact us on Telegram @abduganiev9009 after payment.');
-        }
-      });
-      return;
-    } else {
-      // Fallback to localStorage if Firebase not ready
-      var plan = localStorage.getItem('bnd_plan') || 'free';
-      if (plan !== 'premium' && plan !== 'intensive') {
-        alert('This test requires Premium or Intensive. Contact us on Telegram @abduganiev9009 after payment.');
-        return;
-      }
-    }
+  if (!test || test.tier !== 'premium') { _startTestNow(name); return; }
+
+  // Show loading state
+  var btn = document.querySelector('.start-btn.locked') ||
+            [].slice.call(document.querySelectorAll('.start-btn')).find(function(b){
+              return b.getAttribute('onclick') && b.getAttribute('onclick').indexOf(name) !== -1;
+            });
+
+  // Fetch plan directly from Firebase REST API — no module scope dependency
+  var uid = window._currentUserUid;
+  if (!uid) {
+    // Not loaded yet — wait 1.5s and retry once
+    setTimeout(function(){ startTest(name); }, 1500);
+    return;
   }
-  _startTestNow(name);
-  return;
+
+  var API_KEY = 'AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM';
+  var url = 'https://firestore.googleapis.com/v1/projects/bandio-53433/databases/(default)/documents/users/' + uid + '?key=' + API_KEY;
+
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      var plan = 'free';
+      if (data && data.fields && data.fields.plan && data.fields.plan.stringValue) {
+        plan = data.fields.plan.stringValue;
+      }
+      localStorage.setItem('bnd_plan', plan);
+      if (plan === 'premium' || plan === 'intensive') {
+        _startTestNow(name);
+      } else {
+        alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
+      }
+    })
+    .catch(function() {
+      // Fallback to localStorage if fetch fails
+      var plan = localStorage.getItem('bnd_plan') || 'free';
+      if (plan === 'premium' || plan === 'intensive') {
+        _startTestNow(name);
+      } else {
+        alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
+      }
+    });
 }
+
 function _startTestNow(name) {
   document.getElementById('test-title').textContent=name;
   document.getElementById('sel').classList.add('hide');
