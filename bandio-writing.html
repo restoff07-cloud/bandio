@@ -822,9 +822,6 @@ async function doCheck() {
     btn.disabled=false; return;
   }
 
-  // Record usage in Firestore BEFORE calling AI
-  await window.recordWritingCheck();
-  updateChkBadge();
   btn.textContent = 'Analysing your writing...';
   btn.disabled = true;
   res.style.display = 'block';
@@ -882,15 +879,26 @@ async function doCheck() {
     var jsonEnd   = raw.lastIndexOf('}');
     if (jsonStart !== -1 && jsonEnd !== -1) raw = raw.slice(jsonStart, jsonEnd + 1);
     var result = JSON.parse(raw);
+    // Only deduct check AFTER successful AI response
+    await window.recordWritingCheck();
+    updateChkBadge();
     renderFeedback(result, words, isT1);
 
   } catch(err) {
+    console.error('Writing check error:', err);
+    if (!doCheck._retries) doCheck._retries = 0;
+    if (doCheck._retries < 2) {
+      doCheck._retries++;
+      res.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#888;font-size:.86rem;">Still working... retrying (' + doCheck._retries + '/2)</div>';
+      setTimeout(function() { doCheck(); }, 3000);
+      return;
+    }
+    doCheck._retries = 0;
     res.innerHTML = '<div style="background:#fee2e2;border-radius:12px;padding:1.25rem;font-size:.86rem;color:#991b1b;">'
       + '<strong style="display:block;margin-bottom:.4rem;">Something went wrong</strong>'
-      + 'Our Senior Examiner could not process your writing. Please check your internet connection and try again in a moment.<br>'
-      + '<button onclick="doCheck()" style="margin-top:.75rem;padding:.4rem 1rem;background:#c8102e;color:#fff;border:none;border-radius:8px;font-family:\'DM Sans\',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;">Try again</button>'
+      + 'Our Senior Examiner could not process your writing. Please try again.<br>'
+      + '<button onclick="doCheck._retries=0;doCheck()" style="margin-top:.75rem;padding:.4rem 1rem;background:#c8102e;color:#fff;border:none;border-radius:8px;font-family:\'DM Sans\',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;">Try again</button>'
       + '</div>';
-    console.error('Writing check error:', err);
   }
 
   btn.textContent = 'Check my writing \u2192';
@@ -1037,16 +1045,14 @@ updateChkBadge();
 
       const plan        = _userData.plan || 'free';
       const bonusEssays = _userData.aiWritingBonus || 0;
-      const limit       = plan === 'intensive' ? 65 + bonusEssays
-                        : plan === 'premium'   ? 30 + bonusEssays
+      const limit       = plan === 'intensive' ? 60 + bonusEssays
+                        : plan === 'premium'   ? 25 + bonusEssays
                         : 2  + bonusEssays;
 
-      const month       = new Date().toISOString().slice(0,7);
-      const storedMonth = _userData.writingCheckMonth || '';
-      const used        = storedMonth === month ? (_userData.writingChecksUsed || 0) : 0;
+      // Total checks used (not monthly)
+      const used = _userData.writingChecksUsed || 0;
 
       // Cache for display only
-      localStorage.setItem('bnd_w_month', month);
       localStorage.setItem('bnd_w_used',  String(used));
       localStorage.setItem('bnd_w_limit', String(limit));
       _limitLoaded = true;
@@ -1070,12 +1076,11 @@ updateChkBadge();
       const data = snap.exists() ? snap.data() : {};
       const plan        = data.plan || 'free';
       const bonusEssays = data.aiWritingBonus || 0;
-      const limit       = plan === 'intensive' ? 65 + bonusEssays
-                        : plan === 'premium'   ? 30 + bonusEssays
+      const limit       = plan === 'intensive' ? 60 + bonusEssays
+                        : plan === 'premium'   ? 25 + bonusEssays
                         : 2  + bonusEssays;
-      const month       = new Date().toISOString().slice(0,7);
-      const storedMonth = data.writingCheckMonth || '';
-      const used        = storedMonth === month ? (data.writingChecksUsed || 0) : 0;
+      // Total checks (not monthly) — premium gets 25 total, intensive gets 60 total
+      const used = data.writingChecksUsed || 0;
 
       if (used >= limit) {
         return { allowed: false, reason: 'limit', used, limit, plan };
@@ -1093,26 +1098,18 @@ updateChkBadge();
     try {
       const snap  = await getDoc(doc(_db, 'users', _currentUser.uid));
       const data  = snap.exists() ? snap.data() : {};
-      const month = new Date().toISOString().slice(0,7);
-      const storedMonth = data.writingCheckMonth || '';
-      const prev  = storedMonth === month ? (parseInt(data.writingChecksUsed)||0) : 0;
+      const prev  = parseInt(data.writingChecksUsed) || 0;
       const newCount = prev + 1;
       await updateDoc(doc(_db, 'users', _currentUser.uid), {
-        writingChecksUsed:  newCount,
-        writingCheckMonth:  month
+        writingChecksUsed: newCount
       });
-      localStorage.setItem('bnd_w_used',  String(newCount));
-      localStorage.setItem('bnd_w_month', month);
-      _userData = { ...(data||{}), writingChecksUsed: newCount, writingCheckMonth: month };
+      localStorage.setItem('bnd_w_used', String(newCount));
+      _userData = { ...(data||{}), writingChecksUsed: newCount };
       updateChkBadge();
     } catch(e) {
-      // If Firestore update fails (e.g. rules), still allow the check — log for debugging
-      console.warn('recordWritingCheck failed (non-fatal):', e.message);
-      // Fallback: track in localStorage only
-      const month = new Date().toISOString().slice(0,7);
+      console.warn('recordWritingCheck failed:', e.message);
       const prev = parseInt(localStorage.getItem('bnd_w_used')||'0');
       localStorage.setItem('bnd_w_used', String(prev+1));
-      localStorage.setItem('bnd_w_month', month);
       updateChkBadge();
     }
   };
