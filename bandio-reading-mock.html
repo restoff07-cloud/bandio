@@ -152,6 +152,7 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
   const app=initializeApp(cfg);
   const auth=getAuth(app);
   const db=getFirestore(app);
+  window._firebaseAuth = auth;
   onAuthStateChanged(auth,async function(u){
     if(!u){location.replace("bandio-login.html");return;}
     window._currentUserUid = u.uid;
@@ -369,46 +370,53 @@ function startTest(name){
   var test = TESTS.find(function(t){ return t.name===name; });
   if (!test || test.tier !== 'premium') { _startTestNow(name); return; }
 
-  // Show loading state
-  var btn = document.querySelector('.start-btn.locked') ||
-            [].slice.call(document.querySelectorAll('.start-btn')).find(function(b){
-              return b.getAttribute('onclick') && b.getAttribute('onclick').indexOf(name) !== -1;
-            });
-
-  // Fetch plan directly from Firebase REST API — no module scope dependency
   var uid = window._currentUserUid;
   if (!uid) {
-    // Not loaded yet — wait 1.5s and retry once
     setTimeout(function(){ startTest(name); }, 1500);
     return;
   }
 
-  var API_KEY = 'AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM';
-  var url = 'https://firestore.googleapis.com/v1/projects/bandio-53433/databases/(default)/documents/users/' + uid + '?key=' + API_KEY;
-
-  fetch(url)
-    .then(function(r){ return r.json(); })
-    .then(function(data) {
-      var plan = 'free';
-      if (data && data.fields && data.fields.plan && data.fields.plan.stringValue) {
-        plan = data.fields.plan.stringValue;
-      }
-      localStorage.setItem('bnd_plan', plan);
-      if (plan === 'premium' || plan === 'intensive') {
-        _startTestNow(name);
-      } else {
-        alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
-      }
-    })
-    .catch(function() {
-      // Fallback to localStorage if fetch fails
-      var plan = localStorage.getItem('bnd_plan') || 'free';
-      if (plan === 'premium' || plan === 'intensive') {
-        _startTestNow(name);
-      } else {
-        alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
-      }
-    });
+  // Use Firebase SDK via the already-loaded module scope token
+  // Get fresh ID token from the current Firebase user
+  if (window._firebaseAuth && window._firebaseAuth.currentUser) {
+    window._firebaseAuth.currentUser.getIdToken(true)
+      .then(function(token) {
+        var url = 'https://firestore.googleapis.com/v1/projects/bandio-53433/databases/(default)/documents/users/' + uid;
+        return fetch(url, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data) {
+        var plan = 'free';
+        if (data && data.fields && data.fields.plan && data.fields.plan.stringValue) {
+          plan = data.fields.plan.stringValue;
+        }
+        localStorage.setItem('bnd_plan', plan);
+        if (plan === 'premium' || plan === 'intensive') {
+          _startTestNow(name);
+        } else {
+          alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
+        }
+      })
+      .catch(function(e) {
+        console.log('Plan check error:', e);
+        var plan = localStorage.getItem('bnd_plan') || 'free';
+        if (plan === 'premium' || plan === 'intensive') {
+          _startTestNow(name);
+        } else {
+          alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
+        }
+      });
+  } else {
+    // Firebase not ready — fallback to localStorage
+    var plan = localStorage.getItem('bnd_plan') || 'free';
+    if (plan === 'premium' || plan === 'intensive') {
+      _startTestNow(name);
+    } else {
+      alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
+    }
+  }
 }
 
 function _startTestNow(name) {

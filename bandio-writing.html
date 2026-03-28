@@ -859,8 +859,9 @@ async function doCheck() {
         contents: [{ role: 'user', parts: parts }],
         generationConfig: {
           temperature: 0.2,
-          maxOutputTokens: 2048,
-          responseMimeType: 'application/json'
+          maxOutputTokens: 8192,
+          responseMimeType: 'application/json',
+          thinkingConfig: { thinkingBudget: 0 }
         }
       })
     });
