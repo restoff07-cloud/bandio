@@ -212,10 +212,27 @@ const db=getFirestore(app);
 // Auth redirect
 onAuthStateChanged(auth,async function(u){
   if(!u){location.replace("bandio-login.html");return;}
+  window._currentUserUid = u.uid;
+  window._checkPlanLive = async function(uid){
+    try{
+      const {getDoc,doc}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const snap=await getDoc(doc(db,'users',uid));
+      if(snap.exists()){var p=snap.data().plan||'free';localStorage.setItem('bnd_plan',p);return p;}
+    }catch(e){}
+    return localStorage.getItem('bnd_plan')||'free';
+  };
   try{
     const {getDoc,doc}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const snap=await getDoc(doc(db,'users',u.uid));
-    if(snap.exists()) localStorage.setItem('bnd_plan',snap.data().plan||'free');
+    if(snap.exists()){
+      var plan=snap.data().plan||'free';
+      localStorage.setItem('bnd_plan',plan);
+      // If premium/intensive, remove word limit immediately
+      if(plan==='premium'||plan==='intensive'){
+        window._userIsPremium = true;
+        updateUsageDisplay();
+      }
+    }
   }catch(e){}
 });
 
@@ -242,11 +259,26 @@ async function loadFirestoreVocab(){
       btn.innerHTML='<span class="sb-icon">'+icon+'</span> '+set.name+' '+badge;
       btn.onclick=function(){
         if(set.tier==='premium'){
-          var plan=localStorage.getItem('bnd_plan')||'free';
-          if(plan!=='premium'&&plan!=='intensive'){
-            document.getElementById('premOverlay').classList.add('show');
-            return;
+          var uid=window._currentUserUid;
+          if(uid&&window._checkPlanLive){
+            window._checkPlanLive(uid).then(function(plan){
+              if(plan==='premium'||plan==='intensive'){
+                window._userIsPremium=true;updateUsage();
+                selectSet(set.category||'cambridge',set.name,btn);
+              } else {
+                document.getElementById('premOverlay').classList.add('show');
+              }
+            });
+          } else {
+            var plan=localStorage.getItem('bnd_plan')||'free';
+            if(plan==='premium'||plan==='intensive'){
+              window._userIsPremium=true;updateUsage();
+              selectSet(set.category||'cambridge',set.name,btn);
+            } else {
+              document.getElementById('premOverlay').classList.add('show');
+            }
           }
+          return;
         }
         selectSet(set.category||'cambridge',set.name,btn);
       };
@@ -343,11 +375,11 @@ loadFirestoreVocab();
     </div>
 
     <div class="sb-section" style="margin-top:.5rem">Premium sets ✦</div>
-    <button class="sb-item" onclick="document.getElementById('premOverlay').classList.add('show')">
+    <button class="sb-item" onclick="checkPremiumThenShow(this)">
       <span class="sb-icon">📚</span> Essential Words
       <span class="sb-badge badge-prem">Premium</span>
     </button>
-    <button class="sb-item" onclick="document.getElementById('premOverlay').classList.add('show')">
+    <button class="sb-item" onclick="checkPremiumThenShow(this)">
       <span class="sb-icon">🎯</span> Academic Word List
       <span class="sb-badge badge-prem">Premium</span>
     </button>
@@ -472,11 +504,19 @@ let matchAttempts = 0;
 
 // ── USAGE ─────────────────────────────────────────────────────────────
 function updateUsage() {
+  var plan = localStorage.getItem('bnd_plan') || 'free';
+  if (plan === 'premium' || plan === 'intensive' || window._userIsPremium) {
+    document.getElementById('usageFill').style.width = '100%';
+    document.getElementById('usageFill').style.background = '#2a9d68';
+    document.getElementById('usageNum').textContent = '∞ Unlimited';
+    return;
+  }
   const pct = Math.min((wordsStudied / FREE_LIMIT) * 100, 100);
   document.getElementById('usageFill').style.width = pct + '%';
   document.getElementById('usageNum').textContent = wordsStudied + '/' + FREE_LIMIT;
   if (wordsStudied >= FREE_LIMIT) document.getElementById('usageFill').style.background = '#e24b4a';
 }
+function updateUsageDisplay() { updateUsage(); }
 
 function addUsage(n) {
   wordsStudied = Math.min(wordsStudied + n, FREE_LIMIT);
@@ -485,7 +525,34 @@ function addUsage(n) {
 }
 
 function atLimit() {
+  // Premium and Intensive users have no word limit
+  if (window._userIsPremium) return false;
+  var plan = localStorage.getItem('bnd_plan') || 'free';
+  if (plan === 'premium' || plan === 'intensive') {
+    window._userIsPremium = true;
+    return false;
+  }
   return wordsStudied >= FREE_LIMIT;
+}
+
+// ── PREMIUM CHECK ───────────────────────────────────────────────────────
+function checkPremiumThenShow(btn) {
+  var uid = window._currentUserUid;
+  var tryOpen = function(plan) {
+    if (plan === 'premium' || plan === 'intensive') {
+      window._userIsPremium = true;
+      updateUsage();
+      var name = btn.textContent.replace(/[\U0001F512\u2756]/g,'').trim();
+      selectSet('topic', name, btn);
+    } else {
+      document.getElementById('premOverlay').classList.add('show');
+    }
+  };
+  if (uid && window._checkPlanLive) {
+    window._checkPlanLive(uid).then(tryOpen);
+  } else {
+    tryOpen(localStorage.getItem('bnd_plan') || 'free');
+  }
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────

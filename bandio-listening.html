@@ -142,6 +142,15 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
   const app=initializeApp({apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"});
   onAuthStateChanged(getAuth(app),async function(u){
     if(!u){location.replace("bandio-login.html");return;}
+    window._currentUserUid = u.uid;
+    window._checkPlanLive = async function(uid){
+      try{
+        const {getFirestore,getDoc,doc}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        const snap=await getDoc(doc(getFirestore(app),'users',uid));
+        if(snap.exists()){var plan=snap.data().plan||'free';localStorage.setItem('bnd_plan',plan);return plan;}
+      }catch(e){}
+      return localStorage.getItem('bnd_plan')||'free';
+    };
     try{
       const {getFirestore,getDoc,doc}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
       const snap=await getDoc(doc(getFirestore(app),'users',u.uid));
@@ -337,12 +346,24 @@ function renderList(){
 function startTest(name){
   var test=TESTS.find(function(t){return t.name===name;});
   if(test&&test.tier==='premium'){
-    var plan=localStorage.getItem('bnd_plan')||'free';
-    if(plan!=='premium'&&plan!=='intensive'){
-      alert('This test requires Premium. Upgrade at the pricing page.');
+    if(window._currentUserUid&&window._checkPlanLive){
+      window._checkPlanLive(window._currentUserUid).then(function(plan){
+        if(plan==='premium'||plan==='intensive'){_startTestNow(name);}
+        else{alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');}
+      });
       return;
+    } else {
+      var plan=localStorage.getItem('bnd_plan')||'free';
+      if(plan!=='premium'&&plan!=='intensive'){
+        alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
+        return;
+      }
     }
   }
+  _startTestNow(name);
+  return;
+}
+function _startTestNow(name){
   document.getElementById('test-title').textContent=name;
   document.getElementById('sel').classList.add('hide');
   document.getElementById('exam').classList.add('show');
