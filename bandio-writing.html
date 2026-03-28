@@ -860,9 +860,9 @@ async function doCheck() {
         generationConfig: {
           temperature: 0.2,
           maxOutputTokens: 8192,
-          responseMimeType: 'application/json',
-          thinkingConfig: { thinkingLevel: 'MINIMAL' }
-        }
+          responseMimeType: 'application/json'
+        },
+        thinkingConfig: { thinkingBudget: 0 }
       })
     });
 
@@ -886,7 +886,9 @@ async function doCheck() {
     renderFeedback(result, words, isT1);
 
   } catch(err) {
-    console.error('Writing check error:', err);
+    console.error('Writing check error:', err.message || err);
+    // Show error details in console for debugging
+    if (err.message) console.error('Error details:', err.message.substring(0, 300));
     if (!doCheck._retries) doCheck._retries = 0;
     if (doCheck._retries < 2) {
       doCheck._retries++;
