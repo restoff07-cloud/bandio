@@ -301,34 +301,16 @@ const db   = getFirestore(app);
 var _otp         = '';
 var _otpExpiry   = 0;
 var _otpAttempts = 0;
-const BREVO_KEY  = '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';
 
 async function sendBrevoEmail(toEmail, toName, otpCode) {
-  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+  const res = await fetch('https://bandio-otp.aslbekabduganiev5.workers.dev', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'api-key': BREVO_KEY
-    },
-    body: JSON.stringify({
-      sender:  { name: 'Bandio', email: 'aslbekabduganiev5@gmail.com' },
-      to:      [{ email: toEmail, name: toName }],
-      subject: 'Your Bandio verification code',
-      htmlContent: '<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:2rem;background:#f5f2eb;border-radius:16px;">'
-        + '<div style="font-size:1.4rem;font-weight:800;margin-bottom:1.5rem;">Band<span style="color:#d4541a;">io</span></div>'
-        + '<h2 style="font-size:1.2rem;margin-bottom:.5rem;">Verify your email</h2>'
-        + '<p style="color:#7a7468;margin-bottom:1.5rem;">Hi ' + toName + ', enter this code on the Bandio signup page:</p>'
-        + '<div style="background:#fff;border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1.5rem;">'
-        + '<div style="font-size:2.5rem;font-weight:800;letter-spacing:.3em;color:#0e0e0e;">' + otpCode + '</div>'
-        + '<div style="font-size:.8rem;color:#7a7468;margin-top:.5rem;">Expires in 10 minutes</div>'
-        + '</div>'
-        + '<p style="font-size:.8rem;color:#7a7468;">If you did not create a Bandio account, ignore this email.</p>'
-        + '</div>'
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ toEmail: toEmail, toName: toName, otpCode: otpCode })
   });
   if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.message || 'Email send failed');
+    const err = await res.json().catch(function(){ return {}; });
+    throw new Error(err.error || 'Failed to send email');
   }
 }
 
