@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Bandio — Sign in</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -22,18 +22,18 @@
 
   /* TOP NAV */
   .top-nav { position:fixed; top:0; left:0; right:0; z-index:100; height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 2rem; background:var(--paper); border-bottom:1px solid rgba(14,14,14,.07); }
-  .tn-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem; letter-spacing:-.02em; color:var(--ink); text-decoration:none; }
+  .tn-logo { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:1.3rem; letter-spacing:-.02em; color:var(--ink); text-decoration:none; }
   .tn-logo span { color:var(--accent); }
   .tn-links { display:flex; align-items:center; gap:1rem; }
   .tn-link { font-size:.84rem; color:var(--muted); text-decoration:none; font-weight:500; transition:color .15s; }
   .tn-link:hover { color:var(--ink); }
-  .tn-btn { padding:.45rem 1.1rem; border-radius:100px; background:var(--ink); color:var(--paper); font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:500; text-decoration:none; transition:background .15s; }
+  .tn-btn { padding:.45rem 1.1rem; border-radius:100px; background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif; font-size:.82rem; font-weight:500; text-decoration:none; transition:background .15s; }
   .tn-btn:hover { background:var(--accent); }
 
   html, body { height: 100%; }
 
   body {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     background: var(--paper);
     color: var(--ink);
     min-height: 100vh;
@@ -62,7 +62,7 @@
   .left-content { position: relative; z-index: 1; }
 
   .logo {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800; font-size: 1.6rem;
     letter-spacing: -.02em;
     color: var(--paper);
@@ -73,7 +73,7 @@
   .logo span { color: var(--accent); }
 
   .left-headline {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: clamp(2rem, 3.2vw, 2.8rem);
     font-weight: 800;
     line-height: 1.08;
@@ -103,7 +103,7 @@
   .sv-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
   .sv-label { font-size: .78rem; color: rgba(245,242,235,.4); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
   .sv-band {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800; font-size: 1.6rem; color: var(--accent);
   }
   .sv-bars { display: flex; flex-direction: column; gap: .55rem; }
@@ -151,7 +151,7 @@
     color: var(--accent); margin-bottom: .5rem;
   }
   .form-title {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 1.9rem; font-weight: 800;
     letter-spacing: -.025em; line-height: 1.1;
     color: var(--ink); margin-bottom: .5rem;
@@ -169,7 +169,7 @@
     border: 1px solid rgba(14,14,14,.15);
     border-radius: 10px;
     background: var(--card-bg);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: .9rem; color: var(--ink);
     transition: border-color .15s, box-shadow .15s;
     outline: none;
@@ -227,7 +227,7 @@
     width: 100%; padding: .9rem;
     background: var(--ink); color: var(--paper);
     border: none; border-radius: 100px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: .95rem; font-weight: 500;
     cursor: pointer;
     transition: background .2s, transform .15s;
@@ -275,7 +275,7 @@
   }
   .back-btn {
     background: none; border: none; cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: .82rem; color: var(--muted);
     padding: 0; margin-bottom: 1.75rem;
     display: flex; align-items: center; gap: .4rem;
@@ -299,7 +299,7 @@
   .icon-success { background: #EAF3DE; }
   .icon-email   { background: #E6F1FB; }
   .screen-title {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 1.5rem; font-weight: 800;
     letter-spacing: -.02em; margin-bottom: .65rem;
   }
@@ -313,7 +313,7 @@
     padding: .85rem 2rem; border-radius: 100px;
     font-size: .9rem; font-weight: 500;
     text-decoration: none; border: none;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     cursor: pointer; transition: background .2s;
   }
   .btn-action:hover { background: var(--accent); }
@@ -422,14 +422,7 @@
         <div class="spinner"></div>
       </button>
 
-      <div class="divider">or</div>
-
-      <button onclick="doGoogleLogin()" style="width:100%;padding:.72rem;background:#fff;border:1.5px solid #e0ddd8;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;color:#1a1a1a;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.65rem;transition:border-color .15s;" onmouseover="this.style.borderColor='#999'" onmouseout="this.style.borderColor='#e0ddd8'">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.46-8.83l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Continue with Google
-      </button>
-
-      <div class="signup-link" style="margin-top:1rem;">
+         <div class="signup-link" style="margin-top:1rem;">
         Don't have an account? <a href="bandio-signup.html">Sign up free</a>
       </div>
     </div>
@@ -479,7 +472,7 @@
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -494,8 +487,6 @@
   const app      = initializeApp(firebaseConfig);
   const auth     = getAuth(app);
   const db       = getFirestore(app);
-  const gProvider = new GoogleAuthProvider();
-
   // If already logged in go straight to dashboard
   onAuthStateChanged(auth, user => {
     if (user) window.location.href = 'bandio-dashboard.html';
@@ -536,36 +527,7 @@
     }
   };
 
-  // ── Google Sign-In ───────────────────────────────────────────
-  window.doGoogleLogin = async function() {
-    try {
-      const result = await signInWithPopup(auth, gProvider);
-      const user   = result.user;
-      // Save to Firestore if new user
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      if (!snap.exists()) {
-        const { setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-        await setDoc(doc(db, 'users', user.uid), {
-          name:      user.displayName || 'Student',
-          email:     user.email,
-          plan:      'free',
-          joinedAt:  serverTimestamp(),
-          referralCode: 'BND' + Math.random().toString(36).substr(2,8).toUpperCase(),
-          writingChecksUsed: 0,
-          speakingMinsUsed:  0,
-          aiWritingBonus:    0,
-          aiMinsBonus:       0
-        });
-      }
-      window.location.href = 'bandio-dashboard.html';
-    } catch(err) {
-      if (err.code !== 'auth/popup-closed-by-user') {
-        alert('Google sign-in failed. Please try again.');
-      }
-    }
-  };
-
-  // ── Password Reset ────────────────────────────────────────────
+    // ── Password Reset ────────────────────────────────────────────
   window.doReset = async function() {
     const email = document.getElementById('reset-email').value.trim();
     if (!email || !email.includes('@')) { shake('reset-email'); return; }

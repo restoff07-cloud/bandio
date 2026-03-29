@@ -427,7 +427,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Plan</th>
-            <th>Plan expires</th>
+            <th>Plan type</th>
             <th>Target band</th>
             <th>Joined</th>
             <th>Actions</th>
@@ -2105,7 +2105,7 @@ function renderStudents(list) {
       '<td style="font-weight:500">' + (s.name||'—') + '</td>' +
       '<td style="color:var(--muted);font-family:monospace;font-size:.82rem">' + (s.email||'—') + '</td>' +
       '<td>' + planBadge(s.plan||'free') + '</td>' +
-      '<td style="font-size:.82rem;color:var(--muted)">' + (s.planExpires||'—') + '</td>' +
+      '<td style="font-size:.82rem;color:var(--muted)">' + (s.plan==='free'?'—':'<span style="color:#2a9d68;font-weight:600">Lifetime ✓</span>') + '</td>' +
       '<td>' + (s.targetBand||'—') + '</td>' +
       '<td style="color:var(--muted);font-size:.82rem">' + joined + '</td>' +
       '<td style="white-space:nowrap">' + actions + '</td>' +
@@ -2146,21 +2146,20 @@ function setPlan(uid, plan) {
   if (window.fbSetPlan) {
     window.fbSetPlan(uid, plan).then(function() {
       s.plan = plan;
-      s.planExpires = plan==='free' ? '—' : getExpiry();
+      s.planExpires = plan==='free' ? '—' : 'Lifetime';
       filterStudents();
       window.showToast('✓ ' + s.name + (plan==='free' ? ' downgraded to Free' : ' upgraded to '+planNames[plan]+' ✦'));
     });
   } else {
     s.plan = plan;
-    s.planExpires = plan==='free' ? '—' : getExpiry();
+    s.planExpires = plan==='free' ? '—' : 'Lifetime';
     filterStudents();
     window.showToast('✓ Updated (Firebase not connected yet)');
   }
 }
 
 function getExpiry() {
-  var d=new Date(); d.setMonth(d.getMonth()+1);
-  return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  return 'Lifetime';
 }
 
 renderStudents(STUDENTS);
@@ -2493,7 +2492,7 @@ window.saveVocabSet = saveVocabSet;
 
   // Set plan in Firestore
   window.fbSetPlan = async function(uid, plan) {
-    var expiry = plan === 'free' ? null : getExpiryDate();
+    var expiry = plan === 'free' ? null : 'Lifetime';
 
     // Writing checks per plan
     // Premium: 25 total, Intensive: 60 total, Free: 0
@@ -2503,17 +2502,14 @@ window.saveVocabSet = saveVocabSet;
 
     await updateDoc(doc(db, 'users', uid), {
       plan:              plan,
-      planExpires:       plan === 'free' ? '—' : expiry,
+      planExpires:       plan === 'free' ? '—' : 'Lifetime',
       planUpdatedAt:     serverTimestamp(),
       writingChecksUsed: 0,
       writingChecksTotal: writingChecksTotal
     });
   };
 
-  function getExpiryDate() {
-    var d = new Date(); d.setMonth(d.getMonth()+1);
-    return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-  }
+
 
   // Give bonus rewards via Firestore
   window.fbGiveBonus = async function(uid, essays, mins) {

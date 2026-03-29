@@ -4,22 +4,22 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Bandio — Create your account</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--ink:#0e0e0e;--paper:#f5f2eb;--cream:#ede9df;--accent:#d4541a;--muted:#7a7468;--card-bg:#ffffff;}
 html,body{height:100%;}
-body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
 .left-panel{background:var(--ink);padding:3rem;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;min-height:100vh;}
 .left-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 70% 50% at 20% 80%,rgba(212,84,26,.18) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 80% 20%,rgba(26,107,212,.1) 0%,transparent 60%);}
 .left-content{position:relative;z-index:1;}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-.02em;color:var(--paper);text-decoration:none;display:inline-block;margin-bottom:4rem;}
+.logo{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-.02em;color:var(--paper);text-decoration:none;display:inline-block;margin-bottom:4rem;}
 .logo span{color:var(--accent);}
-.left-headline{font-family:'Syne',sans-serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;color:var(--paper);margin-bottom:1.25rem;}
+.left-headline{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;color:var(--paper);margin-bottom:1.25rem;}
 .left-headline em{font-style:normal;color:var(--accent);}
 .left-sub{font-size:.95rem;font-weight:300;line-height:1.7;color:rgba(245,242,235,.55);max-width:380px;margin-bottom:3rem;}
 .proof-item{background:rgba(255,255,255,.06);border:.5px solid rgba(255,255,255,.1);border-radius:12px;padding:1rem 1.25rem;display:flex;gap:.85rem;align-items:flex-start;margin-bottom:.85rem;}
-.proof-score{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--accent);flex-shrink:0;line-height:1;padding-top:2px;}
+.proof-score{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.3rem;color:var(--accent);flex-shrink:0;line-height:1;padding-top:2px;}
 .proof-text{font-size:.8rem;line-height:1.55;color:rgba(245,242,235,.6);}
 .proof-text strong{display:block;color:rgba(245,242,235,.9);font-size:.82rem;margin-bottom:.2rem;}
 .left-footer{position:relative;z-index:1;font-size:.75rem;color:rgba(245,242,235,.25);}
@@ -28,12 +28,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .form-top{margin-bottom:2rem;}
 .form-eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem;}
-.form-title{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;letter-spacing:-.025em;line-height:1.1;color:var(--ink);}
+.form-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.75rem;font-weight:800;letter-spacing:-.025em;line-height:1.1;color:var(--ink);}
 .form-subtitle{font-size:.88rem;color:var(--muted);margin-top:.5rem;font-weight:300;}
 .field-group{display:flex;flex-direction:column;gap:1rem;margin-bottom:1rem;}
 .field{display:flex;flex-direction:column;gap:.45rem;}
 .field label{font-size:.8rem;font-weight:500;color:var(--ink);}
-.field input,.field select{width:100%;padding:.75rem 1rem;border:1px solid rgba(14,14,14,.15);border-radius:10px;background:var(--card-bg);font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);transition:border-color .15s,box-shadow .15s;appearance:none;outline:none;}
+.field input,.field select{width:100%;padding:.75rem 1rem;border:1px solid rgba(14,14,14,.15);border-radius:10px;background:var(--card-bg);font-family:'Inter',sans-serif;font-size:.9rem;color:var(--ink);transition:border-color .15s,box-shadow .15s;appearance:none;outline:none;}
 .field input::placeholder{color:rgba(14,14,14,.3);}
 .field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(212,84,26,.1);}
 .field input.error{border-color:#e24b4a;}
@@ -43,7 +43,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .pw-toggle{position:absolute;right:.85rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:.85rem;padding:0;transition:color .15s;}
 .pw-toggle:hover{color:var(--ink);}
 .band-selector{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
-.band-btn{aspect-ratio:1;border:1px solid rgba(14,14,14,.15);border-radius:8px;background:var(--card-bg);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.band-btn{aspect-ratio:1;border:1px solid rgba(14,14,14,.15);border-radius:8px;background:var(--card-bg);font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
 .band-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(212,84,26,.05);}
 .band-btn.selected{background:var(--accent);border-color:var(--accent);color:white;}
 .strength-wrap{margin-top:.4rem;display:flex;flex-direction:column;gap:.3rem;}
@@ -54,7 +54,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .terms-row input[type="checkbox"]{width:16px;height:16px;flex-shrink:0;accent-color:var(--accent);margin-top:2px;cursor:pointer;}
 .terms-row label{font-size:.8rem;color:var(--muted);line-height:1.5;cursor:pointer;}
 .terms-row a{color:var(--accent);text-decoration:none;}
-.btn-submit{width:100%;padding:.9rem;background:var(--ink);color:var(--paper);border:none;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:500;cursor:pointer;transition:background .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.btn-submit{width:100%;padding:.9rem;background:var(--ink);color:var(--paper);border:none;border-radius:100px;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:500;cursor:pointer;transition:background .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
 .btn-submit:hover{background:var(--accent);transform:translateY(-1px);}
 .btn-submit.loading{pointer-events:none;opacity:.7;}
 .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;}
@@ -70,9 +70,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .step-dot.done{background:var(--ink);}
 .success-screen{display:none;text-align:center;padding:2rem 0;animation:slideUp .4s ease both;}
 .success-icon{width:64px;height:64px;border-radius:50%;background:#EAF3DE;margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;font-size:1.75rem;}
-.success-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.75rem;}
+.success-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.75rem;}
 .success-sub{font-size:.9rem;color:var(--muted);line-height:1.6;margin-bottom:2rem;}
-.btn-dashboard{display:inline-block;background:var(--ink);color:var(--paper);padding:.85rem 2rem;border-radius:100px;font-size:.9rem;font-weight:500;text-decoration:none;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:background .2s;}
+.btn-dashboard{display:inline-block;background:var(--ink);color:var(--paper);padding:.85rem 2rem;border-radius:100px;font-size:.9rem;font-weight:500;text-decoration:none;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:background .2s;}
 .btn-dashboard:hover{background:var(--accent);}
 @media(max-width:768px){body{grid-template-columns:1fr;}.left-panel{display:none;}.right-panel{padding:2rem 1.25rem;align-items:flex-start;padding-top:3rem;}}
 </style>
@@ -105,6 +105,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
       <div class="step-dot active" id="dot1"></div>
       <div class="step-dot" id="dot2"></div>
       <div class="step-dot" id="dot3"></div>
+      <div class="step-dot" id="dot4"></div>
     </div>
     <div id="main-form">
       <div class="form-top">
@@ -163,6 +164,31 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
       </div>
     </div>
 
+      <!-- Step 4: OTP verification -->
+      <div id="step4" style="display:none">
+        <div style="text-align:center;margin-bottom:1.5rem;">
+          <div style="font-size:2.5rem;margin-bottom:.5rem;">📬</div>
+          <p style="font-size:.85rem;color:var(--muted);line-height:1.6;">We sent a 6-digit code to<br/><strong id="otp-email-display" style="color:var(--ink)"></strong></p>
+        </div>
+        <div class="field" style="margin-bottom:.75rem;">
+          <label for="otp-input">Verification code</label>
+          <input type="text" id="otp-input" placeholder="123456" maxlength="6"
+            style="text-align:center;font-size:1.6rem;letter-spacing:.3em;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;padding:.85rem;"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'');document.getElementById('otp-error').style.display='none';"/>
+        </div>
+        <div id="otp-error" style="display:none;color:#e24b4a;font-size:.82rem;margin-bottom:.75rem;text-align:center;padding:.5rem;background:#fef2f2;border-radius:7px;"></div>
+        <button class="btn-submit" id="verify-btn" onclick="verifyOTP()">
+          <span class="btn-text">Verify &amp; create account &rarr;</span>
+          <div class="spinner"></div>
+        </button>
+        <div style="text-align:center;margin-top:1rem;">
+          <button id="resend-btn" onclick="resendOTP()" style="background:none;border:none;color:var(--muted);font-size:.82rem;cursor:pointer;font-family:'Inter',sans-serif;">
+            Didn't get it? <span style="text-decoration:underline;color:var(--accent)">Resend code</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="success-screen" id="success-screen">
       <div class="success-icon">&#127919;</div>
       <div class="success-title" id="success-name">Welcome to Bandio!</div>
@@ -171,10 +197,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
     </div>
 
     <div class="signin-link" id="signin-link">
-      <button onclick="doGoogleSignup()" style="width:100%;padding:.72rem;background:#fff;border:1.5px solid #e0ddd8;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;color:#1a1a1a;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.65rem;margin-bottom:.85rem;transition:border-color .15s;" onmouseover="this.style.borderColor='#999'" onmouseout="this.style.borderColor='#e0ddd8'">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.46-8.83l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Sign up with Google
-      </button>
       Already have an account? <a href="bandio-login.html">Sign in</a>
     </div>
   </div>
@@ -184,8 +206,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 var selectedBand = '';
 var currentStep  = 1;
 var stepLabels = ['','Step 1 of 3 \u2014 Your details','Step 2 of 3 \u2014 Set your password','Step 3 of 3 \u2014 Your goals'];
-var stepTitles = ['','Create your account','Secure your account','What are you aiming for?'];
-var stepSubs   = ['','Free to join. No credit card needed.','Pick something you\'ll remember.','We\'ll tailor everything to your goal.'];
+var stepTitles = ['','Create your account','Secure your account','What are you aiming for?','Check your inbox'];
+var stepSubs   = ['','Free to join. No credit card needed.','Pick something you\'ll remember.','We\'ll tailor everything to your goal.','Enter the 6-digit code we sent to your email.'];
 
 function goStep(n) {
   if (n===2) {
@@ -210,7 +232,7 @@ function goStep(n) {
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function updateDots(n) {
-  for (var i=1;i<=3;i++){
+  for (var i=1;i<=4;i++){
     var d=document.getElementById('dot'+i);
     d.className='step-dot';
     if (i<n) d.classList.add('done');
@@ -251,7 +273,7 @@ function submitForm() {
   var btn=document.getElementById('submit-btn');
   btn.classList.add('loading');
   window.selectedBand=selectedBand;
-  doFirebaseSignup();
+  sendOTP();
 }
 document.querySelectorAll('input').forEach(function(inp){
   inp.addEventListener('input',function(){inp.style.borderColor='';});
@@ -259,26 +281,161 @@ document.querySelectorAll('input').forEach(function(inp){
 </script>
 
 <script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,createUserWithEmailAndPassword,GoogleAuthProvider,signInWithPopup}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,doc,setDoc,getDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
-const app       = initializeApp(cfg);
-const auth      = getAuth(app);
-const db        = getFirestore(app);
-const gProvider = new GoogleAuthProvider();
+const cfg = {
+  apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",
+  authDomain:"bandio-53433.firebaseapp.com",
+  projectId:"bandio-53433",
+  storageBucket:"bandio-53433.firebasestorage.app",
+  messagingSenderId:"161548316253",
+  appId:"1:161548316253:web:a7746750b2ea6d239d67b4"
+};
+const app  = initializeApp(cfg);
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
-// Auth redirect handled by dashboard
+// ── OTP state ─────────────────────────────────────────────────────────────────
+var _otp         = '';
+var _otpExpiry   = 0;
+var _otpAttempts = 0;
+const BREVO_KEY  = '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';
 
-// Create the user document
-async function createUserDoc(uid, name, email, band) {
+async function sendBrevoEmail(toEmail, toName, otpCode) {
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': BREVO_KEY
+    },
+    body: JSON.stringify({
+      sender:  { name: 'Bandio', email: 'aslbekabduganiev5@gmail.com' },
+      to:      [{ email: toEmail, name: toName }],
+      subject: 'Your Bandio verification code',
+      htmlContent: '<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:2rem;background:#f5f2eb;border-radius:16px;">'
+        + '<div style="font-size:1.4rem;font-weight:800;margin-bottom:1.5rem;">Band<span style="color:#d4541a;">io</span></div>'
+        + '<h2 style="font-size:1.2rem;margin-bottom:.5rem;">Verify your email</h2>'
+        + '<p style="color:#7a7468;margin-bottom:1.5rem;">Hi ' + toName + ', enter this code on the Bandio signup page:</p>'
+        + '<div style="background:#fff;border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1.5rem;">'
+        + '<div style="font-size:2.5rem;font-weight:800;letter-spacing:.3em;color:#0e0e0e;">' + otpCode + '</div>'
+        + '<div style="font-size:.8rem;color:#7a7468;margin-top:.5rem;">Expires in 10 minutes</div>'
+        + '</div>'
+        + '<p style="font-size:.8rem;color:#7a7468;">If you did not create a Bandio account, ignore this email.</p>'
+        + '</div>'
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || 'Email send failed');
+  }
+}
+
+// ── Send OTP ──────────────────────────────────────────────────────────────────
+window.sendOTP = async function() {
+  const email = document.getElementById('email').value.trim();
+  const name  = document.getElementById('fullname').value.trim();
+  const btn   = document.getElementById('submit-btn');
+
+  _otp         = Math.floor(100000 + Math.random() * 900000).toString();
+  _otpExpiry   = Date.now() + 10 * 60 * 1000; // 10 minutes
+  _otpAttempts = 0;
+
   try {
-    console.log('Creating Firestore doc for:', uid, email);
-    await setDoc(doc(db, 'users', uid), {
+    await sendBrevoEmail(email, name, _otp);
+    btn.classList.remove('loading');
+
+    // Show step 4
+    document.getElementById('step3').style.display = 'none';
+    document.getElementById('step4').style.display = 'block';
+    document.getElementById('step-label').textContent = 'Step 4 of 4 — Verify your email';
+    document.getElementById('step-title').textContent = 'Check your inbox';
+    document.getElementById('step-sub').textContent   = 'Enter the 6-digit code we sent to your email.';
+    document.getElementById('otp-email-display').textContent = email;
+    document.querySelectorAll('.step-dot').forEach(function(d, i) {
+      d.className = 'step-dot';
+      if (i < 3) d.classList.add('done');
+      else d.classList.add('active');
+    });
+    document.getElementById('otp-input').focus();
+
+  } catch(e) {
+    btn.classList.remove('loading');
+    alert('Could not send verification email. Please check your email address and try again. Error: ' + e.message);
+  }
+};
+
+// ── Resend OTP ────────────────────────────────────────────────────────────────
+window.resendOTP = async function() {
+  const email = document.getElementById('email').value.trim();
+  const name  = document.getElementById('fullname').value.trim();
+  const btn   = document.getElementById('resend-btn');
+
+  _otp         = Math.floor(100000 + Math.random() * 900000).toString();
+  _otpExpiry   = Date.now() + 10 * 60 * 1000;
+  _otpAttempts = 0;
+  btn.disabled = true;
+  btn.innerHTML = 'Sending...';
+
+  try {
+    await sendBrevoEmail(email, name, _otp);
+    btn.innerHTML = 'Didn\'t get it? <span style="text-decoration:underline;color:var(--accent)">Resend code</span>';
+    btn.disabled  = false;
+    document.getElementById('otp-error').style.display = 'none';
+    document.getElementById('otp-input').value = '';
+    alert('New code sent! Check your inbox.');
+  } catch(e) {
+    btn.innerHTML = 'Didn\'t get it? <span style="text-decoration:underline;color:var(--accent)">Resend code</span>';
+    btn.disabled  = false;
+    alert('Failed to resend. Please try again.');
+  }
+};
+
+// ── Verify OTP ────────────────────────────────────────────────────────────────
+window.verifyOTP = async function() {
+  const entered = document.getElementById('otp-input').value.trim();
+  const errEl   = document.getElementById('otp-error');
+  const btn     = document.getElementById('verify-btn');
+
+  if (entered.length !== 6) {
+    errEl.textContent = 'Please enter the full 6-digit code.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (Date.now() > _otpExpiry) {
+    errEl.textContent = 'This code has expired. Please request a new one.';
+    errEl.style.display = 'block';
+    return;
+  }
+  _otpAttempts++;
+  if (_otpAttempts > 5) {
+    errEl.textContent = 'Too many attempts. Please request a new code.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (entered !== _otp) {
+    errEl.textContent = 'Incorrect code. ' + (5 - _otpAttempts) + ' attempts remaining.';
+    errEl.style.display = 'block';
+    document.getElementById('otp-input').style.borderColor = '#e24b4a';
+    return;
+  }
+
+  // Code correct — create account
+  errEl.style.display = 'none';
+  btn.classList.add('loading');
+
+  const name  = document.getElementById('fullname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const pw    = document.getElementById('password').value;
+  const band  = parseFloat(window.selectedBand) || 7.0;
+
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pw);
+    await setDoc(doc(db, 'users', cred.user.uid), {
       name,
       email,
-      targetBand:        band || 7.0,
+      targetBand:        band,
       plan:              'free',
       joinedAt:          serverTimestamp(),
       referralCount:     0,
@@ -293,61 +450,25 @@ async function createUserDoc(uid, name, email, band) {
       essaysEarned:      0,
       minsEarned:        0
     });
-    console.log('Firestore doc created successfully!');
-  } catch(e) {
-    console.error('FIRESTORE ERROR:', e.code, e.message);
-    alert('Account created but profile save failed: ' + e.message + '\n\nCode: ' + e.code);
-    throw e;
-  }
-}
 
-function showSuccess(name, band) {
-  document.getElementById('success-name').textContent = 'Welcome, ' + name.split(' ')[0] + '!';
-  document.getElementById('success-band').textContent = 'Band ' + band;
-  document.getElementById('main-form').style.display = 'none';
-  document.getElementById('success-screen').style.display = 'block';
-  document.getElementById('signin-link').style.display = 'none';
-  document.querySelectorAll('.step-dot').forEach(d => { d.className = 'step-dot done'; });
-  setTimeout(() => { window.location.href = 'bandio-dashboard.html'; }, 2000);
-}
-
-// ── Email/Password Signup ─────────────────────────────────────────────────────
-window.doFirebaseSignup = async function() {
-  signupInProgress = true;
-  const name  = document.getElementById('fullname').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const pw    = document.getElementById('password').value;
-  const btn   = document.getElementById('submit-btn');
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, pw);
-    const uid  = cred.user.uid;
-    const band = parseFloat(window.selectedBand) || 7.0;
-    await createUserDoc(uid, name, email, band);
     btn.classList.remove('loading');
-    showSuccess(name, band);
+
+    // Show success
+    document.getElementById('main-form').style.display  = 'none';
+    document.getElementById('signin-link').style.display = 'none';
+    document.getElementById('success-screen').style.display = 'block';
+    document.getElementById('success-name').textContent = 'Welcome, ' + name.split(' ')[0] + '!';
+    document.getElementById('success-band').textContent = 'Band ' + band;
+    document.querySelectorAll('.step-dot').forEach(function(d){ d.className = 'step-dot done'; });
+    setTimeout(function(){ window.location.href = 'bandio-dashboard.html'; }, 2000);
+
   } catch(err) {
     btn.classList.remove('loading');
     const msg = err.code === 'auth/email-already-in-use' ? 'An account with this email already exists. Sign in instead.'
               : err.code === 'auth/weak-password'        ? 'Password must be at least 6 characters.'
-              : err.code === 'auth/invalid-email'        ? 'Please enter a valid email address.'
-              : 'Sign up failed. Please try again.';
-    alert(msg);
-  }
-};
-
-// ── Google Sign-Up ────────────────────────────────────────────────────────────
-window.doGoogleSignup = async function() {
-  signupInProgress = true;
-  try {
-    const result = await signInWithPopup(auth, gProvider);
-    const user   = result.user;
-    const snap   = await getDoc(doc(db, 'users', user.uid));
-    if (!snap.exists()) {
-      await createUserDoc(user.uid, user.displayName || 'Student', user.email, 7.0);
-    }
-    window.location.href = 'bandio-dashboard.html';
-  } catch(err) {
-    if (err.code !== 'auth/popup-closed-by-user') alert('Google sign-up failed. Please try again.');
+              : 'Sign up failed: ' + err.message;
+    errEl.textContent = msg;
+    errEl.style.display = 'block';
   }
 };
 </script>
