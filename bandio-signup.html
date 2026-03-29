@@ -262,26 +262,17 @@ document.querySelectorAll('input').forEach(function(inp){
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,createUserWithEmailAndPassword,onAuthStateChanged,GoogleAuthProvider,signInWithPopup}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,doc,setDoc,getDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import{getFunctions,httpsCallable}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
 
 const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
 const app       = initializeApp(cfg);
 const auth      = getAuth(app);
 const db        = getFirestore(app);
-const functions = getFunctions(app);
 const gProvider = new GoogleAuthProvider();
-
-// Callable Cloud Function reference
-const processReferral = httpsCallable(functions, 'processReferral');
-
-// Save ?ref= param in localStorage as soon as page loads
-const urlRef = new URLSearchParams(window.location.search).get('ref');
-if (urlRef) localStorage.setItem('bnd_ref', urlRef);
 
 // Redirect if already logged in
 onAuthStateChanged(auth, user => { if (user) window.location.href = 'bandio-dashboard.html'; });
 
-// Create the user document — NO referral fields written here
+// Create the user document
 async function createUserDoc(uid, name, email, band) {
   await setDoc(doc(db, 'users', uid), {
     name,
@@ -290,8 +281,6 @@ async function createUserDoc(uid, name, email, band) {
     plan:              'free',
     joinedAt:          serverTimestamp(),
     referralCount:     0,
-    referredUsers:     [],
-    referredBy:        null,
     writingChecksUsed: 0,
     writingCheckMonth: '',
     speakingMinsUsed:  0,
@@ -303,19 +292,6 @@ async function createUserDoc(uid, name, email, band) {
     essaysEarned:      0,
     minsEarned:        0
   });
-}
-
-// Call Cloud Function to handle referral — all validation happens server-side
-async function handleReferral(uid) {
-  const referrerId = localStorage.getItem('bnd_ref') || null;
-  try {
-    await processReferral({ newUserId: uid, referrerId });
-    localStorage.removeItem('bnd_ref');
-  } catch(e) {
-    // Non-fatal — user is signed up, referral just didn't process
-    console.log('Referral function error (non-fatal):', e.message);
-    localStorage.removeItem('bnd_ref');
-  }
 }
 
 function showSuccess(name, band) {
@@ -339,7 +315,6 @@ window.doFirebaseSignup = async function() {
     const uid  = cred.user.uid;
     const band = parseFloat(window.selectedBand) || 7.0;
     await createUserDoc(uid, name, email, band);
-    await handleReferral(uid);  // Cloud Function — server validates everything
     btn.classList.remove('loading');
     showSuccess(name, band);
   } catch(err) {
@@ -360,7 +335,6 @@ window.doGoogleSignup = async function() {
     const snap   = await getDoc(doc(db, 'users', user.uid));
     if (!snap.exists()) {
       await createUserDoc(user.uid, user.displayName || 'Student', user.email, 7.0);
-      await handleReferral(user.uid);
     }
     window.location.href = 'bandio-dashboard.html';
   } catch(err) {
