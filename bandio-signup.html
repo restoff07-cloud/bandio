@@ -260,7 +260,7 @@ document.querySelectorAll('input').forEach(function(inp){
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,createUserWithEmailAndPassword,onAuthStateChanged,GoogleAuthProvider,signInWithPopup}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getAuth,createUserWithEmailAndPassword,GoogleAuthProvider,signInWithPopup}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,doc,setDoc,getDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
@@ -269,12 +269,7 @@ const auth      = getAuth(app);
 const db        = getFirestore(app);
 const gProvider = new GoogleAuthProvider();
 
-// Redirect if already logged in
-// Only redirect if user is ALREADY logged in when page loads (not during signup flow)
-let signupInProgress = false;
-onAuthStateChanged(auth, user => {
-  if (user && !signupInProgress) window.location.href = 'bandio-dashboard.html';
-});
+// Auth redirect handled by dashboard
 
 // Create the user document
 async function createUserDoc(uid, name, email, band) {
