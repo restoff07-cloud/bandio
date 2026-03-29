@@ -278,24 +278,32 @@ onAuthStateChanged(auth, user => {
 
 // Create the user document
 async function createUserDoc(uid, name, email, band) {
-  await setDoc(doc(db, 'users', uid), {
-    name,
-    email,
-    targetBand:        band || 7.0,
-    plan:              'free',
-    joinedAt:          serverTimestamp(),
-    referralCount:     0,
-    writingChecksUsed: 0,
-    writingCheckMonth: '',
-    speakingMinsUsed:  0,
-    speakingMinMonth:  '',
-    mockSpeakUsed:     0,
-    mockSpeakMonth:    '',
-    aiWritingBonus:    0,
-    aiMinsBonus:       0,
-    essaysEarned:      0,
-    minsEarned:        0
-  });
+  try {
+    console.log('Creating Firestore doc for:', uid, email);
+    await setDoc(doc(db, 'users', uid), {
+      name,
+      email,
+      targetBand:        band || 7.0,
+      plan:              'free',
+      joinedAt:          serverTimestamp(),
+      referralCount:     0,
+      writingChecksUsed: 0,
+      writingCheckMonth: '',
+      speakingMinsUsed:  0,
+      speakingMinMonth:  '',
+      mockSpeakUsed:     0,
+      mockSpeakMonth:    '',
+      aiWritingBonus:    0,
+      aiMinsBonus:       0,
+      essaysEarned:      0,
+      minsEarned:        0
+    });
+    console.log('Firestore doc created successfully!');
+  } catch(e) {
+    console.error('FIRESTORE ERROR:', e.code, e.message);
+    alert('Account created but profile save failed: ' + e.message + '\n\nCode: ' + e.code);
+    throw e;
+  }
 }
 
 function showSuccess(name, band) {
