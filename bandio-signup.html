@@ -270,7 +270,11 @@ const db        = getFirestore(app);
 const gProvider = new GoogleAuthProvider();
 
 // Redirect if already logged in
-onAuthStateChanged(auth, user => { if (user) window.location.href = 'bandio-dashboard.html'; });
+// Only redirect if user is ALREADY logged in when page loads (not during signup flow)
+let signupInProgress = false;
+onAuthStateChanged(auth, user => {
+  if (user && !signupInProgress) window.location.href = 'bandio-dashboard.html';
+});
 
 // Create the user document
 async function createUserDoc(uid, name, email, band) {
@@ -306,6 +310,7 @@ function showSuccess(name, band) {
 
 // ── Email/Password Signup ─────────────────────────────────────────────────────
 window.doFirebaseSignup = async function() {
+  signupInProgress = true;
   const name  = document.getElementById('fullname').value.trim();
   const email = document.getElementById('email').value.trim();
   const pw    = document.getElementById('password').value;
@@ -329,6 +334,7 @@ window.doFirebaseSignup = async function() {
 
 // ── Google Sign-Up ────────────────────────────────────────────────────────────
 window.doGoogleSignup = async function() {
+  signupInProgress = true;
   try {
     const result = await signInWithPopup(auth, gProvider);
     const user   = result.user;
