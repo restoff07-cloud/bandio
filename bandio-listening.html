@@ -135,6 +135,19 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
 }
 #popupTools button:hover { text-decoration: underline; }
 
+.m2opts{display:flex;flex-direction:column;gap:.3rem;padding-left:2rem;}
+.m2opt{display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.28rem 0;user-select:none;}
+.m2opt:hover .mc2{border-color:#d4541a;color:#d4541a;}
+.mc2{width:20px;height:20px;border-radius:4px;border:1.5px solid #bbb;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.64rem;font-weight:700;color:#aaa;transition:all .1s;}
+.m2opt.sel .mc2{border-color:#d4541a;color:#d4541a;border-width:2px;background:rgba(212,84,26,.08);}
+.m2opt.ok .mc2{border-color:#2a9d68;color:#2a9d68;background:#e8f5ee;}
+.m2opt.bad .mc2{border-color:#e24b4a;color:#e24b4a;background:#fef2f2;}
+/* Form-fill note completion */
+.nform{background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:1.2rem 1.4rem;margin:1rem 0;font-size:.9rem;line-height:1.75;}
+.nform-title{font-weight:700;text-align:center;font-size:.98rem;margin-bottom:.9rem;padding-bottom:.6rem;border-bottom:1px solid #d8d5d0;}
+.nform-row{display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap;margin-bottom:.25rem;}
+.nform-label{font-weight:600;min-width:140px;flex-shrink:0;}
+.nform-sep{font-size:.88rem;color:#777;}
 </style>
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -277,6 +290,7 @@ var TESTS=[
   {name:'Cambridge 18 TEST_2',sections:'1, 2, 3, 4',level:'HARD',time:'29 minutes',questions:40,type:'mcq',tier:'premium'},
   {name:'Cambridge 18 TEST_3',sections:'1, 2, 3, 4',level:'HARD',time:'30 minutes',questions:40,type:'map',tier:'premium'},
 ];
+window.TESTS=TESTS;
 var activeTab='all';
 function setTab(t,el){activeTab=t;document.querySelectorAll('.ft').forEach(function(x){x.classList.remove('on');});el.classList.add('on');renderList();
 
@@ -415,6 +429,20 @@ var T=10;var A={};
 function buildDots(){var w=document.getElementById('dots');w.innerHTML='';for(var q=1;q<=T;q++){var d=document.createElement('div');d.className='qdot';d.id='dd'+q;d.textContent=q;w.appendChild(d);}}
 function ma(q,v){if(v.trim()){A[q]=v.trim();dot(q,true);}else{delete A[q];dot(q,false);}up();}
 function dot(q,on){var d=document.getElementById('dd'+q);if(d)d.classList.toggle('ans',on);}
+function pm2(el,q1,q2,v){
+  var wrap=el.closest('.m2opts');
+  var sels=wrap.querySelectorAll('.m2opt.sel');
+  if(el.classList.contains('sel')){
+    el.classList.remove('sel');
+    if(A[q1]===v){delete A[q1];dot(q1,false);}
+    else if(A[q2]===v){delete A[q2];dot(q2,false);}
+    up();return;
+  }
+  if(sels.length>=2)return;
+  el.classList.add('sel');
+  if(!A[q1]){A[q1]=v;dot(q1,true);}else{A[q2]=v;dot(q2,true);}
+  up();
+}
 function up(){document.getElementById('scr').textContent=Object.keys(A).length+'/'+T;}
 function chk(){
   var c=0,b=0;
@@ -542,5 +570,26 @@ document.addEventListener("mouseup", function(e) {
   <button onclick="removeHighlight()">Remove</button>
 </div>
 
+<script type="module">
+(async function(){
+  try{
+    const {initializeApp,getApps}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const {getFirestore,collection,getDocs,query,where}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
+    const app=getApps().length?getApps()[0]:initializeApp(cfg);
+    const db=getFirestore(app);
+    const snap=await getDocs(query(collection(db,'tests'),where('kind','==','listening')));
+    snap.forEach(function(d){
+      var t=d.data();
+      if(!t.title)return;
+      if(t.type&&t.type.indexOf('mock')!==-1)return;
+      if(!window.TESTS.find(function(x){return x.name===t.title;})){
+        window.TESTS.push({name:t.title,sections:'1',level:t.level||'MEDIUM',time:t.time||'10 minutes',questions:t.questions||10,type:'note',tier:t.access||'free'});
+      }
+    });
+    if(typeof renderList==='function')renderList();
+  }catch(e){console.log('Firestore listening practice load:',e.message);}
+})();
+</script>
 </body>
 </html>

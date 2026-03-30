@@ -143,16 +143,48 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
 .popup-tools span { cursor: pointer; }
 .popup-tools span:hover { text-decoration: underline; }
 
+.m2opts{display:flex;flex-direction:column;gap:.3rem;padding-left:2rem;}
+.m2opt{display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.28rem 0;user-select:none;}
+.m2opt:hover .mc2{border-color:#d4541a;color:#d4541a;}
+.mc2{width:20px;height:20px;border-radius:4px;border:1.5px solid #bbb;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.64rem;font-weight:700;color:#aaa;transition:all .1s;}
+.m2opt.sel .mc2{border-color:#d4541a;color:#d4541a;border-width:2px;background:rgba(212,84,26,.08);}
+.m2opt.ok .mc2{border-color:#2a9d68;color:#2a9d68;background:#e8f5ee;}
+.m2opt.bad .mc2{border-color:#e24b4a;color:#e24b4a;background:#fef2f2;}
+/* Form-fill note completion */
+.nform{background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:1.2rem 1.4rem;margin:1rem 0;font-size:.9rem;line-height:1.75;}
+.nform-title{font-weight:700;text-align:center;font-size:.98rem;margin-bottom:.9rem;padding-bottom:.6rem;border-bottom:1px solid #d8d5d0;}
+.nform-row{display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap;margin-bottom:.25rem;}
+.nform-label{font-weight:600;min-width:140px;flex-shrink:0;}
+.nform-sep{font-size:.88rem;color:#777;}
 </style>
-<scr'+'ipt type="module">
+<script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import{getFirestore,collection,getDocs,query,where}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import{getFirestore,collection,getDocs,query,where,getDoc,doc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
   const app=initializeApp(cfg);
   const auth=getAuth(app);
   const db=getFirestore(app);
-  onAuthStateChanged(auth,function(u){if(!u)location.replace("bandio-login.html");});
+  window._firebaseAuth = auth;
+  onAuthStateChanged(auth,async function(u){
+    if(!u){location.replace("bandio-login.html");return;}
+    window._currentUserUid = u.uid;
+    window._checkPlanLive = async function(uid) {
+      try {
+        const snap = await getDoc(doc(db,'users',uid));
+        if(snap.exists()){
+          var plan = snap.data().plan||'free';
+          localStorage.setItem('bnd_plan', plan);
+          return plan;
+        }
+      } catch(e){}
+      return localStorage.getItem('bnd_plan')||'free';
+    };
+    try {
+      const snap = await getDoc(doc(db,'users',u.uid));
+      if(snap.exists()) localStorage.setItem('bnd_plan', snap.data().plan||'free');
+    } catch(e){}
+  });
 
   // Store full Firestore test docs keyed by title for dynamic rendering
   // Load test cards from Firestore (admin-added tests appear in the list)
@@ -180,7 +212,7 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
     }catch(e){console.log('Firestore tests load error:',e.message);}
   }
   loadFirestoreTests();
-<\/script>
+</script>
 </head>
 <body>
 <div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
@@ -272,20 +304,56 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
   <div class="phdr"><div class="ph1">Part 1</div><div class="ph2">Read the text and answer questions 1–13.</div></div>
   <div class="main">
     <div class="box">
-      <div class="pass" id="pp"><h2>The whale goes to a court</h2><p>In 1818, a whale became the subject of a controversial court case in New York City. The case involved an old law requiring those who sold fish oil to pay a fee in order to have their barrels inspected by city officials and certified. However, an oil merchant named Samuel Judd refused to pay the inspection fee on three barrels of oil, claiming that no inspection was necessary because it was whale oil, and whales were not fish. The state disagreed, and so a date was set for a court to decide not a question of law, but the answer to a more fundamental question: Is a whale a fish?</p><p>As simple as that question may appear today, the answer was far from obvious in the early nineteenth century. Indeed, the public debate in New York sparked off by the trial was sensational. At stake was nothing less than what most regarded as the order of nature. According to the commonly accepted scheme of things, if an animal was not a beast or a bird, it was a fish, regardless of whether it breathed air or suckled its young. For as long as anyone could remember, all non-human creatures had been organized according to the categories of birds, beasts, or fish. For the average person, the answer seemed perfectly obvious: whales swam in the sea and therefore they were fish.</p><p>Against this traditional framework stood the new Linnaean system of classification, which sought to introduce more scientific values into the classification of living things. Barely half a century old in 1818, the Linnaean system controversially classified whales as mammals because they shared two mammalian characteristics: they were warm-blooded and breathed air.</p><p>So the trial began in December 1818. Judd's defense lawyers chose as their star witness one of New York's most prominent figures, the congressman Samuel Mitchill. Referred to as a ‘living encyclopedia’ and a ‘walking library’, Mitchill was a renowned natural history lecturer at the College of Physicians and Surgeons who liked to dare his students to test his knowledge of the natural world. “Show me the fin, and I will name the fish,” he boasted. Scientifically, it was an open-and-shut case, and Judd’s defense lawyers believed they only had to do one simple thing to win the trial: insist that it be decided by biology alone. Mitchill seemed fully qualified for this role.</p><p>But this is where the case becomes interesting, and is the reason why the trial of the whale is not some dusty nineteenth-century obscurity. For rather than debate Mitchill on his area of expertise, lawyers for the New York City fish-oil inspectors chose a different tack. Lead counsel William Sampson turned the trial into a contest between scientific learning and common sense, by asking plain-spoken whalers to make their case before the jury.</p><p>The crux of Sampson's case was the trial’s implication with regard to humans: should Judd be found not guilty? Sampson told jury members that if they accepted Mitchill’s testimony on whales, they were obliged to accept a lower place for their own kind in the natural order. As a result, Mitchill’s day in court did not go smoothly, not least because he was forced to acknowledge serious disputes among his peers regarding exactly how to classify biological organisms. Sampson then took aim at Mitchill himself and what he represented: privileged aristocrats from the scientific community who had lost touch with reality. The smooth-talking Sampson then claimed Mitchill’s beliefs had their origin in Europe – something he rightly judged would infuriate the citizens of always-independent New York. This revolutionary new thinking, Sampson claimed, was something that honest working New Yorkers could do without. No longer was this a case about barrels of oil; but the proper place of scientific knowledge in the U.S.A.</p><p>Ultimately, what won the case for Samuel Judd were not Mitchill’s scientific arguments, but testimony from a different sphere altogether. In New York’s markets, the merchants implicitly understood that whale oil and fish oil were not the same: whale oil could be used as a fuel for lamps because it could be burned without giving off smoke; fish oil, on the other hand, was nasty, impure stuff used primarily in tanning leather. In the end, it was this testimony that led to Judd’s victory.</p><p>The trial of the whale still has relevance today, when the court of public opinion remains easily swayed by skeptics. The 1818 trial was really about this question: who gets to decide on the place of the natural world in the human world – scientific experts or public opinion? Whether the issue today is the effects of human activity on the climate of this planet, or one of many other contemporary topics, the legacy of Judd’s case continues to be of relevance.</p></div>
+      <div class="pass" id="pp">
+        <h2>The Psychology of Urban Green Spaces</h2>
+        <p>For decades, urban planners have debated the role of green spaces in cities. Parks, tree-lined avenues and community gardens were long considered aesthetic luxuries — pleasant additions, but not necessities. That view is now fundamentally changing, driven by a growing body of research linking access to nature with measurable improvements in human mental and physical health.</p>
+        <p>A landmark 2019 study published in <em>Scientific Reports</em> found that people who spend at least two hours per week in natural settings report significantly higher levels of wellbeing than those who do not. Crucially, this effect held regardless of whether the time was spent in a single two-hour visit or spread across shorter exposures. The researchers, led by Dr Matthew White of the University of Exeter, concluded that urban green spaces — even small neighbourhood parks — could serve as vital infrastructure for public health.</p>
+        <p>The psychological mechanisms behind this effect are still being explored. One prominent theory, known as Attention Restoration Theory (ART), proposes that natural environments replenish the capacity for focused attention, which is depleted by the constant cognitive demands of urban life. According to this framework, the soft stimulation of natural environments — birdsong, rustling leaves, shifting light — engages what psychologists call "involuntary attention," allowing the directed attention system to recover.</p>
+        <p>A second framework, Stress Recovery Theory (SRT), developed by Roger Ulrich, emphasises the physiological dimension. Ulrich's research demonstrated that exposure to natural scenes produces measurable reductions in cortisol levels, heart rate and blood pressure within minutes. In one frequently cited experiment, participants who viewed nature scenes after a stressful task recovered their baseline physiological state significantly faster than those who viewed urban scenes.</p>
+        <p>Critics note that most studies rely on self-reported wellbeing measures, which are inherently subjective. Furthermore, access to green spaces is not evenly distributed: wealthier urban neighbourhoods consistently feature more parks and tree cover than lower-income areas. Urban ecologist Jennifer Wolch has described this disparity as "green gentrification" — a process by which green infrastructure can inadvertently raise property values and displace lower-income residents.</p>
+        <p>Despite these critiques, city governments worldwide are increasingly investing in urban greening. Melbourne has committed to tripling its urban tree canopy by 2040. London's Green Infrastructure Task Force has argued that every pound invested in urban nature returns an estimated £27 in public health benefits.</p>
+      </div>
       <div class="divider" id="dv">⟨⟩</div>
-      <div class="qs"><div class="qi" id="qi1"><div class="qrow"><div class="qn">1</div><div class="qt">An inspection fee on fish oil was introduced in New York in 1818</div></div><div class="ropts"><div class="ropt" onclick="pr(this,1,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,1,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,1,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div><hr class="qdiv"/><div class="qi" id="qi2"><div class="qrow"><div class="qn">2</div><div class="qt">Samuel Judd argued that the inspection fee should exclude whale oil.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,2,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,2,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,2,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div><hr class="qdiv"/><div class="qi" id="qi3"><div class="qrow"><div class="qn">3</div><div class="qt">Judd had been in trouble with city officials before the inspection fee disagreement</div></div><div class="ropts"><div class="ropt" onclick="pr(this,3,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,3,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,3,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div><hr class="qdiv"/><div class="qi" id="qi4"><div class="qrow"><div class="qn">4</div><div class="qt">Many New Yorkers were interested in the court case at the time.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,4,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,4,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,4,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div><hr class="qdiv"/><div class="qi" id="qi5"><div class="qrow"><div class="qn">5</div><div class="qt">Traditionally, non-human creatures had been classified in one of three groups.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,5,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,5,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,5,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div><hr class="qdiv"/><div class="qi" id="qi6"><div class="qrow"><div class="qn">6</div><div class="qt">Generally speaking, ordinary people thought fish were the lowest form of life.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,6,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,6,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,6,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div><hr class="qdiv"/><div class="qi" id="qi7"><div class="qrow"><div class="qn">7</div><div class="qt">Whales were excluded from the Linnaean system in 1818.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,7,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,7,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,7,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div><hr class="qdiv"/><div class="qi" id="qi8"><div class="qrow"><div class="qn">8</div><div class="qt">Complete the notes below.
-Write ONE WORD ONLY from the text for each answer</div></div><div style="padding-left:2rem;margin-top:.3rem"><input class="gap" id="g8" oninput="ma(8,this.value)" autocomplete="off" style="min-width:120px"/></div></div><hr class="qdiv"/><div class="qi" id="qi9"><div class="qrow"><div class="qn">9</div><div class="qt"></div></div><div style="padding-left:2rem;margin-top:.3rem"><input class="gap" id="g9" oninput="ma(9,this.value)" autocomplete="off" style="min-width:120px"/></div></div><hr class="qdiv"/><div class="qi" id="qi10"><div class="qrow"><div class="qn">10</div><div class="qt"></div></div><div style="padding-left:2rem;margin-top:.3rem"><input class="gap" id="g10" oninput="ma(10,this.value)" autocomplete="off" style="min-width:120px"/></div></div><hr class="qdiv"/><div class="qi" id="qi11"><div class="qrow"><div class="qn">11</div><div class="qt"></div></div><div style="padding-left:2rem;margin-top:.3rem"><input class="gap" id="g11" oninput="ma(11,this.value)" autocomplete="off" style="min-width:120px"/></div></div><hr class="qdiv"/><div class="qi" id="qi12"><div class="qrow"><div class="qn">12</div><div class="qt"></div></div><div style="padding-left:2rem;margin-top:.3rem"><input class="gap" id="g12" oninput="ma(12,this.value)" autocomplete="off" style="min-width:120px"/></div></div><hr class="qdiv"/><div class="qi" id="qi13"><div class="qrow"><div class="qn">13</div><div class="qt"></div></div><div style="padding-left:2rem;margin-top:.3rem"><input class="gap" id="g13" oninput="ma(13,this.value)" autocomplete="off" style="min-width:120px"/></div></div><hr class="qdiv"/></div>
-  <div class="botbar"><button class="part-nav on" id="pnav1" onclick="goToPart(1)">Passage 1 · Q1–13</button><button class="subbtn" onclick="chk()">Submit ✓</button></div>
+      <div class="qs">
+        <div class="qs-hd">Questions 1–6</div>
+        <div class="qs-inst">Choose <b>TRUE</b> if the statement agrees, <b>FALSE</b> if it contradicts, or <b>NOT GIVEN</b> if there is no information.</div>
+        <div class="qi" id="qi1"><div class="qrow"><div class="qn">1</div><div class="qt">Urban green spaces were traditionally seen as essential to city planning.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,1,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,1,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,1,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <div class="qi" id="qi2"><div class="qrow"><div class="qn">2</div><div class="qt">The 2019 study found benefits only when two hours were spent in a single visit.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,2,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,2,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,2,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <div class="qi" id="qi3"><div class="qrow"><div class="qn">3</div><div class="qt">ART suggests natural environments help restore directed attention.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,3,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,3,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,3,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <div class="qi" id="qi4"><div class="qrow"><div class="qn">4</div><div class="qt">Ulrich showed nature scenes reduced blood pressure faster than urban scenes.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,4,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,4,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,4,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <div class="qi" id="qi5"><div class="qrow"><div class="qn">5</div><div class="qt">Critics argue green space benefits are equally accessible to all income groups.</div></div><div class="ropts"><div class="ropt" onclick="pr(this,5,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,5,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,5,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <div class="qi" id="qi6"><div class="qrow"><div class="qn">6</div><div class="qt">Jennifer Wolch coined the term "green gentrification".</div></div><div class="ropts"><div class="ropt" onclick="pr(this,6,'TRUE')"><div class="rc"></div><span class="rl">TRUE</span></div><div class="ropt" onclick="pr(this,6,'FALSE')"><div class="rc"></div><span class="rl">FALSE</span></div><div class="ropt" onclick="pr(this,6,'NOT GIVEN')"><div class="rc"></div><span class="rl">NOT GIVEN</span></div></div></div>
+        <hr class="qdiv"/>
+        <div class="qs-hd">Questions 7–9</div>
+        <div class="qs-inst">Choose the correct letter, <b>A</b>, <b>B</b>, <b>C</b> or <b>D</b>.</div>
+        <div class="qi" id="qi7"><div class="qrow"><div class="qn">7</div><div class="qt">What did the 2019 study conclude about urban parks?</div></div><div class="mopts"><div class="mopt" onclick="pm(this,7,'A')"><div class="mc">A</div><span class="ml">They are only beneficial if larger than a certain size.</span></div><div class="mopt" onclick="pm(this,7,'B')"><div class="mc">B</div><span class="ml">Even small neighbourhood parks can support public health.</span></div><div class="mopt" onclick="pm(this,7,'C')"><div class="mc">C</div><span class="ml">They should replace hospitals as primary health infrastructure.</span></div><div class="mopt" onclick="pm(this,7,'D')"><div class="mc">D</div><span class="ml">Their benefits are limited to physical health only.</span></div></div></div>
+        <div class="qi" id="qi8"><div class="qrow"><div class="qn">8</div><div class="qt">What does the writer suggest about distribution of green spaces?</div></div><div class="mopts"><div class="mopt" onclick="pm(this,8,'A')"><div class="mc">A</div><span class="ml">Wealthier areas have fewer parks than poorer areas.</span></div><div class="mopt" onclick="pm(this,8,'B')"><div class="mc">B</div><span class="ml">Green spaces are spread equally across all neighbourhoods.</span></div><div class="mopt" onclick="pm(this,8,'C')"><div class="mc">C</div><span class="ml">Wealthier areas tend to have more parks and tree cover.</span></div><div class="mopt" onclick="pm(this,8,'D')"><div class="mc">D</div><span class="ml">Lower-income areas are targeted for urban greening projects.</span></div></div></div>
+        <div class="qi" id="qi9"><div class="qrow"><div class="qn">9</div><div class="qt">What does London's Green Infrastructure Task Force claim?</div></div><div class="mopts"><div class="mopt" onclick="pm(this,9,'A')"><div class="mc">A</div><span class="ml">Investment costs more than benefits justify.</span></div><div class="mopt" onclick="pm(this,9,'B')"><div class="mc">B</div><span class="ml">Every pound invested returns £27 in public health benefits.</span></div><div class="mopt" onclick="pm(this,9,'C')"><div class="mc">C</div><span class="ml">Returns are unpredictable and vary by location.</span></div><div class="mopt" onclick="pm(this,9,'D')"><div class="mc">D</div><span class="ml">Investment should focus on tree planting exclusively.</span></div></div></div>
+        <hr class="qdiv"/>
+        <div class="qs-hd">Questions 10–13</div>
+        <div class="qs-inst">Complete the sentences. Write <b>NO MORE THAN TWO WORDS</b> from the text.</div>
+        <div class="qi"><div class="qrow"><div class="qn">10</div><div class="qt">The study was led by Dr Matthew White from the University of <input class="gap" id="g10" oninput="ma(10,this.value)" autocomplete="off" style="min-width:95px"/>.</div></div></div>
+        <div class="qi"><div class="qrow"><div class="qn">11</div><div class="qt">ART proposes natural environments replenish <input class="gap" id="g11" oninput="ma(11,this.value)" autocomplete="off" style="min-width:110px"/> attention.</div></div></div>
+        <div class="qi"><div class="qrow"><div class="qn">12</div><div class="qt">Ulrich found nature reduced <input class="gap" id="g12" oninput="ma(12,this.value)" autocomplete="off" style="min-width:95px"/> levels within minutes.</div></div></div>
+        <div class="qi"><div class="qrow"><div class="qn">13</div><div class="qt">Melbourne pledged to triple its urban <input class="gap" id="g13" oninput="ma(13,this.value)" autocomplete="off" style="min-width:110px"/> by 2040.</div></div></div>
+        <div style="height:1.5rem"></div>
+      </div>
+    </div>
+  </div>
+  <div class="botbar">
+    <button class="part-nav on" id="pnav1" onclick="goToPart(1)">Passage 1 · Q1–13</button>
+    <button class="part-nav" id="pnav2" onclick="goToPart(2)">Passage 2 · Q14–26</button>
+    <button class="part-nav" id="pnav3" onclick="goToPart(3)">Passage 3 · Q27–40</button>
+    <button class="subbtn" onclick="chk()">Submit ✓</button>
+  </div>
 </div>
-<scr'+'ipt>
+<script>
 function sanitize(str) {
   var d = document.createElement('div');
   d.textContent = String(str || '');
   return d.innerHTML;
 }
 var TESTS=[
-  {name:"Cambridge IELTS 18 — Reading Test 1",topic:"Passages 1, 2, 3",level:"MEDIUM",time:"60 minutes",questions:13,type:"mixed",tier:"free"},
   {name:'Cambridge 16 TEST_4',topic:'Passages 1, 2, 3',level:'MEDIUM',time:'60 minutes',questions:40,type:'tfng',tier:'free'},
   {name:'Cambridge 17 TEST_3',topic:'Passages 1, 2, 3',level:'MEDIUM',time:'60 minutes',questions:40,type:'mcq',tier:'free'},
   {name:'Cambridge 17 TEST_4',topic:'Passages 1, 2, 3',level:'MEDIUM',time:'60 minutes',questions:40,type:'gap',tier:'free'},
@@ -309,9 +377,62 @@ function renderList(){
   });
   var w=document.getElementById('tlist');
   if(!f.length){w.innerHTML='<div class="nores">No tests match your filters.</div>';return;}
-  w.innerHTML=f.map(function(t){return'<div class="tcard"><div class="tcard-info"><div class="tcard-top"><span class="tcard-name">'+t.name+'</span><span class="tbadge '+(t.tier==='free'?'free':'prem')+'">'+(t.tier==='free'?'🎁 Free':'🔒 Premium')+'</span></div><div class="tcard-sub">Passages: '+t.topic+' – '+t.level+' Level</div><div class="tcard-meta"><span class="tmeta">📊 '+t.level+'</span><span class="tmeta-sep">|</span><span class="tmeta">⏱ '+t.time+'</span><span class="tmeta-sep">|</span><span class="tmeta">✓ '+t.questions+' questions</span></div></div>'+(t.tier==='premium'?'<button class="start-btn locked" onclick="alert(\'Upgrade to Premium to access this test.\')">🔒 Premium</button>':'<button class="start-btn" onclick="startTest(\''+t.name+'\')">Start test</button>')+'</div>';}).join('');
+  w.innerHTML=f.map(function(t){return'<div class="tcard"><div class="tcard-info"><div class="tcard-top"><span class="tcard-name">'+t.name+'</span><span class="tbadge '+(t.tier==='free'?'free':'prem')+'">'+(t.tier==='free'?'🎁 Free':'🔒 Premium')+'</span></div><div class="tcard-sub">Passages: '+t.topic+' – '+t.level+' Level</div><div class="tcard-meta"><span class="tmeta">📊 '+t.level+'</span><span class="tmeta-sep">|</span><span class="tmeta">⏱ '+t.time+'</span><span class="tmeta-sep">|</span><span class="tmeta">✓ '+t.questions+' questions</span></div></div>'+'<button class="start-btn" onclick="startTest(\''+t.name+'\')">'+( t.tier==='premium'?'🔒 Start':'Start test')+'</button>'+'</div>';}).join('');
 }
 function startTest(name){
+  var test = TESTS.find(function(t){ return t.name===name; });
+  if (!test || test.tier !== 'premium') { _startTestNow(name); return; }
+
+  var uid = window._currentUserUid;
+  if (!uid) {
+    setTimeout(function(){ startTest(name); }, 1500);
+    return;
+  }
+
+  // Use Firebase SDK via the already-loaded module scope token
+  // Get fresh ID token from the current Firebase user
+  if (window._firebaseAuth && window._firebaseAuth.currentUser) {
+    window._firebaseAuth.currentUser.getIdToken(true)
+      .then(function(token) {
+        var url = 'https://firestore.googleapis.com/v1/projects/bandio-53433/databases/(default)/documents/users/' + uid;
+        return fetch(url, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data) {
+        var plan = 'free';
+        if (data && data.fields && data.fields.plan && data.fields.plan.stringValue) {
+          plan = data.fields.plan.stringValue;
+        }
+        localStorage.setItem('bnd_plan', plan);
+        if (plan === 'premium' || plan === 'intensive') {
+          _startTestNow(name);
+        } else {
+          alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
+        }
+      })
+      .catch(function(e) {
+        console.log('Plan check error:', e);
+        var plan = localStorage.getItem('bnd_plan') || 'free';
+        if (plan === 'premium' || plan === 'intensive') {
+          _startTestNow(name);
+        } else {
+          alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
+        }
+      });
+  } else {
+    // Firebase not ready — fallback to localStorage
+    var plan = localStorage.getItem('bnd_plan') || 'free';
+    if (plan === 'premium' || plan === 'intensive') {
+      _startTestNow(name);
+    } else {
+      alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
+    }
+  }
+}
+
+function _startTestNow(name) {
   document.getElementById('test-title').textContent=name;
   document.getElementById('sel').classList.add('hide');
   document.getElementById('exam').classList.add('show');
@@ -324,7 +445,7 @@ function goBack(){
   document.getElementById('sel').classList.remove('hide');
   document.getElementById('ovl').classList.remove('show');
 }
-var K={"1":"False","2":"True","3":"Not Given","4":"True","5":"True","6":"Not Given","7":"False","8":"lecturer","9":"whalers","10":"europe","11":"merchants","12":"fuel","13":"climate"};
+var K={1:'FALSE',2:'FALSE',3:'TRUE',4:'TRUE',5:'FALSE',6:'TRUE',7:'B',8:'C',9:'B',10:'exeter',11:'focused',12:'cortisol',13:'tree canopy'};
 var T=13;var A={};
 function buildDots(){var w=document.getElementById('dots');w.innerHTML='';for(var q=1;q<=T;q++){var d=document.createElement('div');d.className='qdot';d.id='dd'+q;d.textContent=q;w.appendChild(d);}}
 function ma(q,v){if(v.trim()){A[q]=v.trim();dot(q,true);}else{delete A[q];dot(q,false);}up();}
@@ -332,11 +453,39 @@ function dot(q,on){var d=document.getElementById('dd'+q);if(d)d.classList.toggle
 function up(){document.getElementById('scr').textContent=Object.keys(A).length+'/'+T;}
 function pr(el,q,v){el.closest('.ropts').querySelectorAll('.ropt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');A[q]=v;dot(q,true);up();}
 function pm(el,q,v){el.closest('.mopts').querySelectorAll('.mopt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');A[q]=v;dot(q,true);up();}
+function pm2(el,q1,q2,v){
+  var wrap=el.closest('.m2opts');
+  var sels=wrap.querySelectorAll('.m2opt.sel');
+  if(el.classList.contains('sel')){
+    el.classList.remove('sel');
+    if(A[q1]===v){delete A[q1];dot(q1,false);}
+    else if(A[q2]===v){delete A[q2];dot(q2,false);}
+    up();return;
+  }
+  if(sels.length>=2)return;
+  el.classList.add('sel');
+  if(!A[q1]){A[q1]=v;dot(q1,true);}else{A[q2]=v;dot(q2,true);}
+  up();
+}
 function chk(){
   var c=0,b=0;
   for(var q=1;q<=6;q++){var e=document.getElementById('qi'+q);if(!e)continue;e.querySelectorAll('.ropt').forEach(function(o){o.classList.remove('ok','bad');var l=o.querySelector('.rl').textContent.trim();if(A[q]===l)o.classList.add(l===K[q]?'ok':'bad');else if(l===K[q])o.classList.add('ok');});if(!A[q])b++;else if(A[q]===K[q])c++;}
   for(var q=7;q<=9;q++){var e=document.getElementById('qi'+q);if(!e)continue;e.querySelectorAll('.mopt').forEach(function(o){o.classList.remove('ok','bad');var l=o.querySelector('.mc').textContent.trim();if(A[q]===l)o.classList.add(l===K[q]?'ok':'bad');else if(l===K[q])o.classList.add('ok');});if(!A[q])b++;else if(A[q]===K[q])c++;}
-  for(var q=10;q<=13;q++){var i=document.getElementById('g'+q);if(!i)continue;i.classList.remove('ok','bad');if(!A[q]){b++;continue;}var ok=(A[q]||'').toLowerCase().trim()===(K[q]||'').toLowerCase();i.classList.add(ok?'ok':'bad');if(ok)c++;}
+  for(var q=1;q<=T;q++){var i=document.getElementById('g'+q);if(!i)continue;i.classList.remove('ok','bad');if(!A[q]){b++;continue;}var ok=(A[q]||'').toLowerCase().trim()===(K[q]||'').toLowerCase();i.classList.add(ok?'ok':'bad');if(ok)c++;}
+  // MCQ2 scoring
+  document.querySelectorAll('.m2opts').forEach(function(wrap){
+    var q1=+wrap.dataset.q1,q2=+wrap.dataset.q2;
+    wrap.querySelectorAll('.m2opt').forEach(function(o){
+      o.classList.remove('ok','bad');
+      var l=o.querySelector('.mc2').textContent.trim();
+      var isSel=(A[q1]===l||A[q2]===l);
+      var isCorr=(K[q1]===l||K[q2]===l);
+      if(isSel)o.classList.add(isCorr?'ok':'bad');
+      else if(isCorr)o.classList.add('ok');
+    });
+    if(!A[q1])b++;else if(A[q1]===K[q1])c++;
+    if(!A[q2])b++;else if(A[q2]===K[q2])c++;
+  });
   var w=T-c-b;
   var band=c>=39?'9.0':c>=37?'8.5':c>=35?'8.0':c>=33?'7.5':c>=30?'7.0':c>=27?'6.5':c>=23?'6.0':c>=19?'5.5':c>=15?'5.0':c>=13?'4.5':c>=10?'4.0':'3.5';
   document.getElementById('sband').textContent=band;
@@ -480,7 +629,7 @@ function removeHighlight() {
   document.getElementById("popup").style.display = "none";
 }
 
-<\/script>
+</script>
 
 
 <div id="popup" class="popup-tools">

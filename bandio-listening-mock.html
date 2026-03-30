@@ -134,6 +134,19 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
 .popup-tools span { cursor: pointer; }
 .popup-tools span:hover { text-decoration: underline; }
 
+.m2opts{display:flex;flex-direction:column;gap:.3rem;padding-left:2rem;}
+.m2opt{display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.28rem 0;user-select:none;}
+.m2opt:hover .mc2{border-color:#d4541a;color:#d4541a;}
+.mc2{width:20px;height:20px;border-radius:4px;border:1.5px solid #bbb;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.64rem;font-weight:700;color:#aaa;transition:all .1s;}
+.m2opt.sel .mc2{border-color:#d4541a;color:#d4541a;border-width:2px;background:rgba(212,84,26,.08);}
+.m2opt.ok .mc2{border-color:#2a9d68;color:#2a9d68;background:#e8f5ee;}
+.m2opt.bad .mc2{border-color:#e24b4a;color:#e24b4a;background:#fef2f2;}
+/* Form-fill note completion */
+.nform{background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:1.2rem 1.4rem;margin:1rem 0;font-size:.9rem;line-height:1.75;}
+.nform-title{font-weight:700;text-align:center;font-size:.98rem;margin-bottom:.9rem;padding-bottom:.6rem;border-bottom:1px solid #d8d5d0;}
+.nform-row{display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap;margin-bottom:.25rem;}
+.nform-label{font-weight:600;min-width:140px;flex-shrink:0;}
+.nform-sep{font-size:.88rem;color:#777;}
 </style>
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -407,9 +420,37 @@ function buildDots(){var w=document.getElementById('dots');w.innerHTML='';for(va
 function ma(q,v){if(v.trim()){A[q]=v.trim();dot(q,true);}else{delete A[q];dot(q,false);}up();}
 function dot(q,on){var d=document.getElementById('dd'+q);if(d)d.classList.toggle('ans',on);}
 function up(){document.getElementById('scr').textContent=Object.keys(A).length+'/'+T;}
+function pm2(el,q1,q2,v){
+  var wrap=el.closest('.m2opts');
+  var sels=wrap.querySelectorAll('.m2opt.sel');
+  if(el.classList.contains('sel')){
+    el.classList.remove('sel');
+    if(A[q1]===v){delete A[q1];dot(q1,false);}
+    else if(A[q2]===v){delete A[q2];dot(q2,false);}
+    up();return;
+  }
+  if(sels.length>=2)return;
+  el.classList.add('sel');
+  if(!A[q1]){A[q1]=v;dot(q1,true);}else{A[q2]=v;dot(q2,true);}
+  up();
+}
 function chk(){
   var c=0,b=0;
   for(var q=1;q<=T;q++){var i=document.getElementById('q'+q);if(!i)continue;i.classList.remove('ok','bad');if(!A[q]){b++;continue;}var ok=(A[q]||'').toLowerCase().trim()===(K[q]||'').toLowerCase();i.classList.add(ok?'ok':'bad');if(ok)c++;}
+  // MCQ2 scoring
+  document.querySelectorAll('.m2opts').forEach(function(wrap){
+    var q1=+wrap.dataset.q1,q2=+wrap.dataset.q2;
+    wrap.querySelectorAll('.m2opt').forEach(function(o){
+      o.classList.remove('ok','bad');
+      var l=o.querySelector('.mc2').textContent.trim();
+      var isSel=(A[q1]===l||A[q2]===l);
+      var isCorr=(K[q1]===l||K[q2]===l);
+      if(isSel)o.classList.add(isCorr?'ok':'bad');
+      else if(isCorr)o.classList.add('ok');
+    });
+    if(!A[q1])b++;else if(A[q1]===K[q1])c++;
+    if(!A[q2])b++;else if(A[q2]===K[q2])c++;
+  });
   var w=T-c-b;
   var band=c>=39?'9.0':c>=37?'8.5':c>=35?'8.0':c>=32?'7.5':c>=30?'7.0':c>=26?'6.5':c>=23?'6.0':c>=18?'5.5':c>=16?'5.0':c>=13?'4.5':c>=10?'4.0':'3.5';
   document.getElementById('sband').textContent=band;
