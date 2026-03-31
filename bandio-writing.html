@@ -405,16 +405,15 @@ function renderList() {
   var w = document.getElementById('qlist');
   if (!f.length) { w.innerHTML='<div class="nores">No questions found.</div>'; return; }
   w.innerHTML = f.map(function(q) {
-    var qid=JSON.stringify(q.id);
     var badge=(q.tier==='premium')?'<span class="tbadge" style="background:#fff8e1;color:#f57f17;border-color:#ffe082;">🔒 Premium</span>':'<span class="tbadge">🎁 Free</span>';
-    return '<div class="tcard"><div class="tcard-info">'
+    return '<div class="tcard" onclick="startTest(\'' + q.id + '\')"><div class="tcard-info">'
       +'<div class="tcard-top"><span class="tcard-name">'+q.title+'</span>'
       +badge
       +'<span class="ttag '+(q.task==='task1'?'t1':'t2')+'">'+(q.task==='task1'?'Task 1':'Task 2')+'</span></div>'
       +'<div class="tcard-sub">'+q.sub.substring(0,130)+(q.sub.length>130?'…':'')+'</div>'
       +'<div class="tcard-meta"><span class="tmeta">'+q.time+' min</span><span class="tmeta-sep">|</span><span class="tmeta">Min '+q.min+' words</span></div>'
       +'</div>'
-      +'<button class="sbtn" onclick="startTest('+qid+')">Start</button>'
+      +'<button class="sbtn" onclick="startTest(\'' + q.id + '\')">Start</button>'
       +'</div>';
   }).join('');
 }

@@ -284,9 +284,8 @@ function renderList() {
   if (!filtered.length) { wrap.innerHTML = '<div class="nores">No questions match your search.</div>'; return; }
   var html = '';
   filtered.forEach(function(q) {
-    var qIdStr = JSON.stringify(q.id);
     var tierBadge = (q.tier === 'premium') ? '<span class="fb" style="background:#fff8e1;color:#f57f17;border-color:#ffe082;">🔒 Premium</span>' : '<span class="fb">🎁 Free</span>';
-    html += '<div class="tc" onclick="startTest(' + qIdStr + ')">'
+    html += '<div class="tc" onclick="startTest(\'' + q.id + '\')">'
       + '<div class="tc-info">'
       + '<div class="tc-top"><span class="tc-name">' + q.title + '</span>'
       + tierBadge
@@ -294,7 +293,7 @@ function renderList() {
       + '<div class="tc-sub">' + q.sub.substring(0,120) + (q.sub.length>120?'…':'') + '</div>'
       + '<div class="tc-meta"><span class="tm">&#9200; ' + q.time + ' min</span><span class="tm-sep">|</span><span class="tm">Min ' + q.min + ' words</span></div>'
       + '</div>'
-      + '<button class="sbtn" onclick="event.stopPropagation();startTest(' + qIdStr + ')">Start &rarr;</button>'
+      + '<button class="sbtn" onclick="event.stopPropagation();startTest(\'' + q.id + '\')">Start &rarr;</button>'
       + '</div>';
   });
   wrap.innerHTML = html;

@@ -313,7 +313,7 @@
           <!-- Passage / Section number — shown for practice reading/listening only -->
           <div class="form-field" id="f-passage-num-wrap" style="display:none">
             <label id="f-passage-num-label">Which passage is this?</label>
-            <select id="f-passage-num" onchange="window.onTypeChange()">
+            <select id="f-passage-num" onchange="setTimeout(window.onTypeChange,0)">
               <option value="1">Passage 1</option>
               <option value="2">Passage 2</option>
               <option value="3">Passage 3</option>
