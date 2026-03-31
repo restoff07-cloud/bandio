@@ -198,7 +198,7 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
         var t=d.data();
         if(!t.title)return;
         if(!TESTS.find(function(x){return x.name===t.title;})){
-          TESTS.push({name:t.title,topic:t.passages&&t.passages[0]?t.passages[0].title||'reading test':'reading test',level:t.level||'MEDIUM',time:t.time||'60 minutes',questions:t.questions||40,type:'mock-reading',tier:t.access||'free'});
+          TESTS.push({name:t.title,topic:t.passages&&t.passages[0]?t.passages[0].title||'reading test':'reading test',level:t.level||'MEDIUM',time:t.time||'60 minutes',questions:t.questions||40,type:'mock-reading',tier:t.access||'free',firestoreDocId:d.id,passages:t.passages||[]});
         }
       });
       if(typeof renderList==='function')renderList();
@@ -207,30 +207,6 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
 
   // Store full Firestore test docs keyed by title for dynamic rendering
   // Load test cards from Firestore (admin-added tests appear in the list)
-  async function loadFirestoreTests(){
-    try{
-      const q=query(collection(db,'tests'),where('kind','==','reading'));
-      const snap=await getDocs(q);
-      if(snap.empty)return;
-      snap.forEach(function(d){
-        var t=d.data();
-        if(!t.title)return;
-        if(!TESTS.find(function(x){return x.name===t.title;})){
-          TESTS.push({
-            name:      t.title,
-            topic:     'Passages 1, 2, 3',
-            level:     t.level||'MEDIUM',
-            time:      t.time||'60 minutes',
-            questions: t.questions||40,
-            type:      'mixed',
-            tier:      t.access||'free'
-          });
-        }
-      });
-      if(typeof renderList==='function')renderList();
-    }catch(e){console.log('Firestore tests load error:',e.message);}
-  }
-  loadFirestoreTests();
 </script>
 </head>
 <body>
@@ -451,8 +427,13 @@ function startTest(name){
   }
 }
 
-function _startTestNow(name) {
+function _startTestNow(name){
+  var test=TESTS.find(function(t){return t.name===name;});
   document.getElementById('test-title').textContent=name;
+  // If this is a Firestore test with content, render it dynamically
+  if(test && test.passages && test.passages.length > 0 && test.passages[0].questions && test.passages[0].questions.length > 0){
+    renderReadingContent(test.passages);
+  }
   document.getElementById('sel').classList.add('hide');
   document.getElementById('exam').classList.add('show');
   resetTimer();buildDots();
@@ -646,6 +627,121 @@ function removeHighlight() {
 
   window.getSelection().removeAllRanges();
   document.getElementById("popup").style.display = "none";
+}
+
+
+// ── DYNAMIC CONTENT RENDERER (Firestore tests) ───────────────────
+function _escHtml(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
+
+function _buildQHTML(q,num,num2){
+  var type=q.type||'Gap fill';
+  var labelNum=(type==='2-answer MCQ'&&num2)?(num+' \u2013 '+num2):String(q.num||num);
+  var html='<div class="qi" id="qi'+num+'"><div class="qrow"><div class="qn">'+labelNum+'</div><div class="qt">'+_escHtml(q.text)+'</div></div>';
+  if(type==='Multiple choice'||type==='multiple-choice'){
+    html+='<div class="mopts">';
+    (q.options||[]).forEach(function(o){html+='<div class="mopt" onclick="pm(this,'+num+',\''+o.letter+'\')"><div class="mc">'+o.letter+'</div><span class="ml">'+_escHtml(o.text)+'</span></div>';});
+    html+='</div>';
+  } else if(type==='2-answer MCQ'){
+    var n2=String(num2||num+1);
+    html+='<div class="m2opts" id="m2opts_'+num+'" data-q1="'+num+'" data-q2="'+n2+'">';
+    (q.options||[]).forEach(function(o){html+='<div class="m2opt" onclick="pm2(this,'+num+','+n2+',\''+o.letter+'\')"><div class="mc2">'+o.letter+'</div><span class="ml">'+_escHtml(o.text)+'</span></div>';});
+    html+='</div>';
+  } else if(type==='T/F/NG'||type==='T/F/NG'){
+    html+='<div class="ropts">';
+    ['TRUE','FALSE','NOT GIVEN'].forEach(function(v){html+='<div class="ropt" onclick="pr(this,'+num+',\''+v+'\')"><div class="rc"></div><span class="rl">'+v+'</span></div>';});
+    html+='</div>';
+  } else if(type==='Y/N/NG'){
+    html+='<div class="ropts">';
+    ['YES','NO','NOT GIVEN'].forEach(function(v){html+='<div class="ropt" onclick="pr(this,'+num+',\''+v+'\')"><div class="rc"></div><span class="rl">'+v+'</span></div>';});
+    html+='</div>';
+  } else if(type==='Form fill'){
+    var ffTitle=(q.extra&&q.extra.ffTitle)||'';
+    var ffRows=(q.extra&&q.extra.ffRows)||'';
+    var ffAnswers=(q.answer||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    var gapIdx=0;
+    var rowsHtml='';
+    (ffRows.split('\n')).forEach(function(row){
+      var parts=row.split('___');
+      if(parts.length===1){rowsHtml+='<div class="nform-row"><span>'+_escHtml(row)+'</span></div>';}
+      else{
+        var rowOut='<div class="nform-row">';
+        parts.forEach(function(part,pi){
+          rowOut+='<span>'+_escHtml(part)+'</span>';
+          if(pi<parts.length-1){var gn=num+gapIdx;rowOut+='<input class="gap" id="g'+gn+'" oninput="ma('+gn+',this.value)" autocomplete="off" style="min-width:80px"/>';gapIdx++;}
+        });
+        rowOut+='</div>';
+        rowsHtml+=rowOut;
+      }
+    });
+    html+='<div class="nform">'+(ffTitle?'<div class="nform-title">'+_escHtml(ffTitle)+'</div>':'')+rowsHtml+'</div>';
+  } else {
+    html+='<div style="padding-left:2rem;margin-top:.3rem"><input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:120px"/></div>';
+  }
+  html+='</div><hr class="qdiv"/>';
+  return html;
+}
+
+function renderReadingContent(passages){
+  var newK={};
+  var qNum=1;
+  var passHTML='';
+  var qHTML='';
+  var botParts=[];
+
+  passages.forEach(function(p,pi){
+    var qStart=qNum;
+    // Build passage text
+    var paras=(p.text||'').split('\n').filter(function(l){return l.trim();});
+    passHTML+='<h2>'+_escHtml(p.title||('Passage '+(pi+1)))+'</h2>'+paras.map(function(l){return '<p>'+_escHtml(l)+'</p>';}).join('');
+
+    // Build questions
+    (p.questions||[]).forEach(function(q){
+      var num=qNum++;
+      if(q.type==='2-answer MCQ'){
+        var num2Raw=q.extra&&q.extra.q2num?parseInt(q.extra.q2num):qNum;
+        var num2=isNaN(num2Raw)?qNum:num2Raw;
+        var answers=(q.answer||'').split(',').map(function(s){return s.trim();});
+        newK[num]=answers[0]||'';
+        newK[num2]=answers[1]||'';
+        qHTML+=_buildQHTML(q,num,num2);
+        qNum=Math.max(qNum,num2+1);
+      } else {
+        newK[num]=q.answer||'';
+        qHTML+=_buildQHTML(q,num,null);
+      }
+    });
+
+    var qEnd=qNum-1;
+    botParts.push('<button class="part-nav'+(pi===0?' on':'')+'" id="pnav'+(pi+1)+'" onclick="goToPart('+(pi+1)+')">Passage '+(pi+1)+' \u00b7 Q'+qStart+'\u2013'+qEnd+'</button>');
+  });
+
+  var newT=qNum-1;
+
+  // Replace passage content
+  var ppDiv=document.getElementById('pp');
+  if(ppDiv) ppDiv.innerHTML=passHTML;
+
+  // Replace questions area
+  var qsDiv=document.querySelector('.qs');
+  if(qsDiv) qsDiv.innerHTML=qHTML+'<div style="height:1.5rem"></div>';
+
+  // Replace botbar (keep submit button)
+  var bb=document.querySelector('.botbar');
+  if(bb){
+    var subbtn='<button class="subbtn" onclick="chk()">Submit \u2713</button>';
+    bb.innerHTML=botParts.join('')+subbtn;
+  }
+
+  // Update answer key and total
+  K=newK;
+  T=newT;
+  A={};
+
+  // Update phdr
+  var ph1=document.querySelector('.ph1');
+  var ph2=document.querySelector('.ph2');
+  if(ph1) ph1.textContent='Passage 1';
+  if(ph2&&passages[0]) ph2.textContent='Read the text and answer questions 1\u2013'+newT+'.';
 }
 
 </script>
