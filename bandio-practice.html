@@ -140,6 +140,7 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
 .popup-tools span { cursor: pointer; }
 .popup-tools span:hover { text-decoration: underline; }
 
+/* MCQ2 two-answer */
 .m2opts{display:flex;flex-direction:column;gap:.3rem;padding-left:2rem;}
 .m2opt{display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.28rem 0;user-select:none;}
 .m2opt:hover .mc2{border-color:#d4541a;color:#d4541a;}
@@ -147,12 +148,10 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
 .m2opt.sel .mc2{border-color:#d4541a;color:#d4541a;border-width:2px;background:rgba(212,84,26,.08);}
 .m2opt.ok .mc2{border-color:#2a9d68;color:#2a9d68;background:#e8f5ee;}
 .m2opt.bad .mc2{border-color:#e24b4a;color:#e24b4a;background:#fef2f2;}
-/* Form-fill note completion */
-.nform{background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:1.2rem 1.4rem;margin:1rem 0;font-size:.9rem;line-height:1.75;}
-.nform-title{font-weight:700;text-align:center;font-size:.98rem;margin-bottom:.9rem;padding-bottom:.6rem;border-bottom:1px solid #d8d5d0;}
-.nform-row{display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap;margin-bottom:.25rem;}
-.nform-label{font-weight:600;min-width:140px;flex-shrink:0;}
-.nform-sep{font-size:.88rem;color:#777;}
+/* Form fill */
+.nform{background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:1.2rem 1.4rem;margin:.8rem 0 1rem 2rem;font-size:.9rem;line-height:1.85;}
+.nform-title{font-weight:700;text-align:center;font-size:.97rem;margin-bottom:.85rem;padding-bottom:.55rem;border-bottom:1px solid #d8d5d0;}
+.nform-row{display:flex;align-items:baseline;gap:.3rem;flex-wrap:wrap;margin-bottom:.22rem;}
 </style>
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -176,7 +175,27 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
       const snap=await getDoc(doc(getFirestore(app),'users',u.uid));
       if(snap.exists()) localStorage.setItem('bnd_plan',snap.data().plan||'free');
     }catch(e){}
+    loadFirestoreTests();
   });
+
+  // Load admin-uploaded tests from Firestore (type-filtered for this page)
+  async function loadFirestoreTests(){
+    try{
+      const {getFirestore,collection,getDocs,query,where}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const db2=getFirestore(app);
+      const q2=query(collection(db2,'tests'),where('type','==','practice-reading'));
+      const snap=await getDocs(q2);
+      if(snap.empty)return;
+      snap.forEach(function(d){
+        var t=d.data();
+        if(!t.title)return;
+        if(!TESTS.find(function(x){return x.name===t.title;})){
+          TESTS.push({name:t.title,topic:t.passages&&t.passages[0]?t.passages[0].title||'reading test':'reading test',level:t.level||'MEDIUM',time:t.time||'60 minutes',questions:t.questions||40,type:'practice-reading',tier:t.access||'free'});
+        }
+      });
+      if(typeof renderList==='function')renderList();
+    }catch(e){console.log('Firestore load error:',e.message);}
+  }
 </script>
 </head>
 <body>
@@ -283,7 +302,7 @@ function sanitize(str) {
   d.textContent = String(str || '');
   return d.innerHTML;
 }
-var TESTS=
+var TESTS=[
   {name:'Cambridge 16 TEST_4 — Passage 1',topic:'Urban Green Spaces',level:'MEDIUM',time:'20 minutes',questions:13,type:'tfng',tier:'free'},
   {name:'Cambridge 17 TEST_3 — Passage 1',topic:'The Life of Marie Curie',level:'MEDIUM',time:'20 minutes',questions:13,type:'tfng',tier:'free'},
   {name:'Cambridge 17 TEST_4 — Passage 2',topic:'Psychology of Colour',level:'MEDIUM',time:'20 minutes',questions:14,type:'mcq',tier:'free'},
@@ -291,7 +310,6 @@ var TESTS=
   {name:'Cambridge 18 TEST_2 — Passage 2',topic:'Animal Navigation',level:'HARD',time:'20 minutes',questions:14,type:'tfng',tier:'premium'},
   {name:'Cambridge 18 TEST_3 — Passage 3',topic:'The Colosseum',level:'HARD',time:'20 minutes',questions:14,type:'mcq',tier:'premium'},
 ];
-window.TESTS=TESTS;
 var activeTab='all';
 function setTab(t,el){activeTab=t;document.querySelectorAll('.ft').forEach(function(x){x.classList.remove('on');});el.classList.add('on');renderList();}
 function renderList(){
@@ -401,7 +419,7 @@ function chk(){
   var c=0,b=0;
   for(var q=1;q<=6;q++){var e=document.getElementById('qi'+q);if(!e)continue;e.querySelectorAll('.ropt').forEach(function(o){o.classList.remove('ok','bad');var l=o.querySelector('.rl').textContent.trim();if(A[q]===l)o.classList.add(l===K[q]?'ok':'bad');else if(l===K[q])o.classList.add('ok');});if(!A[q])b++;else if(A[q]===K[q])c++;}
   for(var q=7;q<=9;q++){var e=document.getElementById('qi'+q);if(!e)continue;e.querySelectorAll('.mopt').forEach(function(o){o.classList.remove('ok','bad');var l=o.querySelector('.mc').textContent.trim();if(A[q]===l)o.classList.add(l===K[q]?'ok':'bad');else if(l===K[q])o.classList.add('ok');});if(!A[q])b++;else if(A[q]===K[q])c++;}
-  for(var q=1;q<=T;q++){var i=document.getElementById('g'+q);if(!i)continue;i.classList.remove('ok','bad');if(!A[q]){b++;continue;}var ok=(A[q]||'').toLowerCase().trim()===(K[q]||'').toLowerCase();i.classList.add(ok?'ok':'bad');if(ok)c++;}
+  for(var q=10;q<=13;q++){var i=document.getElementById('g'+q);if(!i)continue;i.classList.remove('ok','bad');if(!A[q]){b++;continue;}var ok=(A[q]||'').toLowerCase().trim()===(K[q]||'').toLowerCase();i.classList.add(ok?'ok':'bad');if(ok)c++;}
   // MCQ2 scoring
   document.querySelectorAll('.m2opts').forEach(function(wrap){
     var q1=+wrap.dataset.q1,q2=+wrap.dataset.q2;
@@ -523,27 +541,5 @@ function removeHighlight() {
 </div>
 
 
-<script type="module">
-(async function(){
-  try{
-    const {initializeApp,getApps}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-    const {getFirestore,collection,getDocs,query,where}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
-    const app=getApps().length?getApps()[0]:initializeApp(cfg);
-    const db=getFirestore(app);
-    const snap=await getDocs(query(collection(db,'tests'),where('kind','==','reading')));
-    snap.forEach(function(d){
-      var t=d.data();
-      if(!t.title)return;
-      // show practice tests on practice page, mock tests on mock page
-      if(t.type&&t.type.indexOf('mock')!==-1)return;
-      if(!window.TESTS.find(function(x){return x.name===t.title;})){
-        window.TESTS.push({name:t.title,topic:t.passages&&t.passages[0]?t.passages[0].title||'Reading practice':'Reading practice',level:t.level||'MEDIUM',time:t.time||'20 minutes',questions:t.questions||13,type:'mixed',tier:t.access||'free'});
-      }
-    });
-    if(typeof renderList==='function')renderList();
-  }catch(e){console.log('Firestore practice load:',e.message);}
-})();
-</script>
 </body>
 </html>

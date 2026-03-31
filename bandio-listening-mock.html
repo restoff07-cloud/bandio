@@ -134,6 +134,7 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
 .popup-tools span { cursor: pointer; }
 .popup-tools span:hover { text-decoration: underline; }
 
+/* MCQ2 two-answer */
 .m2opts{display:flex;flex-direction:column;gap:.3rem;padding-left:2rem;}
 .m2opt{display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.28rem 0;user-select:none;}
 .m2opt:hover .mc2{border-color:#d4541a;color:#d4541a;}
@@ -141,12 +142,10 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
 .m2opt.sel .mc2{border-color:#d4541a;color:#d4541a;border-width:2px;background:rgba(212,84,26,.08);}
 .m2opt.ok .mc2{border-color:#2a9d68;color:#2a9d68;background:#e8f5ee;}
 .m2opt.bad .mc2{border-color:#e24b4a;color:#e24b4a;background:#fef2f2;}
-/* Form-fill note completion */
-.nform{background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:1.2rem 1.4rem;margin:1rem 0;font-size:.9rem;line-height:1.75;}
-.nform-title{font-weight:700;text-align:center;font-size:.98rem;margin-bottom:.9rem;padding-bottom:.6rem;border-bottom:1px solid #d8d5d0;}
-.nform-row{display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap;margin-bottom:.25rem;}
-.nform-label{font-weight:600;min-width:140px;flex-shrink:0;}
-.nform-sep{font-size:.88rem;color:#777;}
+/* Form fill */
+.nform{background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:1.2rem 1.4rem;margin:.8rem 0 1rem 2rem;font-size:.9rem;line-height:1.85;}
+.nform-title{font-weight:700;text-align:center;font-size:.97rem;margin-bottom:.85rem;padding-bottom:.55rem;border-bottom:1px solid #d8d5d0;}
+.nform-row{display:flex;align-items:baseline;gap:.3rem;flex-wrap:wrap;margin-bottom:.22rem;}
 </style>
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -175,7 +174,27 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
       const snap = await getDoc(doc(db,'users',u.uid));
       if(snap.exists()) localStorage.setItem('bnd_plan', snap.data().plan||'free');
     } catch(e){}
+    loadFirestoreTests();
   });
+
+  // Load admin-uploaded tests from Firestore (type-filtered for this page)
+  async function loadFirestoreTests(){
+    try{
+      const {getFirestore,collection,getDocs,query,where}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const db2=getFirestore(app);
+      const q2=query(collection(db2,'tests'),where('type','==','mock-listening'));
+      const snap=await getDocs(q2);
+      if(snap.empty)return;
+      snap.forEach(function(d){
+        var t=d.data();
+        if(!t.title)return;
+        if(!TESTS.find(function(x){return x.name===t.title;})){
+          TESTS.push({name:t.title,topic:t.passages&&t.passages[0]?t.passages[0].title||'listening test':'listening test',level:t.level||'MEDIUM',time:t.time||'60 minutes',questions:t.questions||40,type:'mock-listening',tier:t.access||'free'});
+        }
+      });
+      if(typeof renderList==='function')renderList();
+    }catch(e){console.log('Firestore load error:',e.message);}
+  }
   // Load test cards from Firestore (admin-added tests appear in the list)
   async function loadFirestoreTests(){
     try{
