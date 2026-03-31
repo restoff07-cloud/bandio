@@ -128,8 +128,44 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  const app=initializeApp({apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"});
-  onAuthStateChanged(getAuth(app),function(u){if(!u)location.replace("bandio-login.html");});
+  import{getFirestore,collection,getDocs,query,where}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
+  const app=initializeApp(cfg);
+  const auth=getAuth(app);
+  const db=getFirestore(app);
+
+  function taskTypeInst(type){
+    var m={'opinion':'To what extent do you agree or disagree?','discussion':'Discuss both views and give your own opinion.','problem-solution':'What are the causes of this problem and what measures could be taken to solve it?','advantages-disadvantages':'What are the advantages and disadvantages?','two-part':'Answer both questions.'};
+    return m[type]||'Give your opinion and support it with examples.';
+  }
+
+  onAuthStateChanged(auth, async function(u){
+    if(!u){location.replace("bandio-login.html");return;}
+    // Load admin-published mock-writing tests from Firestore
+    try{
+      const snap=await getDocs(query(collection(db,'tests'),where('type','==','mock-writing')));
+      snap.forEach(function(d){
+        var t=d.data();
+        if(!t.title||!t.passages)return;
+        var p1=t.passages[0]||{};
+        var p2=t.passages[1]||{};
+        var base='fs_'+d.id;
+        // Task 1
+        if(p1.instructions||p1.prompt){
+          if(!QUESTIONS.find(function(q){return q.id===base+'_t1';})){
+            QUESTIONS.push({id:base+'_t1',task:'task1',title:t.title+' — Task 1',sub:p1.instructions||p1.prompt||'',inst:'You should spend about 20 minutes on this task. Write at least 150 words.',time:20,min:150,chart:!!(p1.image),chartSrc:p1.image||'',modelAnswer:p1.modelAnswer||'',tier:t.access||'free'});
+          }
+        }
+        // Task 2
+        if(p2.prompt){
+          if(!QUESTIONS.find(function(q){return q.id===base+'_t2';})){
+            QUESTIONS.push({id:base+'_t2',task:'task2',title:t.title+' — Task 2',sub:p2.prompt||'',inst:taskTypeInst(p2.taskType||''),time:40,min:250,chart:false,modelAnswer:p2.modelAnswer||'',tier:t.access||'free'});
+          }
+        }
+      });
+      if(typeof renderList==='function')renderList();
+    }catch(e){console.log('Firestore writing-mock load:',e.message);}
+  });
 </script>
 </head>
 <body>
@@ -248,15 +284,17 @@ function renderList() {
   if (!filtered.length) { wrap.innerHTML = '<div class="nores">No questions match your search.</div>'; return; }
   var html = '';
   filtered.forEach(function(q) {
-    html += '<div class="tc" onclick="startTest(' + q.id + ')">'
+    var qIdStr = JSON.stringify(q.id);
+    var tierBadge = (q.tier === 'premium') ? '<span class="fb" style="background:#fff8e1;color:#f57f17;border-color:#ffe082;">🔒 Premium</span>' : '<span class="fb">🎁 Free</span>';
+    html += '<div class="tc" onclick="startTest(' + qIdStr + ')">'
       + '<div class="tc-info">'
       + '<div class="tc-top"><span class="tc-name">' + q.title + '</span>'
-      + '<span class="fb">Free</span>'
+      + tierBadge
       + '<span class="tt ' + (q.task === 'task1' ? 't1' : 't2') + '">' + (q.task === 'task1' ? 'Task 1' : 'Task 2') + '</span></div>'
-      + '<div class="tc-sub">' + q.sub + '</div>'
-      + '<div class="tc-meta"><span class="tm">&#9200; ' + q.time + ' min</span><span class="tm-sep">|</span><span class="tm">Min ' + q.min + ' words</span><span class="tm-sep">|</span><span class="tm">' + q.inst + '</span></div>'
+      + '<div class="tc-sub">' + q.sub.substring(0,120) + (q.sub.length>120?'…':'') + '</div>'
+      + '<div class="tc-meta"><span class="tm">&#9200; ' + q.time + ' min</span><span class="tm-sep">|</span><span class="tm">Min ' + q.min + ' words</span></div>'
       + '</div>'
-      + '<button class="sbtn" onclick="event.stopPropagation();startTest(' + q.id + ')">Start &rarr;</button>'
+      + '<button class="sbtn" onclick="event.stopPropagation();startTest(' + qIdStr + ')">Start &rarr;</button>'
       + '</div>';
   });
   wrap.innerHTML = html;
@@ -265,7 +303,7 @@ function renderList() {
 function startTest(id) {
   var found = null;
   for (var i = 0; i < QUESTIONS.length; i++) {
-    if (QUESTIONS[i].id === id) { found = QUESTIONS[i]; break; }
+    if (String(QUESTIONS[i].id) === String(id)) { found = QUESTIONS[i]; break; }
   }
   if (!found) return;
   currentQ = found;

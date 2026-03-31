@@ -313,7 +313,7 @@
           <!-- Passage / Section number — shown for practice reading/listening only -->
           <div class="form-field" id="f-passage-num-wrap" style="display:none">
             <label id="f-passage-num-label">Which passage is this?</label>
-            <select id="f-passage-num">
+            <select id="f-passage-num" onchange="window.onTypeChange()">
               <option value="1">Passage 1</option>
               <option value="2">Passage 2</option>
               <option value="3">Passage 3</option>
@@ -770,6 +770,17 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('sidebar').style.display = 'flex';
       document.getElementById('main-area').style.display = 'block';
       initTests();
+      // Load published tests from Firestore so they appear in All Tests table
+      if (window.fbLoadTests) {
+        window.fbLoadTests().then(function(firestoreTests) {
+          firestoreTests.forEach(function(t) {
+            if (!tests.find(function(x){ return String(x.id) === String(t.id); })) {
+              tests.push({ id: t.id, title: t.title, type: t.type||'mock-reading', access: t.access||'free', status: t.status||'live', students: t.students||0, avg: '—' });
+            }
+          });
+          renderTests();
+        }).catch(function(e){ console.log('Firestore tests load error:', e.message); });
+      }
       buildPassages();
       // Init speaking page
       const hint = document.getElementById('sp-part-hint');
@@ -1193,6 +1204,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (input.files[0]) {
       nameEl.textContent = '✓ ' + input.files[0].name;
       nameEl.style.display = 'block';
+      // Read as base64 for Firestore storage
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        if (nameId === 'task1-imgname') window._task1ImageData = e.target.result;
+        else if (nameId === 'prac-imgname') window._pracImageData = e.target.result;
+        // Also update preview image if present
+        const imgId = nameId.replace('-imgname','-img');
+        const imgEl = document.getElementById(imgId);
+        if (imgEl) { imgEl.src = e.target.result; imgEl.style.display = 'block'; }
+      };
+      reader.readAsDataURL(input.files[0]);
     }
   };
 
@@ -1223,7 +1245,13 @@ document.addEventListener('DOMContentLoaded', function() {
     div.id = 'qi-' + qn;
     div.innerHTML = `
       <div class="q-item-hdr">
-        <span class="q-item-num">Question ${qCounters[pid]}</span>
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+          <span class="q-item-num" style="white-space:nowrap">Q</span>
+          <input type="text" id="qnum-${qn}" value="${qCounters[pid]}"
+            placeholder="e.g. 5 or 25–26"
+            style="width:80px;padding:.2rem .5rem;border:1px solid rgba(14,14,14,.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;color:var(--accent);background:transparent;"
+            title="Enter number or range. E.g. '5' for one question, '25–26' for two questions spanning one gap-fill block."/>
+        </div>
         <button class="q-item-del" onclick="window.removeQ('${qn}','${pid}')">✕ Remove</button>
       </div>
       <div class="q-type-row">
@@ -1284,11 +1312,12 @@ document.addEventListener('DOMContentLoaded', function() {
   // Question type builders
   function buildMCQ(qn) {
     return `<div class="options-builder" id="mcqopts-${qn}">
-      ${['A','B','C','D'].map(l=>`<div class="opt-row">
+      ${['A','B','C','D'].map(l=>`<div class="opt-row" id="optrow-${qn}-${l}">
         <div class="opt-letter">${l}</div>
         <input class="opt-input" placeholder="Option ${l}"/>
         <input type="radio" name="cr-${qn}" class="correct-radio" title="Correct answer"/>
         <span class="correct-label">Correct</span>
+        <button type="button" onclick="window.removeOpt(this)" title="Remove option" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:.8rem;padding:.1rem .3rem;line-height:1;flex-shrink:0;" onmouseover="this.style.color='#e24b4a'" onmouseout="this.style.color='#aaa'">✕</button>
       </div>`).join('')}
     </div>
     <button class="btn-add-opt" onclick="window.addOpt('${qn}')">＋ Add option</button>`;
@@ -1477,8 +1506,27 @@ document.addEventListener('DOMContentLoaded', function() {
     row.innerHTML = `<div class="opt-letter">${letter}</div>
       <input class="opt-input" placeholder="Option ${letter}"/>
       <input type="radio" name="cr-${qn}" class="correct-radio"/>
-      <span class="correct-label">Correct</span>`;
+      <span class="correct-label">Correct</span>
+      <button type="button" onclick="window.removeOpt(this)" title="Remove option" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:.8rem;padding:.1rem .3rem;line-height:1;flex-shrink:0;" onmouseover="this.style.color='#e24b4a'" onmouseout="this.style.color='#aaa'">✕</button>`;
     opts.appendChild(row);
+  };
+
+  window.removeOpt = function(btn) {
+    const row = btn.closest('.opt-row');
+    if (!row) return;
+    const opts = row.closest('.options-builder');
+    if (!opts || opts.querySelectorAll('.opt-row').length <= 1) return; // keep at least 1
+    row.remove();
+    // Re-letter remaining options
+    opts.querySelectorAll('.opt-row').forEach(function(r, i) {
+      const letter = String.fromCharCode(65 + i);
+      const letterEl = r.querySelector('.opt-letter');
+      const inputEl  = r.querySelector('.opt-input');
+      const radioEl  = r.querySelector('.correct-radio');
+      if (letterEl) letterEl.textContent = letter;
+      if (inputEl && !inputEl.value) inputEl.placeholder = 'Option ' + letter;
+      if (radioEl) radioEl.name = radioEl.name; // keep group name
+    });
   };
 
   // ── TESTS TABLE ──────────────────────────────────────────────────────
@@ -1524,18 +1572,97 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!confirm('Delete this test? This cannot be undone.')) return;
     tests = tests.filter(t => t.id !== id);
     renderTests();
+    if (window.fbDeleteTest) {
+      window.fbDeleteTest(id).catch(function(e){ console.log('Firestore delete error:', e.message); });
+    }
     showToast('🗑 Test deleted.');
   };
 
-  window.editTest = function(id) {
+  window.editTest = async function(id) {
     window.showPage('upload', document.querySelectorAll('.s-item')[1]);
     const t = tests.find(t => t.id === id);
     if (!t) return;
     document.getElementById('f-title').value = t.title;
     document.getElementById('f-type').value = t.type;
     document.getElementById('f-access').value = t.access;
-    buildPassages();
-    showToast('📝 Editing: ' + t.title);
+    window.onTypeChange();  // update passage-num selector and rebuild form
+    showToast('📝 Loading: ' + t.title + '...');
+
+    // Fetch full doc from Firestore to populate fields
+    if (!window.fbLoadTests) return;
+    try {
+      const allTests = await window.fbLoadTests();
+      const full = allTests.find(function(x){ return String(x.id) === String(id); });
+      if (!full || !full.passages) { showToast('📝 Editing: ' + t.title); return; }
+
+      const isWriting = (full.kind === 'writing' || full.kind === 'writing-practice');
+      const isReading = (full.kind === 'reading');
+      const isListening = (full.kind === 'listening');
+
+      if (isWriting && full.kind === 'writing') {
+        // Mock writing: populate task1 + task2
+        const p1 = full.passages[0] || {};
+        const p2 = full.passages[1] || {};
+        setTimeout(function() {
+          var t1type = document.getElementById('task1-type');
+          var t1inst = document.getElementById('task1-instructions');
+          var t1model = document.getElementById('task1-model');
+          var t2type = document.getElementById('task2-type');
+          var t2prompt = document.getElementById('task2-prompt');
+          var t2model = document.getElementById('task2-model');
+          if (t1type)  t1type.value  = p1.taskType || 'academic-graph';
+          if (t1inst)  t1inst.value  = p1.instructions || '';
+          if (t1model) t1model.value = p1.modelAnswer || '';
+          if (t2type)  t2type.value  = p2.taskType || 'opinion';
+          if (t2prompt)t2prompt.value= p2.prompt || '';
+          if (t2model) t2model.value = p2.modelAnswer || '';
+          if (p1.image) {
+            var imgEl = document.getElementById('task1-img');
+            var nmEl  = document.getElementById('task1-imgname');
+            if (imgEl) { imgEl.src = p1.image; imgEl.style.display = 'block'; }
+            if (nmEl)  { nmEl.textContent = '✓ Image loaded'; nmEl.style.display = 'block'; }
+            window._task1ImageData = p1.image;
+          }
+          showToast('📝 Editing: ' + t.title);
+        }, 300);
+      } else if (isWriting && full.kind === 'writing-practice') {
+        // Practice writing
+        const p1 = full.passages[0] || {};
+        setTimeout(function() {
+          var ptype  = document.getElementById('prac-task-type');
+          var pprompt= document.getElementById('prac-prompt');
+          var pmodel = document.getElementById('prac-model');
+          if (ptype)   ptype.value   = p1.taskType || 'task2-opinion';
+          if (pprompt) pprompt.value = p1.prompt || '';
+          if (pmodel)  pmodel.value  = p1.modelAnswer || '';
+          if (p1.image) {
+            var imgEl = document.getElementById('prac-img');
+            var nmEl  = document.getElementById('prac-imgname');
+            if (imgEl) { imgEl.src = p1.image; imgEl.style.display = 'block'; }
+            if (nmEl)  { nmEl.textContent = '✓ Image loaded'; nmEl.style.display = 'block'; }
+            window._pracImageData = p1.image;
+          }
+          showToast('📝 Editing: ' + t.title);
+        }, 300);
+      } else {
+        // Reading/listening: populate passage text + questions (basic title/text)
+        setTimeout(function() {
+          full.passages.forEach(function(p, i) {
+            var pid = 'p' + (i + 1);
+            var titleEl = document.getElementById('title-' + pid);
+            var textEl  = document.getElementById('text-' + pid);
+            var rangeEl = document.getElementById('qrange-' + pid);
+            if (titleEl) titleEl.value = p.title || '';
+            if (textEl)  textEl.value  = p.text  || '';
+            if (rangeEl) rangeEl.value = p.range  || '';
+          });
+          showToast('📝 Editing: ' + t.title);
+        }, 300);
+      }
+    } catch(e) {
+      showToast('📝 Editing: ' + t.title);
+      console.log('editTest Firestore error:', e.message);
+    }
   };
 
   // ── PUBLISH ──────────────────────────────────────────────────────────
@@ -1550,6 +1677,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // ── Collect all passage/section content ──────────────────────────
     const passages = [];
     const numPassages = cfg.count || 1;
+
+    // ── Writing: collect task-specific fields ─────────────────────
+    if (cfg.kind === 'writing') {
+      // Mock Writing: Task 1 + Task 2
+      const t1Type  = (document.getElementById('task1-type')||{}).value || 'academic-graph';
+      const t1Inst  = (document.getElementById('task1-instructions')||{}).value || '';
+      const t1Model = (document.getElementById('task1-model')||{}).value || '';
+      const t1Img   = window._task1ImageData || '';
+      const t2Type  = (document.getElementById('task2-type')||{}).value || 'opinion';
+      const t2Prompt= (document.getElementById('task2-prompt')||{}).value || '';
+      const t2Model = (document.getElementById('task2-model')||{}).value || '';
+      passages.push({ num:1, task:'task1', taskType:t1Type, instructions:t1Inst, modelAnswer:t1Model, image:t1Img });
+      passages.push({ num:2, task:'task2', taskType:t2Type, prompt:t2Prompt, modelAnswer:t2Model });
+    } else if (cfg.kind === 'writing-practice') {
+      // Practice Writing: single task
+      const pType   = (document.getElementById('prac-task-type')||{}).value || 'task2-opinion';
+      const pPrompt = (document.getElementById('prac-prompt')||{}).value || '';
+      const pModel  = (document.getElementById('prac-model')||{}).value || '';
+      const pImg    = window._pracImageData || '';
+      passages.push({ num:1, task: pType.startsWith('task1') ? 'task1' : 'task2', taskType:pType, prompt:pPrompt, modelAnswer:pModel, image:pImg });
+    } else {
 
     for (let i = 1; i <= numPassages; i++) {
       const pid = 'p' + i;
@@ -1616,6 +1764,7 @@ document.addEventListener('DOMContentLoaded', function() {
         questions
       });
     }
+    } // end else (non-writing)
 
     // ── Build full test document ─────────────────────────────────────
     const testDoc = {
@@ -1704,13 +1853,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const questions = [];
     if (!builder) return questions;
     builder.querySelectorAll('.q-item').forEach(function(qitem, idx) {
+      const qnumInput2 = qitem.querySelector('[id^="qnum-"]');
+      const qnumLabel  = qnumInput2 && qnumInput2.value.trim() ? qnumInput2.value.trim() : String(idx + 1);
       const textarea = qitem.querySelector('textarea');
       const qtext    = textarea ? textarea.value.trim() : '';
       const activeBtn = qitem.querySelector('.q-type-btn.on');
       const qtype    = activeBtn ? activeBtn.textContent.trim() : 'Gap fill';
       let answer = '';
       let options = [];
-      let extraData = null;
+      let extraData = { qnumLabel: qnumLabel };
       // MCQ
       if (qtype === 'Multiple choice') {
         const opts = qitem.querySelectorAll('.opt-row');
@@ -1755,7 +1906,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const txts = qitem.querySelectorAll('textarea');
         if (txts.length > 1) answer = txts[txts.length-1].value.trim();
       }
-      questions.push({ num: idx+1, type: qtype, text: qtext, answer: answer, options: options, extra: extraData });
+      questions.push({ num: qnumLabel, type: qtype, text: qtext, answer: answer, options: options, extra: extraData });
     });
     return questions;
   }
@@ -1798,19 +1949,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get the template and replace all the key parts
     var html = READING_TEMPLATE;
 
-    // Replace passage content
+    // Replace passage content - use marker-based replacement
+    var PP_END_MARKER = '<!-- END_PP -->';
+    // Find the divider after the passage
+    var dividerIdx = html.indexOf('<div class="divider"');
+    if (dividerIdx === -1) dividerIdx = html.indexOf('<div class="qs">');
     var passStart = html.indexOf('<div class="pass" id="pp">');
-    var passEnd   = html.indexOf('</div>', passStart) + 6;
-    // Find the real end (closing div of pp - it's a multiline block)
-    var ppOpen = passStart;
-    var depth = 0;
-    for (var i = ppOpen; i < html.length; i++) {
-      if (html[i] === '<' && html.slice(i,i+4) === '<div') depth++;
-      if (html[i] === '<' && html.slice(i,i+6) === '</div>') { depth--; if (depth === 0) { passEnd = i + 6; break; } }
+    if (passStart !== -1 && dividerIdx > passStart) {
+      html = html.slice(0, passStart)
+             + '<div class="pass" id="pp">' + passHTML + '</div>'
+             + html.slice(dividerIdx);
     }
-    html = html.slice(0, passStart)
-           + '<div class="pass" id="pp">' + passHTML + '</div>'
-           + html.slice(passEnd);
 
     // Replace questions area
     var qsStart = html.indexOf('<div class="qs">');
@@ -1825,18 +1974,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Replace T (total questions)
     html = html.replace('var T=13;', 'var T=' + T + ';');
 
-    // Replace botbar content
+    // Replace botbar content - find end by looking for the script tag after it
     var bbStart = html.indexOf('<div class="botbar">');
-    var bbEnd   = html.indexOf('</div>', bbStart) + 6;
-    depth = 0;
-    for (var i = bbStart; i < html.length; i++) {
-      if (html[i] === '<' && html.slice(i,i+4) === '<div') depth++;
-      if (html[i] === '<' && html.slice(i,i+6) === '</div>') { depth--; if (depth === 0) { bbEnd = i+6; break; } }
+    var bbAfter = html.indexOf('</div>', bbStart);
+    // Walk forward to find the true closing </div> of botbar
+    // Botbar contains only buttons (no nested divs in our template) so first </div> works
+    if (bbStart !== -1 && bbAfter !== -1) {
+      var subbtn = '<button class="subbtn" onclick="chk()">Submit ✓</button>';
+      html = html.slice(0, bbStart)
+             + '<div class="botbar">' + botParts.join('') + subbtn + '</div>'
+             + html.slice(bbAfter + 6);
     }
-    var subbtn = '<button class="subbtn" onclick="chk()">Submit ✓</button>';
-    html = html.slice(0, bbStart)
-           + '<div class="botbar">' + botParts.join('') + subbtn + '</div>'
-           + html.slice(bbEnd);
 
     // Add test to TESTS array
     var rTestType = isPractice ? 'practice-reading' : 'mock-reading';
@@ -1925,7 +2073,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function buildReadingQHTML(num, q, num2) {
     var type = q.type || '';
     var headerNum = (type === '2-answer MCQ' && num2) ? (num + ' and ' + num2) : num;
-    var html = '<div class="qi" id="qi' + num + '"><div class="qrow"><div class="qn">' + headerNum + '</div><div class="qt">' + esc(q.text) + '</div></div>';
+    var displayNum = (q.num && isNaN(q.num)) ? q.num : headerNum; // use custom label if it's text like "25-26"
+    var html = '<div class="qi" id="qi' + num + '"><div class="qrow"><div class="qn">' + displayNum + '</div><div class="qt">' + esc(q.text) + '</div></div>';
     if (type === 'Multiple choice') {
       html += '<div class="mopts">';
       (q.options || []).forEach(function(opt) {
