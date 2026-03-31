@@ -313,7 +313,7 @@
           <!-- Passage / Section number — shown for practice reading/listening only -->
           <div class="form-field" id="f-passage-num-wrap" style="display:none">
             <label id="f-passage-num-label">Which passage is this?</label>
-            <select id="f-passage-num" onchange="setTimeout(window.onTypeChange,0)">
+            <select id="f-passage-num" onchange="window.onPassageNumChange()">
               <option value="1">Passage 1</option>
               <option value="2">Passage 2</option>
               <option value="3">Passage 3</option>
@@ -835,15 +835,30 @@ document.addEventListener('DOMContentLoaded', function() {
       wrap.style.display = 'flex';
       label.textContent = 'Which passage is this?';
       hint.textContent  = 'Students practice this passage on its own — no need to do all 3 at once.';
-      sel.innerHTML = '<option value="1">Passage 1</option><option value="2">Passage 2</option><option value="3">Passage 3</option>';
+      // Only rebuild options if not already showing Passage options (prevents resetting on passage-num change)
+      if (!sel.querySelector('option[value="3"]') || sel.options[0].text.indexOf('Passage') === -1) {
+        const prev = sel.value;
+        sel.innerHTML = '<option value="1">Passage 1</option><option value="2">Passage 2</option><option value="3">Passage 3</option>';
+        if (prev) sel.value = prev;
+      }
     } else if (type === 'practice-listening') {
       wrap.style.display = 'flex';
       label.textContent = 'Which section is this?';
       hint.textContent  = 'Students practice this section on its own — no need to do all 4 at once.';
-      sel.innerHTML = '<option value="1">Section 1 — Conversation (2 people)</option><option value="2">Section 2 — Monologue (one person)</option><option value="3">Section 3 — Academic discussion</option><option value="4">Section 4 — Academic lecture</option>';
+      // Only rebuild if not already showing Section options
+      if (!sel.querySelector('option[value="4"]') || sel.options[0].text.indexOf('Section') === -1) {
+        const prev = sel.value;
+        sel.innerHTML = '<option value="1">Section 1 — Conversation (2 people)</option><option value="2">Section 2 — Monologue (one person)</option><option value="3">Section 3 — Academic discussion</option><option value="4">Section 4 — Academic lecture</option>';
+        if (prev) sel.value = prev;
+      }
     } else {
       wrap.style.display = 'none';
     }
+    buildPassages();
+  };
+
+  // Dedicated handler for passage/section number change — just rebuild the form
+  window.onPassageNumChange = function() {
     buildPassages();
   };
 
