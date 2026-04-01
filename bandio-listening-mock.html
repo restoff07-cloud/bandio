@@ -670,8 +670,14 @@ function renderListeningContent(passages){
   // Set audio source if provided
   var audioEl=document.getElementById('audEl');
   if(audioEl && passages[0] && passages[0].audioUrl){
-    audioEl.src=passages[0].audioUrl;
+    var aUrl=passages[0].audioUrl;
+    audioEl.src=aUrl;
     audioEl.load();
+    // Set fallback link
+    var fbLink=document.getElementById('audioFallbackLink');
+    if(fbLink) fbLink.href=aUrl;
+    var errMsg=document.getElementById('audioErrMsg');
+    if(errMsg) errMsg.style.display='none';
     var noAudioEl=document.querySelector('.ap-no-audio');
     if(noAudioEl) noAudioEl.style.display='none';
   }

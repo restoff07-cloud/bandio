@@ -274,7 +274,8 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
       </select>
     </div>
   </div>
-  <audio id="audEl" preload="metadata"></audio>
+  <audio id="audEl" preload="metadata" onerror="document.getElementById('audioErrMsg').style.display='block'"></audio>
+  <div id="audioErrMsg" style="display:none;padding:.4rem .85rem;background:#fee2e2;border-radius:6px;font-size:.75rem;color:#991b1b;margin-top:.4rem;">⚠ Audio could not load. <a id="audioFallbackLink" href="#" target="_blank" style="color:#991b1b;font-weight:600;">Open in new tab ↗</a></div>
   <div class="content">
     <div class="q-heading">Questions 1-10</div>
     <div class="q-inst">Write <b>ONE WORD AND/OR A NUMBER</b> for each answer.</div>
@@ -719,8 +720,14 @@ function renderListeningContent(passages){
   // Set audio source if provided
   var audioEl=document.getElementById('audEl');
   if(audioEl && passages[0] && passages[0].audioUrl){
-    audioEl.src=passages[0].audioUrl;
+    var aUrl=passages[0].audioUrl;
+    audioEl.src=aUrl;
     audioEl.load();
+    // Set fallback link
+    var fbLink=document.getElementById('audioFallbackLink');
+    if(fbLink) fbLink.href=aUrl;
+    var errMsg=document.getElementById('audioErrMsg');
+    if(errMsg) errMsg.style.display='none';
     var noAudioEl=document.querySelector('.ap-no-audio');
     if(noAudioEl) noAudioEl.style.display='none';
   }

@@ -993,8 +993,8 @@ document.addEventListener('DOMContentLoaded', function() {
           style="font-size:.82rem;"
           oninput="window.onAudioUrlInput('${pid}', this.value)"/>
         <span class="form-hint" id="audio-url-hint-${pid}" style="margin-top:.3rem;display:block;">
-          In Google Drive: right-click MP3 → <strong>Get link</strong> → set to <strong>Anyone with link</strong> → paste here.
-          The link is auto-converted to a playable URL.
+          Paste a direct audio link. <strong>Dropbox</strong> works best — upload MP3, click Share → Copy link, paste here.
+          Google Drive links may be blocked by browsers due to CORS. Alternatively use any direct .mp3 URL.
         </span>
         <div id="audio-url-preview-${pid}" style="display:none;margin-top:.5rem;padding:.5rem .75rem;background:#f0f9f0;border:1px solid #c8e6c9;border-radius:6px;font-size:.78rem;color:#1a5c2a;">
           ✓ Audio URL ready
@@ -1262,13 +1262,20 @@ document.addEventListener('DOMContentLoaded', function() {
       if (previewEl) previewEl.style.display = 'none';
       return;
     }
-    // Convert Google Drive share URL to direct stream URL
+    // Convert share URLs to direct/streamable format
     var direct = rawUrl.trim();
-    // Format: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
-    var m = direct.match(/\/file\/d\/([^\/\?]+)/);
-    if (m) {
-      direct = 'https://drive.google.com/uc?export=open&id=' + m[1];
+    // Google Drive: https://drive.google.com/file/d/FILE_ID/view
+    var gdm = direct.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
+    if (gdm) {
+      // Use docs.google.com/uc which has better CORS support than drive.google.com/uc
+      direct = 'https://docs.google.com/uc?export=open&id=' + gdm[1];
     }
+    // Dropbox: change ?dl=0 to ?dl=1 for direct download/stream
+    if (direct.includes('dropbox.com') && direct.includes('dl=0')) {
+      direct = direct.replace('dl=0', 'dl=1').replace('www.dropbox.com', 'dl.dropboxusercontent.com');
+    }
+    // OneDrive: convert share link to embed
+    // (no conversion needed - OneDrive direct links usually work)
     // Store the converted URL so publishTest picks it up
     window._audioUrls = window._audioUrls || {};
     window._audioUrls[pid] = direct;
@@ -1792,7 +1799,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const questions = [];
       if (qbuilder) {
         qbuilder.querySelectorAll('.q-item').forEach(function(qitem, idx) {
-          const qnum     = idx + 1;
+          const qnumInput = qitem.querySelector('[id^="qnum-"]');
+          const qnum      = (qnumInput && qnumInput.value.trim()) ? qnumInput.value.trim() : String(idx + 1);
           const textarea = qitem.querySelector('textarea');
           const qtext    = textarea ? textarea.value.trim() : '';
           const activeBtn = qitem.querySelector('.q-type-btn.on');
@@ -1825,7 +1833,28 @@ document.addEventListener('DOMContentLoaded', function() {
             if (textareas.length > 1) answer = textareas[textareas.length-1].value.trim();
           }
 
-          questions.push({ num: qnum, type: qtype, text: qtext, answer, options });
+          // Collect extra data (2-answer MCQ, form fill etc)
+          let extraData = null;
+          if (qtype === '2-answer MCQ') {
+            const q2el = qitem.querySelector('[id^="mcq2-q2num-"]');
+            extraData = { q2num: q2el ? q2el.value.trim() : '' };
+            // Fix answer for MCQ2
+            const correctLetters = [];
+            qitem.querySelectorAll('.mcq2-correct:checked').forEach(function(chk) {
+              correctLetters.push(chk.dataset.letter || '');
+            });
+            if (correctLetters.length) answer = correctLetters.join(',');
+          } else if (qtype === 'Form fill') {
+            const titleEl = qitem.querySelector('[id^="ff-title-"]');
+            const rowsEl  = qitem.querySelector('[id^="ff-rows-"]');
+            const answEl  = qitem.querySelector('[id^="ff-answers-"]');
+            extraData = {
+              ffTitle: titleEl ? titleEl.value.trim() : '',
+              ffRows:  rowsEl  ? rowsEl.value.trim()  : ''
+            };
+            if (answEl) answer = answEl.value.trim();
+          }
+          questions.push({ num: qnum, type: qtype, text: qtext, answer, options, extra: extraData });
         });
       }
 
