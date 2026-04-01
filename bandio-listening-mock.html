@@ -628,12 +628,18 @@ function renderListeningContent(passages){
         var rangeMatch = labelNum.match(/^(\d+)[\u2013\u2014\-](\d+)$/);
         if(rangeMatch){
           var rStart=parseInt(rangeMatch[1]), rEnd=parseInt(rangeMatch[2]);
-          // For the extra inputs in the range, use sequential qNums
-          secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;">';
+          // Split answers by newline - each line is the answer for the corresponding question
+          var ansLines=(q.answer||'').split('\n').map(function(s){return s.trim();});
+          secQ+='<div style="padding-left:0;margin-bottom:.85rem;">';
           for(var ri=rStart;ri<=rEnd;ri++){
             var rqNum=(ri===rStart)?num:(qNum++);
-            newK[rqNum]=q.answer||'';
-            secQ+='<span class="qbox" style="margin-right:.5rem;"><input id="q'+rqNum+'" oninput="ma('+rqNum+',this.value)" autocomplete="off" style="min-width:100px"/><span class="qn">'+ri+'</span></span>';
+            var rAns=ansLines[ri-rStart]||ansLines[0]||'';
+            newK[rqNum]=rAns;
+            // Each input on its own line with its number label
+            secQ+='<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;">'
+                 +'<span style="min-width:1.6rem;font-size:.72rem;font-weight:700;color:#888;text-align:right;">'+ri+'</span>'
+                 +'<span class="qbox"><input id="q'+rqNum+'" oninput="ma('+rqNum+',this.value)" autocomplete="off" style="min-width:140px"/></span>'
+                 +'</div>';
           }
           secQ+='</div>';
         } else {

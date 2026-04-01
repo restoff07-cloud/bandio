@@ -993,8 +993,9 @@ document.addEventListener('DOMContentLoaded', function() {
           style="font-size:.82rem;"
           oninput="window.onAudioUrlInput('${pid}', this.value)"/>
         <span class="form-hint" id="audio-url-hint-${pid}" style="margin-top:.3rem;display:block;">
-          Paste a direct audio link. <strong>Dropbox</strong> works best — upload MP3, click Share → Copy link, paste here.
-          Google Drive links may be blocked by browsers due to CORS. Alternatively use any direct .mp3 URL.
+          Paste a direct audio URL. <strong>Best option: GitHub</strong> — upload your MP3 to your GitHub repo, then use the raw URL:
+          <code style="font-size:.72rem;background:#f0eeea;padding:.1rem .3rem;border-radius:3px;">https://raw.githubusercontent.com/username/repo/main/audio.mp3</code><br>
+          Dropbox also works: upload MP3 → Share → Copy link → paste here (auto-converted). Google Drive is blocked by browsers.
         </span>
         <div id="audio-url-preview-${pid}" style="display:none;margin-top:.5rem;padding:.5rem .75rem;background:#f0f9f0;border:1px solid #c8e6c9;border-radius:6px;font-size:.78rem;color:#1a5c2a;">
           ✓ Audio URL ready
@@ -1274,6 +1275,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (direct.includes('dropbox.com') && direct.includes('dl=0')) {
       direct = direct.replace('dl=0', 'dl=1').replace('www.dropbox.com', 'dl.dropboxusercontent.com');
     }
+    // GitHub: convert blob URL to raw URL for direct access
+    if (direct.includes('github.com') && direct.includes('/blob/')) {
+      direct = direct.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+    }
     // OneDrive: convert share link to embed
     // (no conversion needed - OneDrive direct links usually work)
     // Store the converted URL so publishTest picks it up
@@ -1452,9 +1457,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function buildGap(qn) {
     return `<div class="form-field" style="margin-top:.35rem">
-      <label>Correct answer (exact words from passage)</label>
-      <input type="text" placeholder="e.g. blood pressure"/>
-      <span class="form-hint">Max word count allowed: <input type="number" value="2" min="1" max="5" style="width:50px;padding:.2rem .4rem;border:1px solid rgba(14,14,14,.15);border-radius:5px;font-size:.78rem;"/> words</span>
+      <label>Correct answer(s)</label>
+      <textarea id="gap-ans-${qn}" style="min-height:52px;font-family:monospace;font-size:.82rem" placeholder="e.g. blood pressure&#10;For a range of questions (e.g. 1–10): type ONE answer per line&#10;dog&#10;1000&#10;12 a.m&#10;8210767"></textarea>
+      <span class="form-hint">For a <strong>single question</strong>: type the answer. For a <strong>range</strong> (e.g. Q1–10): type one answer per line in order.</span>
     </div>`;
   }
 
@@ -1825,12 +1830,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const checked = qitem.querySelector('input[type=radio]:checked');
             if (checked) answer = checked.value;
           } else {
-            // Gap fill, short answer, summary, table etc — just take first text input
-            const inp = qitem.querySelector('input[type=text]');
-            if (inp) answer = inp.value.trim();
-            // For multi-answer types (summary, table) take textarea answers
-            const textareas = qitem.querySelectorAll('textarea');
-            if (textareas.length > 1) answer = textareas[textareas.length-1].value.trim();
+            // Gap fill / short answer — check for dedicated gap-ans textarea first
+            const gapTA = qitem.querySelector('textarea[id^="gap-ans-"]');
+            if (gapTA) {
+              answer = gapTA.value.trim();
+            } else {
+              const inp = qitem.querySelector('input[type=text]');
+              if (inp) answer = inp.value.trim();
+              const textareas = qitem.querySelectorAll('textarea');
+              if (textareas.length > 1) answer = textareas[textareas.length-1].value.trim();
+            }
           }
 
           // Collect extra data (2-answer MCQ, form fill etc)
@@ -2008,10 +2017,16 @@ document.addEventListener('DOMContentLoaded', function() {
         answer        = answEl  ? answEl.value.trim()   : '';
         extraData = { ffTitle: ffTitle, ffRows: ffRows };
       } else {
-        const inp = qitem.querySelectorAll('input[type=text]');
-        if (inp.length > 0) answer = inp[inp.length-1].value.trim();
-        const txts = qitem.querySelectorAll('textarea');
-        if (txts.length > 1) answer = txts[txts.length-1].value.trim();
+        // Check for dedicated gap-ans textarea first (supports per-line answers for ranges)
+        const gapTA2 = qitem.querySelector('textarea[id^="gap-ans-"]');
+        if (gapTA2) {
+          answer = gapTA2.value.trim();
+        } else {
+          const inp = qitem.querySelectorAll('input[type=text]');
+          if (inp.length > 0) answer = inp[inp.length-1].value.trim();
+          const txts = qitem.querySelectorAll('textarea');
+          if (txts.length > 1) answer = txts[txts.length-1].value.trim();
+        }
       }
       questions.push({ num: qnumLabel, type: qtype, text: qtext, answer: answer, options: options, extra: extraData });
     });
