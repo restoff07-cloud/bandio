@@ -1587,25 +1587,36 @@ document.addEventListener('DOMContentLoaded', function() {
         <td style="color:var(--muted)">${t.students}</td>
         <td style="font-weight:600;color:var(--blue)">${t.avg}</td>
         <td><div class="row-actions">
-          <button class="row-btn" onclick="window.editTest(${JSON.stringify(t.id)})">Edit</button>
-          <button class="row-btn" onclick="window.toggleStatus(${JSON.stringify(t.id)})">${t.status==='live'?'Unpublish':'Publish'}</button>
-          <button class="row-btn del" onclick="window.deleteTest(${JSON.stringify(t.id)})">Delete</button>
+          <button class="row-btn" onclick="window.editTest('${t.id}')">Edit</button>
+          <button class="row-btn" onclick="window.toggleStatus('${t.id}')">${t.status==='live'?'Unpublish':'Publish'}</button>
+          <button class="row-btn del" onclick="window.deleteTest('${t.id}')">Delete</button>
         </div></td>`;
       tbody.appendChild(tr);
     });
   }
 
   window.toggleStatus = function(id) {
-    const t = tests.find(t => t.id === id);
+    const t = tests.find(t => String(t.id) === String(id));
     if (!t) return;
     t.status = t.status === 'live' ? 'draft' : 'live';
     renderTests();
     showToast(t.status === 'live' ? '✓ Test published!' : '✓ Test unpublished.');
+    // Sync to Firestore
+    if (window.fbSaveTest && t.status) {
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fs){
+        var app = window._adminFirebaseApp;
+        if(!app) return;
+        var db = fs.getFirestore(app);
+        fs.updateDoc(fs.doc(db,'tests',String(id)),{status:t.status}).catch(function(e){
+          console.log('toggleStatus Firestore error:',e.message);
+        });
+      });
+    }
   };
 
   window.deleteTest = function(id) {
     if (!confirm('Delete this test? This cannot be undone.')) return;
-    tests = tests.filter(t => t.id !== id);
+    tests = tests.filter(t => String(t.id) !== String(id));
     renderTests();
     if (window.fbDeleteTest) {
       window.fbDeleteTest(id).catch(function(e){ console.log('Firestore delete error:', e.message); });
@@ -1615,7 +1626,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   window.editTest = async function(id) {
     window.showPage('upload', document.querySelectorAll('.s-item')[1]);
-    const t = tests.find(t => t.id === id);
+    const t = tests.find(t => String(t.id) === String(id));
     if (!t) return;
     document.getElementById('f-title').value = t.title;
     document.getElementById('f-type').value = t.type;
@@ -1753,7 +1764,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const textarea = qitem.querySelector('textarea');
           const qtext    = textarea ? textarea.value.trim() : '';
           const activeBtn = qitem.querySelector('.q-type-btn.on');
-          const qtype    = activeBtn ? activeBtn.textContent.trim().toLowerCase().replace(/\s+/g,'-') : 'gap';
+          const qtype    = activeBtn ? activeBtn.textContent.trim() : 'Gap fill';
 
           let answer = '';
           let options = [];

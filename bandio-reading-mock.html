@@ -646,15 +646,15 @@ function _buildQHTML(q,num,num2){
     html+='<div class="m2opts" id="m2opts_'+num+'" data-q1="'+num+'" data-q2="'+n2+'">';
     (q.options||[]).forEach(function(o){html+='<div class="m2opt" onclick="pm2(this,'+num+','+n2+',\''+o.letter+'\')"><div class="mc2">'+o.letter+'</div><span class="ml">'+_escHtml(o.text)+'</span></div>';});
     html+='</div>';
-  } else if(type==='T/F/NG'||type==='T/F/NG'){
+  } else if(type==='T/F/NG'||type==='t/f/ng'||type==='True/False/NG'){
     html+='<div class="ropts">';
     ['TRUE','FALSE','NOT GIVEN'].forEach(function(v){html+='<div class="ropt" onclick="pr(this,'+num+',\''+v+'\')"><div class="rc"></div><span class="rl">'+v+'</span></div>';});
     html+='</div>';
-  } else if(type==='Y/N/NG'){
+  } else if(type==='Y/N/NG'||type==='y/n/ng'){
     html+='<div class="ropts">';
     ['YES','NO','NOT GIVEN'].forEach(function(v){html+='<div class="ropt" onclick="pr(this,'+num+',\''+v+'\')"><div class="rc"></div><span class="rl">'+v+'</span></div>';});
     html+='</div>';
-  } else if(type==='Form fill'){
+  } else if(type==='Form fill'||type==='form-fill'||type==='Form fill'){
     var ffTitle=(q.extra&&q.extra.ffTitle)||'';
     var ffRows=(q.extra&&q.extra.ffRows)||'';
     var ffAnswers=(q.answer||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
