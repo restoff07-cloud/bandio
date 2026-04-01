@@ -963,6 +963,11 @@ document.addEventListener('DOMContentLoaded', function() {
           <textarea id="text-${pid}" placeholder="Paste the passage here. Each paragraph on a new line." style="min-height:160px"></textarea>
           <span class="form-hint">Tip: paste directly from Cambridge PDF — formatting is preserved.</span>
         </div>
+        <div class="form-field full">
+          <label>Section instruction (shown above questions, e.g. "Choose the correct letter A, B or C")</label>
+          <input type="text" id="inst-${pid}" placeholder="e.g. Write NO MORE THAN TWO WORDS for each answer."/>
+          <span class="form-hint">Leave blank for no instruction text.</span>
+        </div>
       </div>`;
   }
 
@@ -994,6 +999,11 @@ document.addEventListener('DOMContentLoaded', function() {
         <div id="audio-url-preview-${pid}" style="display:none;margin-top:.5rem;padding:.5rem .75rem;background:#f0f9f0;border:1px solid #c8e6c9;border-radius:6px;font-size:.78rem;color:#1a5c2a;">
           ✓ Audio URL ready
         </div>
+      </div>
+      <div class="form-field" style="margin-bottom:.85rem">
+        <label>Section instruction (shown above questions)</label>
+        <input type="text" id="inst-${pid}" placeholder="e.g. Write ONE WORD AND/OR A NUMBER for each answer."/>
+        <span class="form-hint">Leave blank to use the default instruction.</span>
       </div>
       <div class="form-field" style="margin-bottom:.85rem">
         <label>Section notes / context (optional)</label>
@@ -1257,7 +1267,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Format: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
     var m = direct.match(/\/file\/d\/([^\/\?]+)/);
     if (m) {
-      direct = 'https://drive.google.com/uc?export=download&id=' + m[1];
+      direct = 'https://drive.google.com/uc?export=open&id=' + m[1];
     }
     // Store the converted URL so publishTest picks it up
     window._audioUrls = window._audioUrls || {};
@@ -1306,13 +1316,35 @@ document.addEventListener('DOMContentLoaded', function() {
         <button class="q-type-btn"     onclick="window.setQt('${qn}','map',this)">Map/Plan label</button>
       </div>
       <div class="form-field" style="margin-bottom:.6rem">
-        <label>Question text / instruction</label>
-        <textarea style="min-height:52px" placeholder="Type the question or instruction here…"></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">
+          <label style="margin-bottom:0">Question text / instruction</label>
+          <button type="button" onclick="window.insertBold(this)" title="Wrap selected text in **bold**"
+            style="font-size:.72rem;font-weight:700;padding:.15rem .5rem;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            <b>B</b> Bold
+          </button>
+        </div>
+        <textarea id="qtxt-${qn}" style="min-height:52px" placeholder="Type the question or instruction here…"></textarea>
+        <span class="form-hint">Wrap text in **double asterisks** to make it bold. Or select text and click B.</span>
       </div>
       <div id="qopts-${qn}">${buildMCQ(qn)}</div>`;
 
     builder.appendChild(div);
     updateQBadge(pid);
+  };
+
+  window.insertBold = function(btn) {
+    var ta = btn.closest('.form-field').querySelector('textarea');
+    if (!ta) return;
+    var start = ta.selectionStart, end = ta.selectionEnd;
+    var sel = ta.value.substring(start, end);
+    if (sel) {
+      ta.value = ta.value.substring(0,start) + '**' + sel + '**' + ta.value.substring(end);
+      ta.selectionStart = start; ta.selectionEnd = end + 4;
+    } else {
+      ta.value = ta.value.substring(0,start) + '****' + ta.value.substring(end);
+      ta.selectionStart = ta.selectionEnd = start + 2;
+    }
+    ta.focus();
   };
 
   window.removeQ = function(qn, pid) {
@@ -1769,7 +1801,7 @@ document.addEventListener('DOMContentLoaded', function() {
           let answer = '';
           let options = [];
 
-          if (qtype === 'multiple-choice') {
+          if (qtype === 'Multiple choice') {
             // MCQ — collect options and correct answer
             const opts = qitem.querySelectorAll('.opt-row');
             opts.forEach(function(row) {
@@ -1781,7 +1813,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (radio && radio.checked) answer = letter.textContent.trim();
               }
             });
-          } else if (qtype === 't/f/ng' || qtype === 'y/n/ng') {
+          } else if (qtype === 'T/F/NG' || qtype === 'Y/N/NG' || qtype === 't/f/ng' || qtype === 'y/n/ng') {
             const checked = qitem.querySelector('input[type=radio]:checked');
             if (checked) answer = checked.value;
           } else {
@@ -1797,11 +1829,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
 
+      const passageInst = (document.getElementById('inst-' + pid)||{}).value || '';
       passages.push({
         num:    i,
         title:  passageTitle,
         text:   passageText,
         range:  passageRange,
+        instruction: passageInst,
         audio:  audioData,
         audioUrl: audioUrl,
         questions
@@ -1819,7 +1853,7 @@ document.addEventListener('DOMContentLoaded', function() {
       kind:      cfg.kind,
       level:     document.getElementById('f-level') ? document.getElementById('f-level').value : 'MEDIUM',
       time:      cfg.kind === 'reading' ? '60 minutes' : '40 minutes',
-      questions: passages.reduce(function(sum, p){ return sum + p.questions.length; }, 0) || 40,
+      questions: passages.reduce(function(sum, p){ return sum + ((p.questions && p.questions.length) || 0); }, 0) || 40,
       passages,
       createdAt: new Date().toISOString(),
       students:  0

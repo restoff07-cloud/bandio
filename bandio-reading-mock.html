@@ -636,7 +636,7 @@ function _escHtml(s){var d=document.createElement('div');d.textContent=String(s|
 function _buildQHTML(q,num,num2){
   var type=q.type||'Gap fill';
   var labelNum=(type==='2-answer MCQ'&&num2)?(num+' \u2013 '+num2):String(q.num||num);
-  var html='<div class="qi" id="qi'+num+'"><div class="qrow"><div class="qn">'+labelNum+'</div><div class="qt">'+_escHtml(q.text)+'</div></div>';
+  var html='<div class="qi" id="qi'+num+'"><div class="qrow"><div class="qn">'+labelNum+'</div><div class="qt">'+_renderBold(q.text)+'</div></div>';
   if(type==='Multiple choice'||type==='multiple-choice'){
     html+='<div class="mopts">';
     (q.options||[]).forEach(function(o){html+='<div class="mopt" onclick="pm(this,'+num+',\''+o.letter+'\')"><div class="mc">'+o.letter+'</div><span class="ml">'+_escHtml(o.text)+'</span></div>';});
@@ -681,6 +681,11 @@ function _buildQHTML(q,num,num2){
   return html;
 }
 
+
+function _renderBold(s){
+  // Convert **text** to <b>text</b>
+  return _escHtml(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+}
 function renderReadingContent(passages){
   var newK={};
   var qNum=1;
@@ -741,7 +746,7 @@ function renderReadingContent(passages){
   var ph1=document.querySelector('.ph1');
   var ph2=document.querySelector('.ph2');
   if(ph1) ph1.textContent='Passage 1';
-  if(ph2&&passages[0]) ph2.textContent='Read the text and answer questions 1\u2013'+newT+'.';
+  if(ph2&&passages[0]) ph2.textContent=passages[0].instruction||('Read the text and answer questions 1\u2013'+newT+'.');
 }
 
 </script>

@@ -623,6 +623,11 @@ document.addEventListener("mouseup", function(e) {
 // ── DYNAMIC LISTENING CONTENT RENDERER (Firestore tests) ──────────
 function _escL(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
 
+
+function _renderBold(s){
+  // Convert **text** to <b>text</b>
+  return _escHtml(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+}
 function renderListeningContent(passages){
   var newK={};
   var qNum=1;
@@ -646,7 +651,7 @@ function renderListeningContent(passages){
       // Question text row
       secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem;">'
            +'<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span>'
-           +'<span style="font-size:.9rem;flex:1;line-height:1.5;">'+_escL(q.text)+'</span>'
+           +'<span style="font-size:.9rem;flex:1;line-height:1.5;">'+_escL(q.text).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span>'
            +'</div>';
       // Answer input based on type
       if(type==='Multiple choice'||type==='multiple-choice'){
@@ -668,16 +673,29 @@ function renderListeningContent(passages){
         });
         secQ+='</div>';
       } else {
-        // Default: gap fill text input
-        secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;">'
-             +'<span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:100px"/><span class="qn">'+labelNum+'</span></span>'
-             +'</div>';
+        // Default: gap fill - if labelNum is a range like "1-3", create multiple inputs
+        var rangeMatch = labelNum.match(/^(\d+)[\u2013\u2014\-](\d+)$/);
+        if(rangeMatch){
+          var rStart=parseInt(rangeMatch[1]), rEnd=parseInt(rangeMatch[2]);
+          // For the extra inputs in the range, use sequential qNums
+          secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;">';
+          for(var ri=rStart;ri<=rEnd;ri++){
+            var rqNum=(ri===rStart)?num:(qNum++);
+            newK[rqNum]=q.answer||'';
+            secQ+='<span class="qbox" style="margin-right:.5rem;"><input id="q'+rqNum+'" oninput="ma('+rqNum+',this.value)" autocomplete="off" style="min-width:100px"/><span class="qn">'+ri+'</span></span>';
+          }
+          secQ+='</div>';
+        } else {
+          secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;">'
+               +'<span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:100px"/><span class="qn">'+labelNum+'</span></span>'
+               +'</div>';
+        }
       }
     });
 
     var qEnd=qNum-1;
     contentHTML+='\u2013'+qEnd+'</div>';
-    contentHTML+='<div class="q-inst">Write <b>ONE WORD AND/OR A NUMBER</b> for each answer.</div>';
+    contentHTML+='<div class="q-inst">'+(p.instruction||'Write <b>ONE WORD AND/OR A NUMBER</b> for each answer.')+'</div>';
     contentHTML+='<div class="sec-title">'+_escL(sectionTitle)+'</div>';
     if(p.text) contentHTML+='<div class="sec-label">'+_escL(p.text)+'</div>';
     contentHTML+=secQ;
