@@ -584,7 +584,6 @@ function seekAudio(e){if(!audEl.duration)return;audEl.currentTime=(e.offsetX/e.c
 function setVol(v){audEl.volume=+v;}
 function toggleMute(){muted=!muted;audEl.muted=muted;document.querySelector('.ap-vol-ico').textContent=muted?'🔇':'🔊';}
 function setSpeed(v){audEl.playbackRate=+v;}
-function resetAudio(){audEl.pause();audEl.currentTime=0;playing=false;document.getElementById('btnPlay').textContent='▶';document.getElementById('apFill').style.width='0%';document.getElementById('apCur').textContent='0:00';}
 function fmt(s){if(isNaN(s))return'0:00';return Math.floor(s/60)+':'+(Math.floor(s%60)<10?'0':'')+Math.floor(s%60);}
 renderList();
 
@@ -739,7 +738,7 @@ function renderListeningContent(passages){
         newK[q2numL]=ans2arr[1]||'';
         secQ+='<div class="m2opts" id="m2opts_'+num+'" data-q1="'+num+'" data-q2="'+q2numL+'" style="margin-left:1.9rem;margin-bottom:.85rem;">';
         (q.options||[]).forEach(function(o){
-          secQ+='<div class="m2opt" onclick="pm2(this,'+num+','+q2numL+',''+o.letter+'')"><div class="mc2">'+o.letter+'</div><span class="ml">'+_escL(o.text)+'</span></div>';
+          secQ+='<div class="m2opt" onclick="pm2(this,'+num+','+q2numL+',\''+o.letter+'\')">' +'<div class="mc2">'+o.letter+'</div><span class="ml">'+_escL(o.text)+'</span></div>';
         });
         secQ+='</div>';
         qNum=Math.max(qNum,q2numL+1);
