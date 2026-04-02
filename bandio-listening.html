@@ -84,7 +84,10 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
 .qbox input.ok{background:#e8f5ee;border-color:#2a9d68;color:#155724;}
 .qbox input.bad{background:#fef2f2;border-color:#e24b4a;color:#721c24;}
 .qbox .qn{position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:.65rem;font-weight:600;color:#aaa;pointer-events:none;}
-.botbar{height:50px;background:#f0eeea;border-top:1px solid #d8d5d0;display:flex;align-items:center;padding:0 .75rem;flex-shrink:0;}
+.botbar{height:50px;background:#f0eeea;border-top:1px solid #d8d5d0;display:flex;align-items:center;padding:0;flex-shrink:0;gap:0;}
+.part-nav{flex:1;padding:.5rem .25rem;background:transparent;border:none;border-top:2px solid transparent;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;color:#666;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.part-nav:hover{background:#e8e5e0;color:#1a1a1a;}
+.part-nav.on{border-top-color:#c8102e;color:#c8102e;font-weight:600;background:#fff8f8;}
 .pseg{display:flex;align-items:center;gap:.35rem;flex:1;min-width:0;overflow:hidden;}
 .plbl{font-size:.76rem;font-weight:600;white-space:nowrap;flex-shrink:0;}
 .pscr{font-size:.7rem;color:#666;white-space:nowrap;flex-shrink:0;}
@@ -94,7 +97,7 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
 .pdiv{width:1px;height:28px;background:#d8d5d0;margin:0 .6rem;flex-shrink:0;}
 .arr{width:36px;height:36px;border-radius:5px;border:1px solid #bbb;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;margin-left:.35rem;}
 .arr:hover,.arr.dk{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
-.subbtn{width:34px;height:34px;border-radius:50%;background:#c8102e;color:#fff;border:none;cursor:pointer;font-size:.95rem;margin-left:.3rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto;}
+.subbtn{padding:.4rem 1.2rem;height:36px;border-radius:100px;background:#c8102e;color:#fff;border:none;cursor:pointer;font-size:.82rem;font-weight:600;font-family:'DM Sans',sans-serif;margin:0 .75rem 0 auto;display:flex;align-items:center;justify-content:center;flex-shrink:0;white-space:nowrap;}
 .subbtn:hover{background:#2a9d68;}
 .ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;}
 .ovl.show{display:flex;}
@@ -110,30 +113,26 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
 .sbtn.p{background:#1a1a1a;color:#fff;}
 .sbtn.p:hover{background:#d4541a;}
 @media(max-width:600px){.frow{gap:.4rem;}.tcard{flex-wrap:wrap;}.start-btn{width:100%;margin-top:.5rem;}.aplayer{flex-wrap:wrap;}}
+.tval{font-size:1.1rem;font-weight:600;color:#1a1a1a;min-width:48px;text-align:right;}
+  .tval.warn{color:#c8102e;}
+  .tbtn{padding:.32rem 1rem;background:#c8102e;color:#fff;border:none;border-radius:5px;font-family:inherit;font-size:.84rem;font-weight:600;cursor:pointer;}
+  .tbtn.on{background:#555;}
 
 .hl-yellow { background: yellow; }
-.hl-note { background: red; color: #fff; }
-
-#popupTools {
+.hl-note { background: #ff4d4d; color: #fff; }
+.popup-tools {
   position: absolute;
   background: #1a1a1a;
   color: #fff;
-  padding: 6px 8px;
+  padding: 6px 10px;
   border-radius: 6px;
   font-size: 12px;
   display: none;
-  gap: 6px;
+  gap: 8px;
   z-index: 9999;
 }
-
-#popupTools button {
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  font-size: 12px;
-}
-#popupTools button:hover { text-decoration: underline; }
+.popup-tools span { cursor: pointer; }
+.popup-tools span:hover { text-decoration: underline; }
 
 /* MCQ2 two-answer */
 .m2opts{display:flex;flex-direction:column;gap:.3rem;padding-left:2rem;}
@@ -170,25 +169,30 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  const app=initializeApp({apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"});
-  const _auth=getAuth(app);
-  window._firebaseAuth=_auth;
-  onAuthStateChanged(_auth,async function(u){
+  import{getFirestore,collection,getDocs,query,where,getDoc,doc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const cfg={apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
+  const app=initializeApp(cfg);
+  const auth=getAuth(app);
+  const db=getFirestore(app);
+  window._firebaseAuth = auth;
+  onAuthStateChanged(auth,async function(u){
     if(!u){location.replace("bandio-login.html");return;}
     window._currentUserUid = u.uid;
-    window._checkPlanLive = async function(uid){
-      try{
-        const {getFirestore,getDoc,doc}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-        const snap=await getDoc(doc(getFirestore(app),'users',uid));
-        if(snap.exists()){var plan=snap.data().plan||'free';localStorage.setItem('bnd_plan',plan);return plan;}
-      }catch(e){}
+    window._checkPlanLive = async function(uid) {
+      try {
+        const snap = await getDoc(doc(db,'users',uid));
+        if(snap.exists()){
+          var plan = snap.data().plan||'free';
+          localStorage.setItem('bnd_plan', plan);
+          return plan;
+        }
+      } catch(e){}
       return localStorage.getItem('bnd_plan')||'free';
     };
-    try{
-      const {getFirestore,getDoc,doc}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-      const snap=await getDoc(doc(getFirestore(app),'users',u.uid));
-      if(snap.exists()) localStorage.setItem('bnd_plan',snap.data().plan||'free');
-    }catch(e){}
+    try {
+      const snap = await getDoc(doc(db,'users',u.uid));
+      if(snap.exists()) localStorage.setItem('bnd_plan', snap.data().plan||'free');
+    } catch(e){}
     loadFirestoreTests();
   });
 
@@ -210,41 +214,66 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
       if(typeof renderList==='function')renderList();
     }catch(e){console.log('Firestore load error:',e.message);}
   }
+  // Load test cards from Firestore (admin-added tests appear in the list)var audEl=document.getElementById('audEl');
+var playing=false,muted=false;
+audEl.addEventListener('loadedmetadata',function(){document.getElementById('apNoAudio').style.display='none';document.getElementById('apDur').textContent=fmt(audEl.duration);});
+audEl.addEventListener('timeupdate',function(){if(!audEl.duration)return;document.getElementById('apFill').style.width=(audEl.currentTime/audEl.duration*100)+'%';document.getElementById('apCur').textContent=fmt(audEl.currentTime);});
+audEl.addEventListener('ended',function(){playing=false;document.getElementById('btnPlay').textContent='▶';});
+function resetAudio(){
+  var audEl=document.getElementById('audEl');
+  if(audEl){audEl.pause();audEl.currentTime=0;}
+  var btnPlay=document.getElementById('btnPlay');
+  if(btnPlay) btnPlay.textContent='▶';
+  var apFill=document.getElementById('apFill');
+  if(apFill) apFill.style.width='0%';
+  var apCur=document.getElementById('apCur');
+  if(apCur) apCur.textContent='0:00';
+}
 </script>
 </head>
 <body>
 <div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
-  <div class="scard" style="max-width:560px;width:100%;margin:auto;padding:2rem;">
-    <!-- Header -->
-    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;">
-      <div style="font-size:1.6rem;">🎧</div>
+  <div class="scard" style="max-width:540px;width:100%;margin:auto;padding:2rem;">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;">
+      <div style="font-size:1.75rem;">🎧</div>
       <div>
-        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;">Listening Practice — Results</div>
-        <div style="font-weight:800;font-size:1.1rem;color:#1a1a1a;" id="ovl-test-name">Test complete</div>
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;">Listening — Results</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:#1a1a1a;">Your test is complete</div>
       </div>
     </div>
-    <!-- Band + stats -->
-    <div style="background:#1a1a1a;border-radius:12px;padding:1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+    <div style="background:#1a1a1a;border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
       <div>
-        <div class="sband" id="sband" style="font-size:3rem;color:#d4541a;">—</div>
-        <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.1rem;">Band score</div>
+        <div class="sband" id="sband" style="font-size:3.5rem;">—</div>
+        <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:.15rem;">Band score</div>
       </div>
-      <div style="display:flex;gap:1.5rem;">
-        <div style="text-align:center;"><div class="snum" id="sc" style="color:#2a9d68;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Correct</div></div>
-        <div style="text-align:center;"><div class="snum" id="sw" style="color:#e24b4a;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Wrong</div></div>
-        <div style="text-align:center;"><div class="snum" id="sb" style="color:#aaa;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Blank</div></div>
+      <div style="flex:1;">
+        <div style="font-size:.84rem;color:rgba(255,255,255,.65);line-height:1.6;" id="band-desc">Complete your answers to see your band score.</div>
       </div>
     </div>
-    <!-- Total -->
-    <div style="text-align:center;font-size:.88rem;color:#555;margin-bottom:1rem;">You got <strong id="stotal">0/0</strong> correct</div>
-    <!-- All questions breakdown -->
-    <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:.5rem;">All Questions</div>
-    <div id="ovl-qlist" style="max-height:300px;overflow-y:auto;border:1px solid #eee;border-radius:8px;margin-bottom:1rem;"></div>
-    <!-- Buttons -->
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-      <button style="flex:1;padding:.65rem;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:600;cursor:pointer;" onclick="reviewTest()">📋 Review test</button>
-      <button style="padding:.65rem 1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;" onclick="goBack()">Try another</button>
-      <button style="padding:.65rem 1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;" onclick="location.href='bandio-dashboard.html'">Dashboard</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.25rem;">
+      <div style="background:#dcfce7;border-radius:10px;padding:1rem;text-align:center;">
+        <div class="snum" id="sc" style="color:#166534;font-size:1.8rem;font-weight:800;">0</div>
+        <div style="font-size:.74rem;color:#166534;font-weight:600;margin-top:.2rem;">Correct ✓</div>
+      </div>
+      <div style="background:#fee2e2;border-radius:10px;padding:1rem;text-align:center;">
+        <div class="snum" id="sw" style="color:#991b1b;font-size:1.8rem;font-weight:800;">0</div>
+        <div style="font-size:.74rem;color:#991b1b;font-weight:600;margin-top:.2rem;">Wrong ✗</div>
+      </div>
+      <div style="background:#f5f3f0;border-radius:10px;padding:1rem;text-align:center;">
+        <div class="snum" id="sb" style="color:#555;font-size:1.8rem;font-weight:800;">0</div>
+        <div style="font-size:.74rem;color:#555;font-weight:600;margin-top:.2rem;">Blank —</div>
+      </div>
+    </div>
+    <div style="background:#f5f3f0;border-radius:9px;padding:.75rem 1rem;text-align:center;margin-bottom:1.25rem;font-size:.9rem;color:#1a1a1a;">
+      You got <strong id="stotal" style="font-size:1.05rem;">0/40</strong> questions correct
+    </div>
+    <div style="background:#fef9c3;border:1px solid #fde68a;border-radius:9px;padding:.75rem 1rem;margin-bottom:1.25rem;font-size:.82rem;color:#78350f;line-height:1.6;">
+      <strong>Correct answers</strong> highlighted in <span style="color:#166534;font-weight:700;">green</span> &nbsp;·&nbsp; <strong>Wrong</strong> in <span style="color:#991b1b;font-weight:700;">red</span>. Press "Review test" to go through each question.
+    </div>
+    <div style="display:flex;gap:.65rem;flex-wrap:wrap;">
+      <button style="flex:1;padding:.72rem;background:#1a1a1a;color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;" onclick="reviewTest()">Review test →</button>
+      <button style="padding:.72rem 1.1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;" onclick="goBack()">Choose another</button>
+      <button style="padding:.72rem 1.1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;" onclick="location.href='bandio-dashboard.html'">Dashboard</button>
     </div>
   </div>
 </div>
@@ -263,11 +292,15 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
   <div class="larea"><div class="lhead">Choose a test</div><div id="tlist"></div></div>
 </div>
 <div id="exam">
-  <div class="topbar">
+  <div class="topbar" style="position:relative;">
     <div class="tb-l">
       <button class="btn-back" onclick="goBack()">← Back</button>
       <span class="ielts">IELTS</span>
       <span class="tid" id="test-title">Listening Practice</span>
+    </div>
+    <div style="position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:.6rem;">
+      <span class="tval" id="tv">40:00</span>
+      <button class="tbtn" id="bt" onclick="toggleTimer()">Start</button>
     </div>
     <div class="tb-r">
       <div class="ico" onclick="if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()">⛶</div>
@@ -296,7 +329,7 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
     <!-- Google Drive iframe player (shown instead of custom player for Drive links) -->
     <iframe id="gdriveFrame" style="display:none;width:100%;height:72px;border:none;border-radius:6px;margin-top:.4rem;" allow="autoplay"></iframe>
   </div>
-  <audio id="audEl" preload="metadata"></audio></iframe>
+  <audio id="audEl" preload="metadata"></audio>
   <div class="content">
     <div class="q-heading">Questions 1-10</div>
     <div class="q-inst">Write <b>ONE WORD AND/OR A NUMBER</b> for each answer.</div>
@@ -324,16 +357,11 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
     <div style="height:3rem"></div>
   </div>
   <div class="botbar">
-    <div class="pseg"><span class="plbl">Part 1</span><div class="pdots" id="dots"></div><span class="pscr" id="scr">0/10</span></div>
-    <div class="pdiv"></div>
-    <div class="pseg" style="flex:0 0 auto;gap:.35rem"><span class="plbl">Part 2</span><span class="pscr">0/10</span></div>
-    <div class="pdiv"></div>
-    <div class="pseg" style="flex:0 0 auto;gap:.35rem"><span class="plbl">Part 3</span><span class="pscr">0/10</span></div>
-    <div class="pdiv"></div>
-    <div class="pseg" style="flex:0 0 auto;gap:.35rem"><span class="plbl">Part 4</span><span class="pscr">0/10</span></div>
-    <button class="arr" onclick="goBack()">←</button>
-    <button class="arr dk" onclick="chk()">→</button>
-    <button class="subbtn" onclick="chk()">✓</button>
+    <button class="part-nav on" id="pnav1" onclick="goToSection(1)">Section 1 · Q1–10</button>
+    <button class="part-nav" id="pnav2" onclick="goToSection(2)">Section 2 · Q11–20</button>
+    <button class="part-nav" id="pnav3" onclick="goToSection(3)">Section 3 · Q21–30</button>
+    <button class="part-nav" id="pnav4" onclick="goToSection(4)">Section 4 · Q31–40</button>
+    <button class="subbtn" onclick="chk()">Submit ✓</button>
   </div>
 </div>
 <script>
@@ -351,57 +379,7 @@ var TESTS=[
   {name:'Cambridge 18 TEST_3',sections:'1, 2, 3, 4',level:'HARD',time:'30 minutes',questions:40,type:'map',tier:'premium'},
 ];
 var activeTab='all';
-function setTab(t,el){activeTab=t;document.querySelectorAll('.ft').forEach(function(x){x.classList.remove('on');});el.classList.add('on');renderList();
-
-let selectedRange = null;
-
-document.addEventListener("click", function(e) {
-  if (!e.target.closest("#popupTools")) {
-    document.getElementById("popupTools").style.display = "none";
-  }
-});
-
-function applyHighlight() {
-  if (!selectedRange) return;
-  wrapSelection("hl-yellow");
-}
-
-function addNote() {
-  if (!selectedRange) return;
-  const note = prompt("Write your note:");
-  if (!note) return;
-  wrapSelection("hl-note", note);
-}
-
-function removeHighlight() {
-  const sel = window.getSelection();
-  if (!sel.rangeCount) return;
-
-  let node = sel.anchorNode;
-
-  while (node && node !== document) {
-    if (node.classList && (node.classList.contains("hl-yellow") || node.classList.contains("hl-note"))) {
-      const parent = node.parentNode;
-      while (node.firstChild) parent.insertBefore(node.firstChild, node);
-      parent.removeChild(node);
-      break;
-    }
-    node = node.parentNode;
-  }
-}
-
-function wrapSelection(className, note="") {
-  const span = document.createElement("span");
-  span.className = className;
-  if (note) span.title = note;
-
-  span.appendChild(selectedRange.extractContents());
-  selectedRange.insertNode(span);
-
-  window.getSelection().removeAllRanges();
-  document.getElementById("popupTools").style.display = "none";
-}
-}
+function setTab(t,el){activeTab=t;document.querySelectorAll('.ft').forEach(function(x){x.classList.remove('on');});el.classList.add('on');renderList();}
 function _boldMd(s){
   // Convert **text** to <b>text</b>
   return String(s||'').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
@@ -484,7 +462,7 @@ function _startTestNow(name){
   }
   document.getElementById('sel').classList.add('hide');
   document.getElementById('exam').classList.add('show');
-  buildDots();resetAudio();
+  buildDots();resetTimer();
 }
 function reviewTest(){
   document.getElementById('ovl').classList.remove('show');
@@ -492,10 +470,10 @@ function reviewTest(){
   if(qs)qs.scrollTop=0;
 }
 function goBack(){
+  clearInterval(ti);tr=false;
   document.getElementById('exam').classList.remove('show');
   document.getElementById('sel').classList.remove('hide');
   document.getElementById('ovl').classList.remove('show');
-  resetAudio();
 }
 var K={1:'17',2:'210',3:'Willow',4:'barn',5:'conservatory',6:'parking',7:'wood',8:'mill',9:'castle',10:'1260'};
 var T=10;var A={};
@@ -537,10 +515,20 @@ function chk(){
     if(!A[q2])b++;else if(A[q2]===K[q2])c++;
   });
   var w=T-c-b;
-  // IELTS-style band conversion based on % correct
-  var pct=(c/T)*40; // scale to /40
-  var band=pct>=39?'9.0':pct>=37?'8.5':pct>=35?'8.0':pct>=32?'7.5':pct>=30?'7.0':pct>=26?'6.5':pct>=23?'6.0':pct>=18?'5.5':pct>=16?'5.0':pct>=13?'4.5':'4.0';
-  document.getElementById('sband').textContent=band;document.getElementById('sc').textContent=c;document.getElementById('sw').textContent=w;document.getElementById('sb').textContent=b;try{document.getElementById('stotal').textContent=c+'/'+T;}catch(e){}
+  var band=c>=39?'9.0':c>=37?'8.5':c>=35?'8.0':c>=32?'7.5':c>=30?'7.0':c>=26?'6.5':c>=23?'6.0':c>=18?'5.5':c>=16?'5.0':c>=13?'4.5':c>=10?'4.0':'3.5';
+  document.getElementById('sband').textContent=band;
+  document.getElementById('sc').textContent=c;
+  document.getElementById('sw').textContent=w;
+  document.getElementById('sb').textContent=b;
+  document.getElementById('stotal').textContent=c+'/'+T;
+  // Save and redirect to results page
+  try { sessionStorage.setItem('bnd_last_result', JSON.stringify({skill:'listening',correct:c,wrong:w,blank:b,total:T,band:band})); } catch(e){}
+  setTimeout(function(){
+    window.location.href='bandio-results.html?skill=listening&correct='+c+'&wrong='+w+'&blank='+b+'&name=Listening+Mock+Test&review=bandio-listening-mock.html';
+  }, 1500);
+  var descs2 = {'9.0':'Expert user. Outstanding!','8.5':'Very good user. Excellent!','8.0':'Very good user. Strong performance.','7.5':'Good user. Above average.','7.0':'Good user. Solid performance.','6.5':'Competent user. Good result.','6.0':'Competent user. Keep practising.','5.5':'Modest user. More practice needed.','5.0':'Modest user. Focus on weak areas.','4.5':'Limited user. Keep going.','4.0':'Limited user. Keep studying.','3.5':'Keep studying hard!'};
+  var bdEl = document.getElementById('band-desc');
+  if (bdEl) bdEl.textContent = descs2[band] || 'Keep practising!';
   // Build answers array from A (user answers) and K (correct answers)
   var answersArr = [];
   for (var qi=1; qi<=T; qi++) {
@@ -552,7 +540,7 @@ function chk(){
   localStorage.setItem('bnd_last_result', JSON.stringify({
     skill:     'Listening Practice',
     testName:  '',
-    reviewUrl: 'bandio-listening.html',
+    reviewUrl: 'bandio-listening-mock.html',
     total:     T,
     correct:   c,
     wrong:     w,
@@ -583,6 +571,9 @@ function chk(){
   // Stay on page — results shown in overlay
   document.getElementById('ovl').classList.add('show');
 }
+var ts=40*60,tr=false,ti=null;
+function resetTimer(){clearInterval(ti);tr=false;ts=40*60;document.getElementById('tv').textContent='40:00';document.getElementById('tv').classList.remove('warn');document.getElementById('bt').textContent='Start';document.getElementById('bt').className='tbtn';}
+function toggleTimer(){if(tr){clearInterval(ti);tr=false;document.getElementById('bt').textContent='Resume';document.getElementById('bt').classList.remove('on');}else{tr=true;document.getElementById('bt').textContent='Pause';document.getElementById('bt').classList.add('on');ti=setInterval(function(){ts--;var m=Math.floor(ts/60),s=ts%60;var el=document.getElementById('tv');el.textContent=m+':'+(s<10?'0':'')+s;el.classList.toggle('warn',ts<=300&&ts>0);if(ts<=0){clearInterval(ti);tr=false;chk();}},1000);}}
 var audEl=document.getElementById('audEl');
 var playing=false,muted=false;
 audEl.addEventListener('loadedmetadata',function(){document.getElementById('apNoAudio').style.display='none';document.getElementById('apDur').textContent=fmt(audEl.duration);});
@@ -593,82 +584,64 @@ function seekAudio(e){if(!audEl.duration)return;audEl.currentTime=(e.offsetX/e.c
 function setVol(v){audEl.volume=+v;}
 function toggleMute(){muted=!muted;audEl.muted=muted;document.querySelector('.ap-vol-ico').textContent=muted?'🔇':'🔊';}
 function setSpeed(v){audEl.playbackRate=+v;}
-function resetAudio(){audEl.pause();audEl.currentTime=0;playing=false;document.getElementById('btnPlay').textContent='▶';document.getElementById('apFill').style.width='0%';document.getElementById('apCur').textContent='0:00';}
 function fmt(s){if(isNaN(s))return'0:00';return Math.floor(s/60)+':'+(Math.floor(s%60)<10?'0':'')+Math.floor(s%60);}
 renderList();
 
 let selectedRange = null;
 
-document.addEventListener("click", function(e) {
-  if (!e.target.closest("#popupTools")) {
-    document.getElementById("popupTools").style.display = "none";
+document.addEventListener("mouseup", function () {
+  let selection = window.getSelection();
+  if (selection.toString().length > 0) {
+    selectedRange = selection.getRangeAt(0);
+    let rect = selectedRange.getBoundingClientRect();
+    let popup = document.getElementById("popup");
+
+    popup.style.top = (rect.top + window.scrollY - 40) + "px";
+    popup.style.left = (rect.left + window.scrollX) + "px";
+    popup.style.display = "flex";
+  } else {
+    document.getElementById("popup").style.display = "none";
   }
 });
 
-function applyHighlight() {
+function highlightText() {
   if (!selectedRange) return;
-  wrapSelection("hl-yellow");
+  let span = document.createElement("span");
+  span.className = "hl-yellow";
+  selectedRange.surroundContents(span);
+  window.getSelection().removeAllRanges();
+  document.getElementById("popup").style.display = "none";
 }
 
 function addNote() {
   if (!selectedRange) return;
-  const note = prompt("Write your note:");
+  let note = prompt("Write your note:");
   if (!note) return;
-  wrapSelection("hl-note", note);
+  let span = document.createElement("span");
+  span.className = "hl-note";
+  span.title = note;
+  selectedRange.surroundContents(span);
+  window.getSelection().removeAllRanges();
+  document.getElementById("popup").style.display = "none";
 }
 
 function removeHighlight() {
-  const sel = window.getSelection();
-  if (!sel.rangeCount) return;
+  if (!selectedRange) return;
 
-  let node = sel.anchorNode;
+  let container = selectedRange.commonAncestorContainer;
+  let span = container.nodeType === 3 ? container.parentNode : container;
 
-  while (node && node !== document) {
-    if (node.classList && (node.classList.contains("hl-yellow") || node.classList.contains("hl-note"))) {
-      const parent = node.parentNode;
-      while (node.firstChild) parent.insertBefore(node.firstChild, node);
-      parent.removeChild(node);
-      break;
+  if (span.classList && (span.classList.contains("hl-yellow") || span.classList.contains("hl-note"))) {
+    let parent = span.parentNode;
+    while (span.firstChild) {
+      parent.insertBefore(span.firstChild, span);
     }
-    node = node.parentNode;
+    parent.removeChild(span);
   }
-}
-
-function wrapSelection(className, note="") {
-  const span = document.createElement("span");
-  span.className = className;
-  if (note) span.title = note;
-
-  span.appendChild(selectedRange.extractContents());
-  selectedRange.insertNode(span);
 
   window.getSelection().removeAllRanges();
-  document.getElementById("popupTools").style.display = "none";
+  document.getElementById("popup").style.display = "none";
 }
-
-
-document.addEventListener("contextmenu", function(e) {
-  e.preventDefault();
-});
-
-document.addEventListener("mouseup", function(e) {
-  setTimeout(() => {
-    const sel = window.getSelection();
-
-    if (sel.toString().trim().length > 0) {
-      selectedRange = sel.getRangeAt(0);
-
-      const rect = selectedRange.getBoundingClientRect();
-      const popup = document.getElementById("popupTools");
-
-      popup.style.top = (rect.top + window.scrollY - 45) + "px";
-      popup.style.left = (rect.left + window.scrollX) + "px";
-      popup.style.display = "flex";
-    } else {
-      document.getElementById("popupTools").style.display = "none";
-    }
-  }, 10);
-});
 
 
 // ── DYNAMIC LISTENING CONTENT RENDERER (Firestore tests) ──────────
@@ -714,13 +687,6 @@ function _renderGapSentences(sentences, answers, startNum, qNumOffset) {
   return html;
 }
 function renderListeningContent(passages){
-  console.log('[Bandio] renderListeningContent called with', passages.length, 'passages');
-  passages.forEach(function(p,pi){
-    console.log('[Bandio] Passage', pi, 'title:', p.title, '| questions:', (p.questions||[]).length);
-    (p.questions||[]).forEach(function(q,qi){
-      console.log('[Bandio] Q'+qi, '| type:', q.type, '| num:', q.num, '| extra:', JSON.stringify(q.extra), '| answer:', q.answer ? q.answer.substring(0,40) : '');
-    });
-  });
   var newK={};
   var qNum=1;
   var botParts=[];
@@ -772,7 +738,7 @@ function renderListeningContent(passages){
         newK[q2numL]=ans2arr[1]||'';
         secQ+='<div class="m2opts" id="m2opts_'+num+'" data-q1="'+num+'" data-q2="'+q2numL+'" style="margin-left:1.9rem;margin-bottom:.85rem;">';
         (q.options||[]).forEach(function(o){
-          secQ+='<div class="m2opt" onclick="pm2(this,'+num+','+q2numL+',''+o.letter+'')"><div class="mc2">'+o.letter+'</div><span class="ml">'+_escL(o.text)+'</span></div>';
+          secQ+='<div class="m2opt" onclick="pm2(this,'+num+','+q2numL+',\''+o.letter+'\')">' +'<div class="mc2">'+o.letter+'</div><span class="ml">'+_escL(o.text)+'</span></div>';
         });
         secQ+='</div>';
         qNum=Math.max(qNum,q2numL+1);
@@ -968,11 +934,45 @@ function renderListeningContent(passages){
 
 </script>
 
-<div id="popupTools">
-  <button onclick="applyHighlight()">Highlight</button>
-  <button onclick="addNote()">Note</button>
-  <button onclick="removeHighlight()">Remove</button>
+<div id="popup" class="popup-tools">
+  <span onclick="highlightText()">Highlight</span>
+  <span onclick="addNote()">Note</span>
+  <span onclick="removeHighlight()">Remove</span>
 </div>
 
 </body>
-</html>
+</html><div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
+  <div class="scard" style="max-width:560px;width:100%;margin:auto;padding:2rem;">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;">
+      <div style="font-size:1.6rem;">🎧</div>
+      <div>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;">Listening Practice — Results</div>
+        <div style="font-weight:800;font-size:1.1rem;color:#1a1a1a;" id="ovl-test-name">Test complete</div>
+      </div>
+    </div>
+    <!-- Band + stats -->
+    <div style="background:#1a1a1a;border-radius:12px;padding:1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+      <div>
+        <div class="sband" id="sband" style="font-size:3rem;color:#d4541a;">—</div>
+        <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.1rem;">Band score</div>
+      </div>
+      <div style="display:flex;gap:1.5rem;">
+        <div style="text-align:center;"><div class="snum" id="sc" style="color:#2a9d68;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Correct</div></div>
+        <div style="text-align:center;"><div class="snum" id="sw" style="color:#e24b4a;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Wrong</div></div>
+        <div style="text-align:center;"><div class="snum" id="sb" style="color:#aaa;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Blank</div></div>
+      </div>
+    </div>
+    <!-- Total -->
+    <div style="text-align:center;font-size:.88rem;color:#555;margin-bottom:1rem;">You got <strong id="stotal">0/0</strong> correct</div>
+    <!-- All questions breakdown -->
+    <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:.5rem;">All Questions</div>
+    <div id="ovl-qlist" style="max-height:300px;overflow-y:auto;border:1px solid #eee;border-radius:8px;margin-bottom:1rem;"></div>
+    <!-- Buttons -->
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+      <button style="flex:1;padding:.65rem;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:600;cursor:pointer;" onclick="reviewTest()">📋 Review test</button>
+      <button style="padding:.65rem 1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;" onclick="goBack()">Try another</button>
+      <button style="padding:.65rem 1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;" onclick="location.href='bandio-dashboard.html'">Dashboard</button>
+    </div>
+  </div>
+</div>
