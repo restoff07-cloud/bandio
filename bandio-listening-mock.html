@@ -214,7 +214,21 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
       if(typeof renderList==='function')renderList();
     }catch(e){console.log('Firestore load error:',e.message);}
   }
-  // Load test cards from Firestore (admin-added tests appear in the list)
+  // Load test cards from Firestore (admin-added tests appear in the list)var audEl=document.getElementById('audEl');
+var playing=false,muted=false;
+audEl.addEventListener('loadedmetadata',function(){document.getElementById('apNoAudio').style.display='none';document.getElementById('apDur').textContent=fmt(audEl.duration);});
+audEl.addEventListener('timeupdate',function(){if(!audEl.duration)return;document.getElementById('apFill').style.width=(audEl.currentTime/audEl.duration*100)+'%';document.getElementById('apCur').textContent=fmt(audEl.currentTime);});
+audEl.addEventListener('ended',function(){playing=false;document.getElementById('btnPlay').textContent='▶';});
+function resetAudio(){
+  var audEl=document.getElementById('audEl');
+  if(audEl){audEl.pause();audEl.currentTime=0;}
+  var btnPlay=document.getElementById('btnPlay');
+  if(btnPlay) btnPlay.textContent='▶';
+  var apFill=document.getElementById('apFill');
+  if(apFill) apFill.style.width='0%';
+  var apCur=document.getElementById('apCur');
+  if(apCur) apCur.textContent='0:00';
+}
 </script>
 </head>
 <body>
@@ -294,9 +308,28 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
     </div>
   </div>
   <div class="phdr">
-    <div class="ph1">Part 1</div>
-    <div class="ph2">Listen and answer questions 1-10.</div>
+    <div class="phdr-top"><div><div class="ph1">Part 1</div><div class="ph2">Listen and answer questions 1-10.</div></div></div>
+    <div class="aplayer">
+      <button class="ap-play" id="btnPlay" onclick="togAudio()">▶</button>
+      <div class="ap-track-wrap">
+        <div class="ap-track" id="apTrack" onclick="seekAudio(event)"><div class="ap-fill" id="apFill"></div></div>
+        <div class="ap-times"><span id="apCur">0:00</span><span id="apDur">–:––</span></div>
+      </div>
+      <span class="ap-no-audio" id="apNoAudio">Audio uploaded via admin will play here</span>
+      <div class="ap-vol">
+        <span class="ap-vol-ico" onclick="toggleMute()">🔊</span>
+        <input type="range" class="ap-vs" id="apVol" min="0" max="1" step="0.05" value="1" oninput="setVol(this.value)"/>
+      </div>
+      <select class="ap-speed" onchange="setSpeed(this.value)">
+        <option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option>
+      </select>
+      <a id="audioTabLink" href="#" target="_blank" 
+         style="display:none;font-size:.68rem;color:rgba(255,255,255,.5);white-space:nowrap;text-decoration:none;border:1px solid rgba(255,255,255,.15);border-radius:4px;padding:.15rem .45rem;">↗ tab</a>
+    </div>
+    <!-- Google Drive iframe player (shown instead of custom player for Drive links) -->
+    <iframe id="gdriveFrame" style="display:none;width:100%;height:72px;border:none;border-radius:6px;margin-top:.4rem;" allow="autoplay"></iframe>
   </div>
+  <audio id="audEl" preload="metadata"></audio>
   <div class="content">
     <div class="q-heading">Questions 1-10</div>
     <div class="q-inst">Write <b>ONE WORD AND/OR A NUMBER</b> for each answer.</div>
@@ -512,6 +545,18 @@ function chk(){
 var ts=40*60,tr=false,ti=null;
 function resetTimer(){clearInterval(ti);tr=false;ts=40*60;document.getElementById('tv').textContent='40:00';document.getElementById('tv').classList.remove('warn');document.getElementById('bt').textContent='Start';document.getElementById('bt').className='tbtn';}
 function toggleTimer(){if(tr){clearInterval(ti);tr=false;document.getElementById('bt').textContent='Resume';document.getElementById('bt').classList.remove('on');}else{tr=true;document.getElementById('bt').textContent='Pause';document.getElementById('bt').classList.add('on');ti=setInterval(function(){ts--;var m=Math.floor(ts/60),s=ts%60;var el=document.getElementById('tv');el.textContent=m+':'+(s<10?'0':'')+s;el.classList.toggle('warn',ts<=300&&ts>0);if(ts<=0){clearInterval(ti);tr=false;chk();}},1000);}}
+var audEl=document.getElementById('audEl');
+var playing=false,muted=false;
+audEl.addEventListener('loadedmetadata',function(){document.getElementById('apNoAudio').style.display='none';document.getElementById('apDur').textContent=fmt(audEl.duration);});
+audEl.addEventListener('timeupdate',function(){if(!audEl.duration)return;document.getElementById('apFill').style.width=(audEl.currentTime/audEl.duration*100)+'%';document.getElementById('apCur').textContent=fmt(audEl.currentTime);});
+audEl.addEventListener('ended',function(){playing=false;document.getElementById('btnPlay').textContent='▶';});
+function togAudio(){if(playing){audEl.pause();playing=false;document.getElementById('btnPlay').textContent='▶';}else{audEl.play().catch(function(){});playing=true;document.getElementById('btnPlay').textContent='⏸';}}
+function seekAudio(e){if(!audEl.duration)return;audEl.currentTime=(e.offsetX/e.currentTarget.offsetWidth)*audEl.duration;}
+function setVol(v){audEl.volume=+v;}
+function toggleMute(){muted=!muted;audEl.muted=muted;document.querySelector('.ap-vol-ico').textContent=muted?'🔇':'🔊';}
+function setSpeed(v){audEl.playbackRate=+v;}
+function resetAudio(){audEl.pause();audEl.currentTime=0;playing=false;document.getElementById('btnPlay').textContent='▶';document.getElementById('apFill').style.width='0%';document.getElementById('apCur').textContent='0:00';}
+function fmt(s){if(isNaN(s))return'0:00';return Math.floor(s/60)+':'+(Math.floor(s%60)<10?'0':'')+Math.floor(s%60);}
 renderList();
 
 let selectedRange = null;
@@ -579,6 +624,40 @@ function _renderBold(s){
   // Convert **text** to <b>text</b>
   return _escHtml(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
 }
+function _renderGapSentences(sentences, answers, startNum, qNumOffset) {
+  // sentences: array of strings like "available for week beginning ___ May"
+  // answers: array of answer strings
+  // startNum: the question number for the first sentence
+  var html = '';
+  var qCounter = startNum;
+  sentences.forEach(function(sent, si) {
+    var ans = answers[si] || '';
+    var parts = sent.split('___');
+    if (parts.length === 1 && sent.trim() === '') {
+      // empty line = plain gap input
+      html += '<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;">'
+            + '<span style="min-width:1.5rem;font-size:.72rem;font-weight:700;color:#888;text-align:right;">'+qCounter+'</span>'
+            + '<span class="qbox"><input id="q'+qCounter+'" oninput="ma('+qCounter+',this.value)" autocomplete="off" style="min-width:140px"/></span>'
+            + '</div>';
+    } else if (parts.length === 1) {
+      // no ___ = plain text label (not a gap)
+      html += '<div style="font-size:.88rem;font-weight:600;margin-bottom:.2rem;padding-left:.3rem;">'+_escL(sent)+'</div>';
+      qCounter--; // don't increment for non-gap lines
+    } else {
+      // has ___ = inline gap
+      html += '<li style="padding:.22rem 0;font-size:.91rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">';
+      parts.forEach(function(part, pi) {
+        if (part) html += '<span>'+_escL(part)+'</span>';
+        if (pi < parts.length - 1) {
+          html += '<span class="qbox"><input id="q'+qCounter+'" oninput="ma('+qCounter+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+qCounter+'</span></span>';
+        }
+      });
+      html += '</li>';
+    }
+    qCounter++;
+  });
+  return html;
+}
 function renderListeningContent(passages){
   var newK={};
   var qNum=1;
@@ -624,18 +703,41 @@ function renderListeningContent(passages){
         });
         secQ+='</div>';
       } else {
-        // Default: gap fill - if labelNum is a range like "1-3", create multiple inputs
+        // Gap fill: check for inline sentence format first
+        var gapSent = (q.extra && q.extra.gapSentence) || '';
+        var ansLines2 = (q.answer||'').split('\n').map(function(s){return s.trim();});
         var rangeMatch = labelNum.match(/^(\d+)[\u2013\u2014\-](\d+)$/);
-        if(rangeMatch){
+        if(gapSent){
+          // Inline sentence mode: render sentence with ___ replaced by input boxes
+          var sentLines = gapSent.split('\n');
+          secQ += '<ul style="list-style:none;padding-left:.5rem;margin-bottom:.85rem;">';
+          sentLines.forEach(function(sent, si){
+            var rqNum = (si===0) ? num : (qNum++);
+            newK[rqNum] = ansLines2[si] || ansLines2[0] || '';
+            var parts = sent.split('___');
+            if(parts.length > 1){
+              secQ += '<li style="padding:.22rem 0;font-size:.91rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">';
+              parts.forEach(function(part, pi){
+                if(part) secQ += '<span>'+_escL(part)+'</span>';
+                if(pi < parts.length-1){
+                  secQ += '<span class="qbox"><input id="q'+rqNum+'" oninput="ma('+rqNum+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+rqNum+'</span></span>';
+                }
+              });
+              secQ += '</li>';
+            } else if(sent.trim()) {
+              // no gap = plain label (like "Granary Cottage")
+              secQ += '<li style="font-size:.91rem;line-height:2;font-weight:600;">'+_escL(sent)+'</li>';
+              qNum--; // undo the increment, this line has no input
+            }
+          });
+          secQ += '</ul>';
+        } else if(rangeMatch){
+          // Range mode: numbered vertical inputs
           var rStart=parseInt(rangeMatch[1]), rEnd=parseInt(rangeMatch[2]);
-          // Split answers by newline - each line is the answer for the corresponding question
-          var ansLines=(q.answer||'').split('\n').map(function(s){return s.trim();});
           secQ+='<div style="padding-left:0;margin-bottom:.85rem;">';
           for(var ri=rStart;ri<=rEnd;ri++){
             var rqNum=(ri===rStart)?num:(qNum++);
-            var rAns=ansLines[ri-rStart]||ansLines[0]||'';
-            newK[rqNum]=rAns;
-            // Each input on its own line with its number label
+            newK[rqNum]=ansLines2[ri-rStart]||ansLines2[0]||'';
             secQ+='<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;">'
                  +'<span style="min-width:1.6rem;font-size:.72rem;font-weight:700;color:#888;text-align:right;">'+ri+'</span>'
                  +'<span class="qbox"><input id="q'+rqNum+'" oninput="ma('+rqNum+',this.value)" autocomplete="off" style="min-width:140px"/></span>'
@@ -643,6 +745,7 @@ function renderListeningContent(passages){
           }
           secQ+='</div>';
         } else {
+          // Single standalone input
           secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;">'
                +'<span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:100px"/><span class="qn">'+labelNum+'</span></span>'
                +'</div>';
@@ -676,16 +779,34 @@ function renderListeningContent(passages){
   // Set audio source if provided
   var audioEl=document.getElementById('audEl');
   if(audioEl && passages[0] && passages[0].audioUrl){
+    console.log('[Bandio Audio] URL:', passages[0].audioUrl);
     var aUrl=passages[0].audioUrl;
-    audioEl.src=aUrl;
-    audioEl.load();
-    // Set fallback link
-    var fbLink=document.getElementById('audioFallbackLink');
-    if(fbLink) fbLink.href=aUrl;
-    var errMsg=document.getElementById('audioErrMsg');
-    if(errMsg) errMsg.style.display='none';
-    var noAudioEl=document.querySelector('.ap-no-audio');
+    var noAudioEl=document.getElementById('apNoAudio');
+    var tabLink=document.getElementById('audioTabLink');
+    var gdriveFrame=document.getElementById('gdriveFrame');
+    // Always show "open in tab" link
     if(noAudioEl) noAudioEl.style.display='none';
+    if(tabLink){ tabLink.href=aUrl; tabLink.style.display='inline-flex'; }
+    // Detect Google Drive
+    var gdFile=null;
+    var m1=aUrl.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
+    var m2=aUrl.match(/[?&]id=([^&\s]+)/);
+    if(m1) gdFile=m1[1];
+    else if(m2 && aUrl.indexOf('google')!==-1) gdFile=m2[1];
+    if(gdFile){
+      // Google Drive: use their embed iframe — works without CORS issues
+      var embedUrl='https://drive.google.com/file/d/'+gdFile+'/preview';
+      if(gdriveFrame){ gdriveFrame.src=embedUrl; gdriveFrame.style.display='block'; }
+      // Hide the custom audio player controls (keep phdr visible)
+      var btnPlay=document.getElementById('btnPlay');
+      var apTrack=document.getElementById('apTrack');
+      if(btnPlay) btnPlay.style.display='none';
+      if(apTrack) apTrack.closest('.ap-track-wrap').style.display='none';
+    } else {
+      // Direct URL (GitHub raw, Dropbox dl) — works natively in browser
+      audioEl.src=aUrl;
+      audioEl.load();
+    }
   }
 
   // Update section header

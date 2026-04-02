@@ -989,13 +989,12 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="form-field full" style="margin-bottom:.85rem">
         <label>🎧 Google Drive audio URL</label>
         <input type="text" id="audio-url-${pid}"
-          placeholder="Paste Google Drive share link — e.g. https://drive.google.com/file/d/FILEID/view"
+          placeholder="Paste audio URL: GitHub raw URL (recommended), Google Drive share link, or Dropbox link"
           style="font-size:.82rem;"
           oninput="window.onAudioUrlInput('${pid}', this.value)"/>
         <span class="form-hint" id="audio-url-hint-${pid}" style="margin-top:.3rem;display:block;">
-          Paste a direct audio URL. <strong>Best option: GitHub</strong> — upload your MP3 to your GitHub repo, then use the raw URL:
-          <code style="font-size:.72rem;background:#f0eeea;padding:.1rem .3rem;border-radius:3px;">https://raw.githubusercontent.com/username/repo/main/audio.mp3</code><br>
-          Dropbox also works: upload MP3 → Share → Copy link → paste here (auto-converted). Google Drive is blocked by browsers.
+          <strong>GitHub raw URL works best</strong> (upload MP3 to your repo → click file → click Raw → copy URL).
+          Google Drive share links auto-convert to an embedded player. Dropbox share links also auto-convert.
         </span>
         <div id="audio-url-preview-${pid}" style="display:none;margin-top:.5rem;padding:.5rem .75rem;background:#f0f9f0;border:1px solid #c8e6c9;border-radius:6px;font-size:.78rem;color:#1a5c2a;">
           ✓ Audio URL ready
@@ -1456,10 +1455,17 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function buildGap(qn) {
-    return `<div class="form-field" style="margin-top:.35rem">
-      <label>Correct answer(s)</label>
-      <textarea id="gap-ans-${qn}" style="min-height:52px;font-family:monospace;font-size:.82rem" placeholder="e.g. blood pressure&#10;For a range of questions (e.g. 1–10): type ONE answer per line&#10;dog&#10;1000&#10;12 a.m&#10;8210767"></textarea>
-      <span class="form-hint">For a <strong>single question</strong>: type the answer. For a <strong>range</strong> (e.g. Q1–10): type one answer per line in order.</span>
+    return `<div style="margin-top:.35rem">
+      <div class="form-field" style="margin-bottom:.6rem">
+        <label>Sentence / note text — use ___ for each gap</label>
+        <textarea id="gap-sentence-${qn}" style="min-height:52px" placeholder="e.g. available for week beginning ___ May&#10;cost for the week: £ ___&#10;___ Cottage&#10;building was originally a ___&#10;&#10;Leave blank to show a standalone input box."></textarea>
+        <span class="form-hint">Type the sentence with <strong>___</strong> (three underscores) where the gap goes. One sentence per line for multiple questions.</span>
+      </div>
+      <div class="form-field">
+        <label>Correct answer(s) — one per line</label>
+        <textarea id="gap-ans-${qn}" style="min-height:52px;font-family:monospace;font-size:.82rem" placeholder="17&#10;210&#10;Willow&#10;barn&#10;conservatory"></textarea>
+        <span class="form-hint">One answer per line, matching each sentence line above.</span>
+      </div>
     </div>`;
   }
 
@@ -1797,7 +1803,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Collect audio URL for listening (Google Drive converted URL)
       let audioData = null;
-      let audioUrl  = (window._audioUrls && window._audioUrls[pid]) || '';
+      // Read audio URL: from converted _audioUrls OR directly from the input field
+      let rawAudioInput = (document.getElementById('audio-url-' + pid)||{}).value || '';
+      let audioUrl = (window._audioUrls && window._audioUrls[pid]) || '';
+      // If _audioUrls was reset but field still has value, reconvert it now
+      if (!audioUrl && rawAudioInput.trim()) {
+        audioUrl = rawAudioInput.trim();
+        // Apply same conversions as onAudioUrlInput
+        let gdm2 = audioUrl.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
+        if (gdm2) audioUrl = 'https://docs.google.com/uc?export=open&id=' + gdm2[1];
+        if (audioUrl.includes('dropbox.com') && audioUrl.includes('dl=0'))
+          audioUrl = audioUrl.replace('dl=0','dl=1').replace('www.dropbox.com','dl.dropboxusercontent.com');
+        if (audioUrl.includes('github.com') && audioUrl.includes('/blob/'))
+          audioUrl = audioUrl.replace('github.com','raw.githubusercontent.com').replace('/blob/','/');
+      }
 
       // ── Collect questions for this passage ───────────────────────
       const qbuilder = document.getElementById('qbuilder-' + pid);
@@ -1832,8 +1851,12 @@ document.addEventListener('DOMContentLoaded', function() {
           } else {
             // Gap fill / short answer — check for dedicated gap-ans textarea first
             const gapTA = qitem.querySelector('textarea[id^="gap-ans-"]');
+            const gapSentTA2 = qitem.querySelector('textarea[id^="gap-sentence-"]');
             if (gapTA) {
               answer = gapTA.value.trim();
+              if (gapSentTA2 && gapSentTA2.value.trim()) {
+                extraData = Object.assign(extraData||{}, { gapSentence: gapSentTA2.value.trim() });
+              }
             } else {
               const inp = qitem.querySelector('input[type=text]');
               if (inp) answer = inp.value.trim();
@@ -2019,8 +2042,10 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         // Check for dedicated gap-ans textarea first (supports per-line answers for ranges)
         const gapTA2 = qitem.querySelector('textarea[id^="gap-ans-"]');
+        const gapSentTA = qitem.querySelector('textarea[id^="gap-sentence-"]');
         if (gapTA2) {
           answer = gapTA2.value.trim();
+          if (gapSentTA) extraData = Object.assign(extraData||{}, { gapSentence: gapSentTA.value.trim() });
         } else {
           const inp = qitem.querySelectorAll('input[type=text]');
           if (inp.length > 0) answer = inp[inp.length-1].value.trim();

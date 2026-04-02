@@ -582,15 +582,36 @@ function _buildQHTML(q,num,num2){
     });
     html+='<div class="nform">'+(ffTitle?'<div class="nform-title">'+_escHtml(ffTitle)+'</div>':'')+rowsHtml+'</div>';
   } else {
-    // If qnum label is a range (e.g. "10-14"), create one input per question vertically
+    // Check for inline sentence with ___
+    var gapSentR = (q.extra && q.extra.gapSentence) || '';
+    var aLinesR = (q.answer||'').split('\n').map(function(s){return s.trim();});
     var rMatch=String(q.num||num).match(/^(\d+)[\u2013\u2014\-](\d+)$/);
-    if(rMatch){
+    if(gapSentR){
+      // Inline mode: sentence with ___ replaced by input
+      var sentLinesR = gapSentR.split('\n');
+      html += '<div style="padding-left:0;margin-top:.3rem">';
+      sentLinesR.forEach(function(sent,si){
+        var gn = num + si;
+        K[gn] = aLinesR[si] || aLinesR[0] || '';
+        var partsR = sent.split('___');
+        if(partsR.length > 1){
+          html += '<div style="font-size:.89rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;margin-bottom:.2rem;">';
+          partsR.forEach(function(part,pi){
+            if(part) html += '<span>'+_escHtml(part)+'</span>';
+            if(pi < partsR.length-1) html += '<input class="gap" id="g'+gn+'" oninput="ma('+gn+',this.value)" autocomplete="off" style="min-width:90px;vertical-align:middle;"/>';
+          });
+          html += '</div>';
+        } else if(sent.trim()){
+          html += '<div style="font-size:.88rem;font-weight:600;line-height:2;">'+_escHtml(sent)+'</div>';
+        }
+      });
+      html += '</div>';
+    } else if(rMatch){
       var rS=parseInt(rMatch[1]),rE=parseInt(rMatch[2]);
-      var aLines=(q.answer||'').split('\n').map(function(s){return s.trim();});
       html+='<div style="padding-left:2rem;margin-top:.3rem">';
       for(var ri2=rS;ri2<=rE;ri2++){
         var rn2=num+(ri2-rS);
-        K[rn2]=aLines[ri2-rS]||aLines[0]||'';
+        K[rn2]=aLinesR[ri2-rS]||aLinesR[0]||'';
         html+='<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;">'
              +'<span style="font-size:.72rem;font-weight:700;color:#888;min-width:1.5rem;text-align:right;">'+ri2+'</span>'
              +'<input class="gap" id="g'+rn2+'" oninput="ma('+rn2+',this.value)" autocomplete="off" style="min-width:120px"/>'
