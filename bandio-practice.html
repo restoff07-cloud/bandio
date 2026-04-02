@@ -628,6 +628,47 @@ function _buildQHTML(q,num,num2){
       }
     });
     html+='<div class="nform">'+(ffTitle?'<div class="nform-title">'+_escHtml(ffTitle)+'</div>':'')+rowsHtml+'</div>';
+  } else if(type==='Match headings'||type==='Match features'){
+    // Match — show text input for the answer (roman numeral or letter)
+    html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">'
+         +'<input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:80px" placeholder="e.g. ii or B"/>'
+         +'</div>';
+  } else if(type==='Sentence endings'){
+    // Sentence endings — letter input
+    html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">'
+         +'<input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/>'
+         +'</div>';
+  } else if(type==='Summary fill'||type==='Table/Note fill'||type==='Short answer'){
+    // Summary / Table / Short answer — same as gap fill, supports gapSentence
+    var gapSentST=(q.extra&&q.extra.gapSentence)||'';
+    var aLinesST=(q.answer||'').split('\n').map(function(s){return s.trim();});
+    if(gapSentST){
+      var sentLinesST=gapSentST.split('\n');
+      html+='<div style="padding-left:0;margin-top:.3rem">';
+      sentLinesST.forEach(function(sent,si){
+        var gnST=num+si;
+        K[gnST]=aLinesST[si]||aLinesST[0]||'';
+        var partsST=sent.split('___');
+        if(partsST.length>1){
+          html+='<div style="font-size:.89rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;margin-bottom:.2rem;">';
+          partsST.forEach(function(part,pi){
+            if(part) html+='<span>'+_escHtml(part)+'</span>';
+            if(pi<partsST.length-1) html+='<input class="gap" id="g'+gnST+'" oninput="ma('+gnST+',this.value)" autocomplete="off" style="min-width:90px;vertical-align:middle;"/>';
+          });
+          html+='</div>';
+        } else if(sent.trim()){
+          html+='<div style="font-size:.88rem;font-weight:600;line-height:2;">'+_escHtml(sent)+'</div>';
+        }
+      });
+      html+='</div>';
+    } else {
+      html+='<div style="padding-left:2rem;margin-top:.3rem"><input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:120px"/></div>';
+    }
+  } else if(type==='Diagram label'||type==='Map/Plan label'){
+    // Diagram / Map — text input for label
+    html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">'
+         +'<input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:120px"/>'
+         +'</div>';
   } else {
     // Check for inline sentence with ___
     var gapSentR = (q.extra && q.extra.gapSentence) || '';

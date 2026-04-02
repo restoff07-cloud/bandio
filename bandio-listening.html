@@ -499,7 +499,7 @@ function goBack(){
 }
 var K={1:'17',2:'210',3:'Willow',4:'barn',5:'conservatory',6:'parking',7:'wood',8:'mill',9:'castle',10:'1260'};
 var T=10;var A={};
-function buildDots(){var w=document.getElementById('dots');w.innerHTML='';for(var q=1;q<=T;q++){var d=document.createElement('div');d.className='qdot';d.id='dd'+q;d.textContent=q;w.appendChild(d);}}
+function buildDots(){var w=document.getElementById('dots');if(!w)return;w.innerHTML='';for(var q=1;q<=T;q++){var d=document.createElement('div');d.className='qdot';d.id='dd'+q;d.textContent=q;w.appendChild(d);}}
 function ma(q,v){if(v.trim()){A[q]=v.trim();dot(q,true);}else{delete A[q];dot(q,false);}up();}
 function dot(q,on){var d=document.getElementById('dd'+q);if(d)d.classList.toggle('ans',on);}
 function up(){document.getElementById('scr').textContent=Object.keys(A).length+'/'+T;}
@@ -764,6 +764,89 @@ function renderListeningContent(passages){
           secQ+='<div class="ropt" onclick="pr(this,'+num+',\''+v+'\')"><div class="rc"></div><span class="rl">'+v+'</span></div>';
         });
         secQ+='</div>';
+      } else if(type==='2-answer MCQ'){
+        // Two-answer MCQ
+        var q2numL=q.extra&&q.extra.q2num?parseInt(q.extra.q2num):(num+1);
+        var ans2arr=(q.answer||'').split(',').map(function(s){return s.trim();});
+        newK[num]=ans2arr[0]||'';
+        newK[q2numL]=ans2arr[1]||'';
+        secQ+='<div class="m2opts" id="m2opts_'+num+'" data-q1="'+num+'" data-q2="'+q2numL+'" style="margin-left:1.9rem;margin-bottom:.85rem;">';
+        (q.options||[]).forEach(function(o){
+          secQ+='<div class="m2opt" onclick="pm2(this,'+num+','+q2numL+',''+o.letter+'')"><div class="mc2">'+o.letter+'</div><span class="ml">'+_escL(o.text)+'</span></div>';
+        });
+        secQ+='</div>';
+        qNum=Math.max(qNum,q2numL+1);
+      } else if(type==='Match headings'||type==='match-head'||type==='Match features'||type==='match-feat'){
+        // Match headings / features — show a dropdown or text input per statement
+        var matchList=(q.extra&&q.extra.matchList)||'';
+        if(matchList){
+          secQ+='<div style="background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:.75rem 1rem;margin:.3rem 0 .85rem .5rem;font-size:.85rem;">';
+          secQ+='<div style="font-weight:600;margin-bottom:.5rem;">'+_escL(matchList.split('\n').slice(0,3).join(' · '))+'...</div>';
+          secQ+='</div>';
+        }
+        secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:80px"/><span class="qn">'+labelNum+'</span></span></div>';
+      } else if(type==='Sentence endings'||type==='sent-end'){
+        // Sentence endings — text input for the matching letter
+        secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/><span class="qn">'+labelNum+'</span></span></div>';
+      } else if(type==='Summary fill'||type==='summary'||type==='Table/Note fill'||type==='table'||type==='Short answer'||type==='short'){
+        // Summary/Table/Short answer — treat same as gap fill with gapSentence
+        var gapSentS=(q.extra&&q.extra.gapSentence)||'';
+        var ansLinesS=(q.answer||'').split('\n').map(function(s){return s.trim();});
+        if(gapSentS){
+          var sentLinesS=gapSentS.split('\n');
+          secQ+='<ul style="list-style:none;padding-left:.5rem;margin-bottom:.85rem;">';
+          sentLinesS.forEach(function(sent,si){
+            var rqNumS=(si===0)?num:(qNum++);
+            newK[rqNumS]=ansLinesS[si]||ansLinesS[0]||'';
+            var partsS=sent.split('___');
+            if(partsS.length>1){
+              secQ+='<li style="padding:.22rem 0;font-size:.91rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">';
+              partsS.forEach(function(part,pi){
+                if(part) secQ+='<span>'+_escL(part)+'</span>';
+                if(pi<partsS.length-1) secQ+='<span class="qbox"><input id="q'+rqNumS+'" oninput="ma('+rqNumS+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+rqNumS+'</span></span>';
+              });
+              secQ+='</li>';
+            } else if(sent.trim()){
+              secQ+='<li style="font-size:.91rem;line-height:2;font-weight:600;">'+_escL(sent)+'</li>';
+              qNum--;
+            }
+          });
+          secQ+='</ul>';
+        } else {
+          secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:120px"/><span class="qn">'+labelNum+'</span></span></div>';
+        }
+      } else if(type==='Form fill'||type==='form-fill'){
+        // Form fill - render rows with inline gaps
+        var ffRows2=(q.extra&&q.extra.ffRows)||'';
+        var ffTitle2=(q.extra&&q.extra.ffTitle)||'';
+        var ffAnsList=(q.answer||'').split('\n').map(function(s){return s.trim();});
+        var ffGapIdx=0;
+        var ffHtml='<div style="background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:1rem 1.2rem;margin:.4rem 0 .85rem .5rem;">';
+        if(ffTitle2) ffHtml+='<div style="font-weight:700;text-align:center;margin-bottom:.65rem;font-size:.9rem;">'+_escL(ffTitle2)+'</div>';
+        (ffRows2.split('\n')).forEach(function(row){
+          var rowParts=row.split('___');
+          if(rowParts.length===1){
+            ffHtml+='<div style="font-size:.88rem;line-height:2;">'+_escL(row)+'</div>';
+          } else {
+            ffHtml+='<div style="font-size:.88rem;line-height:2.2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">';
+            rowParts.forEach(function(part,pi){
+              if(part) ffHtml+='<span>'+_escL(part)+'</span>';
+              if(pi<rowParts.length-1){
+                var gqNum=num+ffGapIdx;
+                newK[gqNum]=ffAnsList[ffGapIdx]||'';
+                ffHtml+='<span class="qbox"><input id="q'+gqNum+'" oninput="ma('+gqNum+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+gqNum+'</span></span>';
+                ffGapIdx++;
+              }
+            });
+            ffHtml+='</div>';
+          }
+        });
+        ffHtml+='</div>';
+        secQ+=ffHtml;
+        // Advance qNum for all the gaps we created
+        qNum+=ffGapIdx-1; // -1 because qNum was already incremented once at start
+      } else if(type==='Diagram label'||type==='Map/Plan label'){
+        secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:120px"/><span class="qn">'+labelNum+'</span></span></div>';
       } else {
         // Gap fill: check for inline sentence format first
         var gapSent = (q.extra && q.extra.gapSentence) || '';
