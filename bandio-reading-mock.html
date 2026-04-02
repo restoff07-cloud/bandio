@@ -358,6 +358,10 @@ var TESTS=[
 ];
 var activeTab='all';
 function setTab(t,el){activeTab=t;document.querySelectorAll('.ft').forEach(function(x){x.classList.remove('on');});el.classList.add('on');renderList();}
+function _boldMd(s){
+  // Convert **text** to <b>text</b>
+  return String(s||'').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+}
 function renderList(){
   var s=(document.getElementById('srch').value||'').toLowerCase();
   var lv=document.getElementById('ddLv').value;
@@ -428,6 +432,7 @@ function startTest(name){
 }
 
 function _startTestNow(name){
+  window._currentTestName = name;
   var test=TESTS.find(function(t){return t.name===name;});
   document.getElementById('test-title').textContent=name;
   // If this is a Firestore test with content, render it dynamically
@@ -533,8 +538,27 @@ function chk(){
     band:      band,
     answers:   answersArr
   }));
+  // Populate overlay question list (all questions)
+  var qHtml = '';
+  for(var qi2=1;qi2<=T;qi2++){
+    var st2=answersArr[qi2-1];
+    var bgColor=st2.status==='correct'?'#f0fdf4':st2.status==='wrong'?'#fef2f2':'#f5f5f5';
+    var icon=st2.status==='correct'?'✓':st2.status==='wrong'?'✗':'—';
+    var iconColor=st2.status==='correct'?'#16a34a':st2.status==='wrong'?'#dc2626':'#999';
+    qHtml+='<div style="display:flex;align-items:center;gap:.65rem;padding:.5rem .75rem;background:'+bgColor+';border-bottom:1px solid rgba(0,0,0,.05);">'
+          +'<span style="min-width:1.4rem;font-size:.7rem;font-weight:700;color:#888;">Q'+qi2+'</span>'
+          +'<span style="font-size:.9rem;font-weight:700;color:'+iconColor+';">'+icon+'</span>'
+          +'<div style="flex:1;">'
+          +(st2.yours?'<div style="font-size:.78rem;color:#555;">Your answer: <strong>'+st2.yours+'</strong></div>':'<div style="font-size:.78rem;color:#999;">Left blank</div>')
+          +(st2.status!=='correct'?'<div style="font-size:.78rem;color:#16a34a;">Correct: <strong>'+st2.correct+'</strong></div>':'')
+          +'</div></div>';
+  }
+  var qlist=document.getElementById('ovl-qlist');
+  if(qlist) qlist.innerHTML=qHtml;
+  var ovlName=document.getElementById('ovl-test-name');
+  if(ovlName&&window._currentTestName) ovlName.textContent=window._currentTestName;
   // Redirect to results page
-  setTimeout(function(){ window.location.href = 'bandio-results.html'; }, 300);
+  // Stay on page — results shown in overlay
   document.getElementById('ovl').classList.add('show');
 }
 var ts=60*60,tr=false,ti=null;
@@ -547,12 +571,11 @@ document.addEventListener('mousemove',function(e){if(!drag)return;pp.style.width
 document.addEventListener('mouseup',function(){drag=false;document.body.style.cursor='';document.body.style.userSelect='';});
 
 function reviewTest() {
-  // Hide overlay, leave all answers highlighted so student can review
   document.getElementById('ovl').classList.remove('show');
-  // Scroll to top of exam
+  // Scroll to top so student can review their answers
+  var qs = document.querySelector('.qs') || document.querySelector('.content');
+  if(qs) qs.scrollTop = 0;
   window.scrollTo(0,0);
-  var qs = document.querySelector('.qs');
-  if (qs) qs.scrollTop = 0;
 }
 
 function goToPart(n) {
@@ -798,4 +821,38 @@ function renderReadingContent(passages){
 
 
 </body>
-</html>
+</html><div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
+  <div class="scard" style="max-width:560px;width:100%;margin:auto;padding:2rem;">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;">
+      <div style="font-size:1.6rem;">📖</div>
+      <div>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;">Reading Mock — Results</div>
+        <div style="font-weight:800;font-size:1.1rem;color:#1a1a1a;" id="ovl-test-name">Test complete</div>
+      </div>
+    </div>
+    <!-- Band + stats -->
+    <div style="background:#1a1a1a;border-radius:12px;padding:1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+      <div>
+        <div class="sband" id="sband" style="font-size:3rem;color:#d4541a;">—</div>
+        <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.1rem;">Band score</div>
+      </div>
+      <div style="display:flex;gap:1.5rem;">
+        <div style="text-align:center;"><div class="snum" id="sc" style="color:#2a9d68;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Correct</div></div>
+        <div style="text-align:center;"><div class="snum" id="sw" style="color:#e24b4a;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Wrong</div></div>
+        <div style="text-align:center;"><div class="snum" id="sb" style="color:#aaa;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Blank</div></div>
+      </div>
+    </div>
+    <!-- Total -->
+    <div style="text-align:center;font-size:.88rem;color:#555;margin-bottom:1rem;">You got <strong id="stotal">0/0</strong> correct</div>
+    <!-- All questions breakdown -->
+    <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:.5rem;">All Questions</div>
+    <div id="ovl-qlist" style="max-height:300px;overflow-y:auto;border:1px solid #eee;border-radius:8px;margin-bottom:1rem;"></div>
+    <!-- Buttons -->
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+      <button style="flex:1;padding:.65rem;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:600;cursor:pointer;" onclick="reviewTest()">📋 Review test</button>
+      <button style="padding:.65rem 1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;" onclick="goBack()">Try another</button>
+      <button style="padding:.65rem 1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;" onclick="location.href='bandio-dashboard.html'">Dashboard</button>
+    </div>
+  </div>
+</div>

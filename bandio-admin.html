@@ -1456,10 +1456,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function buildGap(qn) {
     return `<div style="margin-top:.35rem">
+      <div style="background:#fff8f0;border:1px solid #ffd4a8;border-radius:6px;padding:.5rem .75rem;margin-bottom:.65rem;font-size:.78rem;color:#7a3800;">
+        💡 Fill in the <strong>sentence field below</strong> to get inline gaps like the demo test. Without sentences, students will see plain numbered input boxes.
+      </div>
       <div class="form-field" style="margin-bottom:.6rem">
         <label>Sentence / note text — use ___ for each gap</label>
-        <textarea id="gap-sentence-${qn}" style="min-height:52px" placeholder="e.g. available for week beginning ___ May&#10;cost for the week: £ ___&#10;___ Cottage&#10;building was originally a ___&#10;&#10;Leave blank to show a standalone input box."></textarea>
-        <span class="form-hint">Type the sentence with <strong>___</strong> (three underscores) where the gap goes. One sentence per line for multiple questions.</span>
+        <textarea id="gap-sentence-${qn}" style="min-height:70px;border:2px solid #d4541a;border-radius:6px;" placeholder="e.g. available for week beginning ___ May&#10;cost for the week: £ ___&#10;___ Cottage&#10;building was originally a ___&#10;&#10;Leave blank to show a standalone input box."></textarea>
+        <span class="form-hint" style="color:#d4541a;font-weight:500;">⚠ Required for inline gaps: type each sentence with <strong>___</strong> where the blank goes. One sentence per line.</span>
       </div>
       <div class="form-field">
         <label>Correct answer(s) — one per line</label>
@@ -1927,6 +1930,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // ── Save to Firestore ────────────────────────────────────────────
     if (window.fbSaveTest) {
       try {
+        // DEBUG: log exactly what's going to Firestore
+        console.log('[Bandio] Publishing testDoc:', JSON.stringify(testDoc, null, 2));
+        testDoc.passages.forEach(function(p, pi) {
+          (p.questions||[]).forEach(function(q, qi) {
+            console.log('[Bandio] Passage', pi, 'Q', qi, '| type:', q.type, '| num:', q.num, '| extra:', JSON.stringify(q.extra), '| answer:', q.answer);
+          });
+        });
         await window.fbSaveTest(testId, testDoc);
         showToast('Test published — students can see it now!');
       } catch(e) {
