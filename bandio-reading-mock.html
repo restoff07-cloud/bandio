@@ -475,10 +475,33 @@ function pm2(el,q1,q2,v){
 }
 function chk(){
   var c=0,b=0;
-  for(var q=1;q<=6;q++){var e=document.getElementById('qi'+q);if(!e)continue;e.querySelectorAll('.ropt').forEach(function(o){o.classList.remove('ok','bad');var l=o.querySelector('.rl').textContent.trim();if(A[q]===l)o.classList.add(l===K[q]?'ok':'bad');else if(l===K[q])o.classList.add('ok');});if(!A[q])b++;else if(A[q]===K[q])c++;}
-  for(var q=7;q<=9;q++){var e=document.getElementById('qi'+q);if(!e)continue;e.querySelectorAll('.mopt').forEach(function(o){o.classList.remove('ok','bad');var l=o.querySelector('.mc').textContent.trim();if(A[q]===l)o.classList.add(l===K[q]?'ok':'bad');else if(l===K[q])o.classList.add('ok');});if(!A[q])b++;else if(A[q]===K[q])c++;}
-  for(var q=10;q<=13;q++){var i=document.getElementById('g'+q);if(!i)continue;i.classList.remove('ok','bad');if(!A[q]){b++;continue;}var ok=(A[q]||'').toLowerCase().trim()===(K[q]||'').toLowerCase();i.classList.add(ok?'ok':'bad');if(ok)c++;}
-  // MCQ2 scoring
+  // Score T/F/NG and Y/N/NG
+  document.querySelectorAll('.ropts').forEach(function(opts){
+    var qi=opts.closest('.qi');
+    if(!qi) return;
+    var qn=parseInt(qi.id.replace('qi',''));
+    opts.querySelectorAll('.ropt').forEach(function(o){
+      o.classList.remove('ok','bad');
+      var l=o.querySelector('.rl').textContent.trim();
+      if(A[qn]===l) o.classList.add(l===K[qn]?'ok':'bad');
+      else if(l===K[qn]) o.classList.add('ok');
+    });
+    if(!A[qn])b++;else if(A[qn]===K[qn])c++;
+  });
+  // Score MCQ
+  document.querySelectorAll('.mopts').forEach(function(opts){
+    var qi=opts.closest('.qi');
+    if(!qi) return;
+    var qn=parseInt(qi.id.replace('qi',''));
+    opts.querySelectorAll('.mopt').forEach(function(o){
+      o.classList.remove('ok','bad');
+      var l=o.querySelector('.mc').textContent.trim();
+      if(A[qn]===l) o.classList.add(l===K[qn]?'ok':'bad');
+      else if(l===K[qn]) o.classList.add('ok');
+    });
+    if(!A[qn])b++;else if(A[qn]===K[qn])c++;
+  });
+  // Score 2-answer MCQ
   document.querySelectorAll('.m2opts').forEach(function(wrap){
     var q1=+wrap.dataset.q1,q2=+wrap.dataset.q2;
     wrap.querySelectorAll('.m2opt').forEach(function(o){
@@ -492,79 +515,55 @@ function chk(){
     if(!A[q1])b++;else if(A[q1]===K[q1])c++;
     if(!A[q2])b++;else if(A[q2]===K[q2])c++;
   });
+  // Score all gap/text inputs
+  for(var q=1;q<=T;q++){
+    var i=document.getElementById('g'+q);
+    if(!i)continue;
+    i.classList.remove('ok','bad');
+    if(!A[q]){b++;continue;}
+    var ok=(A[q]||'').toLowerCase().trim()===(K[q]||'').toLowerCase().trim();
+    i.classList.add(ok?'ok':'bad');
+    if(ok)c++;
+  }
   var w=T-c-b;
   var band=c>=39?'9.0':c>=37?'8.5':c>=35?'8.0':c>=33?'7.5':c>=30?'7.0':c>=27?'6.5':c>=23?'6.0':c>=19?'5.5':c>=15?'5.0':c>=13?'4.5':c>=10?'4.0':'3.5';
   document.getElementById('sband').textContent=band;
   document.getElementById('sc').textContent=c;
   document.getElementById('sw').textContent=w;
   document.getElementById('sb').textContent=b;
-  document.getElementById('stotal').textContent=c+'/'+T;
-  // Save and redirect to results page
-  try { sessionStorage.setItem('bnd_last_result', JSON.stringify({skill:'reading',correct:c,wrong:w,blank:b,total:T,band:band})); } catch(e){}
-  setTimeout(function(){
-    window.location.href='bandio-results.html?skill=reading&correct='+c+'&wrong='+w+'&blank='+b+'&name=Reading+Mock+Test&review=bandio-reading-mock.html';
-  }, 1500);
-  var descs = {
-    '9.0':'Expert user. Outstanding performance.',
-    '8.5':'Very good user. Excellent result.',
-    '8.0':'Very good user. Strong performance.',
-    '7.5':'Good user. Above average result.',
-    '7.0':'Good user. Solid performance.',
-    '6.5':'Competent user. Good result.',
-    '6.0':'Competent user. Keep practising.',
-    '5.5':'Modest user. More practice needed.',
-    '5.0':'Modest user. Focus on weaker areas.',
-    '4.5':'Limited user. Significant practice needed.',
-    '4.0':'Limited user. Keep going.',
-    '3.5':'Extremely limited user. Keep studying.'
-  };
-  var bandEl = document.getElementById('band-desc');
-  if (bandEl) bandEl.textContent = descs[band] || 'Keep practising to improve your score.';
-  // Build answers array from A (user answers) and K (correct answers)
-  var answersArr = [];
-  for (var qi=1; qi<=T; qi++) {
-    var yours   = A[qi] || '';
-    var correct = K[qi] || '';
-    var status  = !yours ? 'blank' : (yours.toLowerCase().trim()===correct.toLowerCase().trim() ? 'correct' : 'wrong');
-    answersArr.push({q:qi, yours:yours, correct:correct, status:status});
-  }
-  localStorage.setItem('bnd_last_result', JSON.stringify({
-    skill:     'Reading Mock',
-    testName:  '',
-    reviewUrl: 'bandio-reading-mock.html',
-    total:     T,
-    correct:   c,
-    wrong:     w,
-    blank:     b,
-    band:      band,
-    answers:   answersArr
-  }));
-  // Populate overlay question list (all questions)
-  var qHtml = '';
+  try{document.getElementById('stotal').textContent=c+'/'+T;}catch(e){}
+  // Build answers for overlay
+  var answersArr=[];
   for(var qi2=1;qi2<=T;qi2++){
-    var st2=answersArr[qi2-1];
-    var bgColor=st2.status==='correct'?'#f0fdf4':st2.status==='wrong'?'#fef2f2':'#f5f5f5';
-    var icon=st2.status==='correct'?'✓':st2.status==='wrong'?'✗':'—';
-    var iconColor=st2.status==='correct'?'#16a34a':st2.status==='wrong'?'#dc2626':'#999';
-    qHtml+='<div style="display:flex;align-items:center;gap:.65rem;padding:.5rem .75rem;background:'+bgColor+';border-bottom:1px solid rgba(0,0,0,.05);">'
-          +'<span style="min-width:1.4rem;font-size:.7rem;font-weight:700;color:#888;">Q'+qi2+'</span>'
+    var yours=A[qi2]||'';
+    var correct=K[qi2]||'';
+    var status=!yours?'blank':(yours.toLowerCase().trim()===correct.toLowerCase().trim()?'correct':'wrong');
+    answersArr.push({q:qi2,yours:yours,correct:correct,status:status});
+  }
+  // Populate overlay question list
+  var qHtml='';
+  for(var qi3=1;qi3<=T;qi3++){
+    var st=answersArr[qi3-1];
+    var bg=st.status==='correct'?'#f0fdf4':st.status==='wrong'?'#fef2f2':'#f5f5f5';
+    var icon=st.status==='correct'?'✓':st.status==='wrong'?'✗':'—';
+    var iconColor=st.status==='correct'?'#16a34a':st.status==='wrong'?'#dc2626':'#999';
+    qHtml+='<div style="display:flex;align-items:center;gap:.65rem;padding:.5rem .75rem;background:'+bg+';border-bottom:1px solid rgba(0,0,0,.05);">'
+          +'<span style="min-width:1.4rem;font-size:.7rem;font-weight:700;color:#888;">Q'+qi3+'</span>'
           +'<span style="font-size:.9rem;font-weight:700;color:'+iconColor+';">'+icon+'</span>'
           +'<div style="flex:1;">'
-          +(st2.yours?'<div style="font-size:.78rem;color:#555;">Your answer: <strong>'+st2.yours+'</strong></div>':'<div style="font-size:.78rem;color:#999;">Left blank</div>')
-          +(st2.status!=='correct'?'<div style="font-size:.78rem;color:#16a34a;">Correct: <strong>'+st2.correct+'</strong></div>':'')
+          +(st.yours?'<div style="font-size:.78rem;color:#555;">Your answer: <strong>'+st.yours+'</strong></div>':'<div style="font-size:.78rem;color:#999;">Left blank</div>')
+          +(st.status!=='correct'&&st.correct?'<div style="font-size:.78rem;color:#16a34a;">Correct: <strong>'+st.correct+'</strong></div>':'')
           +'</div></div>';
   }
   var qlist=document.getElementById('ovl-qlist');
   if(qlist) qlist.innerHTML=qHtml;
   var ovlName=document.getElementById('ovl-test-name');
   if(ovlName&&window._currentTestName) ovlName.textContent=window._currentTestName;
-  // Redirect to results page
-  // Stay on page — results shown in overlay
+  localStorage.setItem('bnd_last_result', JSON.stringify({skill:'Reading Practice',testName:window._currentTestName||'',reviewUrl:'bandio-practice.html',total:T,correct:c,wrong:w,blank:b,band:band,answers:answersArr}));
+  // Stay on page
   document.getElementById('ovl').classList.add('show');
 }
-var ts=60*60,tr=false,ti=null;
-function resetTimer(){clearInterval(ti);tr=false;ts=60*60;document.getElementById('tv').textContent='60:00';document.getElementById('bt').textContent='Start';document.getElementById('bt').className='tbtn';document.getElementById('tv').classList.remove('warn');}
-function toggleTimer(){if(tr){clearInterval(ti);tr=false;document.getElementById('bt').textContent='Resume';document.getElementById('bt').classList.remove('on');}else{tr=true;document.getElementById('bt').textContent='Pause';document.getElementById('bt').classList.add('on');ti=setInterval(function(){ts--;var m=Math.floor(ts/60),s=ts%60;var el=document.getElementById('tv');el.textContent=m+':'+(s<10?'0':'')+s;el.classList.toggle('warn',ts<=300&&ts>0);if(ts<=0){clearInterval(ti);tr=false;chk();}},1000);}}
+
 var dv=document.getElementById('dv'),pp=document.getElementById('pp');
 var drag=false,sx=0,sw=0;
 dv.addEventListener('mousedown',function(e){drag=true;sx=e.clientX;sw=pp.offsetWidth;document.body.style.cursor='col-resize';document.body.style.userSelect='none';});
@@ -700,15 +699,40 @@ function _buildQHTML(q,num,num2){
     });
     html+='<div class="nform">'+(ffTitle?'<div class="nform-title">'+_escHtml(ffTitle)+'</div>':'')+rowsHtml+'</div>';
   } else if(type==='Match headings'||type==='Match features'){
-    // Match — show text input for the answer (roman numeral or letter)
-    html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">'
-         +'<input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:80px" placeholder="e.g. ii or B"/>'
-         +'</div>';
+    // Match — one input per question in range
+    if(rMatch){
+      var rSM=parseInt(rMatch[1]),rEM=parseInt(rMatch[2]);
+      html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">';
+      for(var riM=rSM;riM<=rEM;riM++){
+        var rnM=num+(riM-rSM);
+        html+='<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;">'
+             +'<span style="font-size:.72rem;font-weight:700;color:#888;min-width:1.5rem;text-align:right;">'+riM+'</span>'
+             +'<input class="gap" id="g'+rnM+'" oninput="ma('+rnM+',this.value)" autocomplete="off" style="min-width:80px" placeholder="e.g. ii or B"/>'
+             +'</div>';
+      }
+      html+='</div>';
+    } else {
+      html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">'
+           +'<input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:80px" placeholder="e.g. ii or B"/>'
+           +'</div>';
+    }
   } else if(type==='Sentence endings'){
-    // Sentence endings — letter input
-    html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">'
-         +'<input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/>'
-         +'</div>';
+    if(rMatch){
+      var rSE=parseInt(rMatch[1]),rEE=parseInt(rMatch[2]);
+      html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">';
+      for(var riE=rSE;riE<=rEE;riE++){
+        var rnE=num+(riE-rSE);
+        html+='<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;">'
+             +'<span style="font-size:.72rem;font-weight:700;color:#888;min-width:1.5rem;text-align:right;">'+riE+'</span>'
+             +'<input class="gap" id="g'+rnE+'" oninput="ma('+rnE+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/>'
+             +'</div>';
+      }
+      html+='</div>';
+    } else {
+      html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">'
+           +'<input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/>'
+           +'</div>';
+    }
   } else if(type==='Summary fill'||type==='Table/Note fill'||type==='Short answer'){
     // Summary / Table / Short answer — same as gap fill, supports gapSentence
     var gapSentST=(q.extra&&q.extra.gapSentence)||'';
@@ -863,7 +887,7 @@ function renderReadingContent(passages){
   var ph1=document.querySelector('.ph1');
   var ph2=document.querySelector('.ph2');
   if(ph1) ph1.textContent='Passage 1';
-  if(ph2&&passages[0]) ph2.textContent=(passages[0].instruction||('Read the text and answer questions 1\u2013'+newT+'.')).replace(/\n/g,'<br>');
+  if(ph2&&passages[0]) ph2.innerHTML=_renderBold((passages[0].instruction||('Read the text and answer questions 1\u2013'+newT+'.')).replace(/\n/g,'<br>'));
 }
 
 </script>
