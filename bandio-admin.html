@@ -1850,6 +1850,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
           let answer = '';
           let options = [];
+          let extraData = null;
 
           if (qtype === 'Multiple choice') {
             // MCQ — collect options and correct answer
@@ -1884,7 +1885,6 @@ document.addEventListener('DOMContentLoaded', function() {
           }
 
           // Collect extra data (2-answer MCQ, form fill etc)
-          let extraData = null;
           if (qtype === '2-answer MCQ') {
             const q2el = qitem.querySelector('[id^="mcq2-q2num-"]');
             extraData = { q2num: q2el ? q2el.value.trim() : '' };
