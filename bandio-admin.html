@@ -1484,12 +1484,12 @@ document.addEventListener('DOMContentLoaded', function() {
     return `<div style="margin-top:.35rem">
       <div class="form-field" style="margin-bottom:.6rem">
         <label>Summary text (use ___ for each gap)</label>
-        <textarea style="min-height:80px" placeholder="The researchers found that ___ improves wellbeing significantly when people spend at least ___ hours per week outdoors."></textarea>
-        <span class="form-hint">Use ___ (three underscores) to mark each gap. Students choose from a word list or write from the passage.</span>
+        <textarea id="gap-sentence-${qn}" style="min-height:80px" placeholder="The researchers found that ___ improves wellbeing significantly when people spend at least ___ hours per week outdoors."></textarea>
+        <span class="form-hint">Use <strong>___</strong> (three underscores) to mark each gap.</span>
       </div>
       <div class="form-field">
         <label>Answer key (one answer per line)</label>
-        <textarea style="min-height:60px" placeholder="nature&#10;two"></textarea>
+        <textarea id="gap-ans-${qn}" style="min-height:60px;font-family:monospace;font-size:.82rem" placeholder="nature&#10;two"></textarea>
       </div>
     </div>`;
   }
@@ -1497,12 +1497,13 @@ document.addEventListener('DOMContentLoaded', function() {
   function buildTable(qn) {
     return `<div style="margin-top:.35rem">
       <div class="form-field" style="margin-bottom:.6rem">
-        <label>Table / note structure (describe or paste)</label>
-        <textarea style="min-height:80px" placeholder="Paste your table or notes here. Use ___ for each blank students must fill."></textarea>
+        <label>Table / note structure — use ___ for each blank</label>
+        <textarea id="gap-sentence-${qn}" style="min-height:80px" placeholder="Paste your table or notes here. Use ___ for each blank students must fill.&#10;e.g. Type: ___ | Colour: ___ | Size: ___"></textarea>
+        <span class="form-hint">Use <strong>___</strong> (three underscores) for each gap. One row per line.</span>
       </div>
       <div class="form-field">
-        <label>Answer key (one answer per line)</label>
-        <textarea style="min-height:60px" placeholder="Answer 1&#10;Answer 2&#10;Answer 3"></textarea>
+        <label>Answer key (one answer per line, matching each ___ above)</label>
+        <textarea id="gap-ans-${qn}" style="min-height:60px;font-family:monospace;font-size:.82rem" placeholder="Answer 1&#10;Answer 2&#10;Answer 3"></textarea>
       </div>
     </div>`;
   }

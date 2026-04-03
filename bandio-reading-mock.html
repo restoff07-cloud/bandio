@@ -659,7 +659,7 @@ function _escHtml(s){var d=document.createElement('div');d.textContent=String(s|
 function _buildQHTML(q,num,num2){
   var type=q.type||'Gap fill';
   var labelNum=(type==='2-answer MCQ'&&num2)?(num+' \u2013 '+num2):String(q.num||num);
-  var html='<div class="qi" id="qi'+num+'"><div class="qrow"><div class="qn">'+labelNum+'</div><div class="qt">'+_renderBold(q.text)+'</div></div>';
+  var html='<div class="qi" id="qi'+num+'"><div class="qrow"><div class="qn">'+labelNum+'</div><div class="qt">'+_renderBold((q.text||'').replace(/\n/g,'<br>'))+'</div></div>';
   if(type==='Multiple choice'||type==='multiple-choice'){
     html+='<div class="mopts">';
     (q.options||[]).forEach(function(o){html+='<div class="mopt" onclick="pm(this,'+num+',\''+o.letter+'\')"><div class="mc">'+o.letter+'</div><span class="ml">'+_escHtml(o.text)+'</span></div>';});
@@ -741,7 +741,7 @@ function _buildQHTML(q,num,num2){
   } else {
     // Check for inline sentence with ___
     var gapSentR = (q.extra && q.extra.gapSentence) || '';
-    var aLinesR = (q.answer||'').split('\n').map(function(s){return s.trim();});
+    var aLinesR = (q.answer||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
     var rMatch=String(q.num||num).match(/^(\d+)[\u2013\u2014\-](\d+)$/);
     if(gapSentR){
       // Inline mode: sentence with ___ replaced by input
@@ -768,7 +768,7 @@ function _buildQHTML(q,num,num2){
       html+='<div style="padding-left:2rem;margin-top:.3rem">';
       for(var ri2=rS;ri2<=rE;ri2++){
         var rn2=num+(ri2-rS);
-        K[rn2]=aLinesR[ri2-rS]||aLinesR[0]||'';
+        // K was already set in renderReadingContent for ranges
         html+='<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;">'
              +'<span style="font-size:.72rem;font-weight:700;color:#888;min-width:1.5rem;text-align:right;">'+ri2+'</span>'
              +'<input class="gap" id="g'+rn2+'" oninput="ma('+rn2+',this.value)" autocomplete="off" style="min-width:120px"/>'
@@ -813,7 +813,20 @@ function renderReadingContent(passages){
         qHTML+=_buildQHTML(q,num,num2);
         qNum=Math.max(qNum,num2+1);
       } else {
-        newK[num]=q.answer||'';
+        // Check if qnum is a range like "8-13" → expand into multiple K entries
+        var qLabel=String(q.num||num);
+        var rangeM=qLabel.match(/^(\d+)[–—\-](\d+)$/);
+        var ansLines=(q.answer||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
+        if(rangeM){
+          var rS=parseInt(rangeM[1]),rE=parseInt(rangeM[2]);
+          // First question uses num, rest get new qNums
+          for(var ri=rS;ri<=rE;ri++){
+            var rn=(ri===rS)?num:(qNum++);
+            newK[rn]=ansLines[ri-rS]||'';
+          }
+        } else {
+          newK[num]=ansLines[0]||q.answer||'';
+        }
         qHTML+=_buildQHTML(q,num,null);
       }
     });
@@ -848,7 +861,7 @@ function renderReadingContent(passages){
   var ph1=document.querySelector('.ph1');
   var ph2=document.querySelector('.ph2');
   if(ph1) ph1.textContent='Passage 1';
-  if(ph2&&passages[0]) ph2.textContent=passages[0].instruction||('Read the text and answer questions 1\u2013'+newT+'.');
+  if(ph2&&passages[0]) ph2.textContent=(passages[0].instruction||('Read the text and answer questions 1\u2013'+newT+'.')).replace(/\n/g,'<br>');
 }
 
 </script>
