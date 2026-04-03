@@ -96,6 +96,7 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
 .gap:focus{border-color:#777;background:#fff;}
 .gap.ok{background:#e8f5ee;border-color:#2a9d68;color:#155724;}
 .gap.bad{background:#fef2f2;border-color:#e24b4a;color:#721c24;}
+.q-section-inst{font-size:.88rem;line-height:1.7;margin-bottom:.5rem;padding:.4rem .6rem;background:#f9f7f4;border-left:3px solid #d4541a;border-radius:0 4px 4px 0;color:#333;}
 .qdiv{border:none;border-top:1px solid #f0eeea;margin:1.4rem 0;}
 .botbar{height:50px;background:#f0eeea;border-top:1px solid #d8d5d0;display:flex;align-items:center;padding:0 .75rem;flex-shrink:0;}
 .pseg{display:flex;align-items:center;gap:.35rem;flex:1;min-width:0;overflow:hidden;}
@@ -590,7 +591,8 @@ function _escHtml(s){var d=document.createElement('div');d.textContent=String(s|
 function _buildQHTML(q,num,num2){
   var type=q.type||'Gap fill';
   var labelNum=(type==='2-answer MCQ'&&num2)?(num+' \u2013 '+num2):String(q.num||num);
-  var html='<div class="qi" id="qi'+num+'"><div class="qrow"><div class="qn">'+labelNum+'</div><div class="qt">'+_renderBold((q.text||'').replace(/\n/g,'<br>'))+'</div></div>';
+  var inst=q.inst?'<div class="q-section-inst">'+_renderBold((q.inst||'').replace(/\n/g,'<br>'))+'</div>':'';
+  var html=inst+'<div class="qi" id="qi'+num+'"><div class="qrow"><div class="qn">'+labelNum+'</div><div class="qt">'+_renderBold((q.text||'').replace(/\n/g,'<br>'))+'</div></div>';
   if(type==='Multiple choice'||type==='multiple-choice'){
     html+='<div class="mopts">';
     (q.options||[]).forEach(function(o){html+='<div class="mopt" onclick="pm(this,'+num+',\''+o.letter+'\')"><div class="mc">'+o.letter+'</div><span class="ml">'+_escHtml(o.text)+'</span></div>';});

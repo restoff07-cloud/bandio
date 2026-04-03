@@ -1326,15 +1326,25 @@ document.addEventListener('DOMContentLoaded', function() {
         <button class="q-type-btn"     onclick="window.setQt('${qn}','diagram',this)">Diagram label</button>
         <button class="q-type-btn"     onclick="window.setQt('${qn}','map',this)">Map/Plan label</button>
       </div>
-      <div class="form-field" style="margin-bottom:.6rem">
+      <div class="form-field" style="margin-bottom:.5rem">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">
-          <label style="margin-bottom:0">Question text / instruction</label>
+          <label style="margin-bottom:0">Section instruction <span style="font-size:.7rem;color:var(--muted);font-weight:400;">(shown above questions, e.g. "Complete the table. Choose ONE WORD ONLY")</span></label>
           <button type="button" onclick="window.insertBold(this)" title="Wrap selected text in **bold**"
             style="font-size:.72rem;font-weight:700;padding:.15rem .5rem;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;">
             <b>B</b> Bold
           </button>
         </div>
-        <textarea id="qtxt-${qn}" style="min-height:52px" placeholder="Type the question or instruction here…"></textarea>
+        <textarea id="qinst-${qn}" style="min-height:36px;border:1px solid rgba(14,14,14,.15);" placeholder="e.g. Complete the table below. Choose **ONE WORD ONLY** from the passage for each answer.&#10;Use Enter for new lines — each line appears as a separate paragraph."></textarea>
+      </div>
+      <div class="form-field" style="margin-bottom:.6rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">
+          <label style="margin-bottom:0">Question text</label>
+          <button type="button" onclick="window.insertBold(this)" title="Wrap selected text in **bold**"
+            style="font-size:.72rem;font-weight:700;padding:.15rem .5rem;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            <b>B</b> Bold
+          </button>
+        </div>
+        <textarea id="qtxt-${qn}" style="min-height:52px" placeholder="Type the question text here… (leave blank if instruction above is sufficient)"></textarea>
         <span class="form-hint">Wrap text in **double asterisks** to make it bold. Or select text and click B.</span>
       </div>
       <div id="qopts-${qn}">${buildMCQ(qn)}</div>`;
@@ -1769,6 +1779,8 @@ document.addEventListener('DOMContentLoaded', function() {
   window.publishTest = async function() {
     const title  = document.getElementById('f-title').value.trim();
     if (!title) { alert('Please add a test title before publishing.'); return; }
+    // Wrap entire function in try/catch to catch any crash
+    try {
     const type   = document.getElementById('f-type').value;
     const access = document.getElementById('f-access').value;
     const cfg    = getTypeConfig();
@@ -1829,8 +1841,10 @@ document.addEventListener('DOMContentLoaded', function() {
         qbuilder.querySelectorAll('.q-item').forEach(function(qitem, idx) {
           const qnumInput = qitem.querySelector('[id^="qnum-"]');
           const qnum      = (qnumInput && qnumInput.value.trim()) ? qnumInput.value.trim() : String(idx + 1);
-          const textarea = qitem.querySelector('textarea');
-          const qtext    = textarea ? textarea.value.trim() : '';
+          const qtxtEl  = qitem.querySelector('textarea[id^="qtxt-"]');
+          const qinstEl = qitem.querySelector('textarea[id^="qinst-"]');
+          const qtext   = qtxtEl  ? qtxtEl.value.trim()  : '';
+          const qinst   = qinstEl ? qinstEl.value.trim() : '';
           const activeBtn = qitem.querySelector('.q-type-btn.on');
           const qtype    = activeBtn ? activeBtn.textContent.trim() : 'Gap fill';
 
@@ -1890,7 +1904,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             if (answEl) answer = answEl.value.trim();
           }
-          questions.push({ num: qnum, type: qtype, text: qtext, answer, options, extra: extraData });
+          questions.push({ num: qnum, type: qtype, text: qtext, inst: qinst, answer, options, extra: extraData });
         });
       }
 
@@ -1952,6 +1966,10 @@ document.addEventListener('DOMContentLoaded', function() {
     window._audioBase64 = {};
     window._audioUrls   = {};
     buildPassages();
+    } catch(publishErr) {
+      console.error('[Bandio] publishTest crashed:', publishErr);
+      alert('Publish error: ' + publishErr.message + '\n\nCheck the browser console for details.');
+    }
   };
 
   // ── GENERATE & DOWNLOAD TEST FILE ──────────────────────────────
@@ -2005,8 +2023,10 @@ document.addEventListener('DOMContentLoaded', function() {
     builder.querySelectorAll('.q-item').forEach(function(qitem, idx) {
       const qnumInput2 = qitem.querySelector('[id^="qnum-"]');
       const qnumLabel  = qnumInput2 && qnumInput2.value.trim() ? qnumInput2.value.trim() : String(idx + 1);
-      const textarea = qitem.querySelector('textarea');
-      const qtext    = textarea ? textarea.value.trim() : '';
+      const qtxtEl2  = qitem.querySelector('textarea[id^="qtxt-"]');
+      const qinstEl2 = qitem.querySelector('textarea[id^="qinst-"]');
+      const qtext    = qtxtEl2  ? qtxtEl2.value.trim()  : '';
+      const qinst2   = qinstEl2 ? qinstEl2.value.trim() : '';
       const activeBtn = qitem.querySelector('.q-type-btn.on');
       const qtype    = activeBtn ? activeBtn.textContent.trim() : 'Gap fill';
       let answer = '';
@@ -2064,7 +2084,7 @@ document.addEventListener('DOMContentLoaded', function() {
           if (txts.length > 1) answer = txts[txts.length-1].value.trim();
         }
       }
-      questions.push({ num: qnumLabel, type: qtype, text: qtext, answer: answer, options: options, extra: extraData });
+      questions.push({ num: qnumLabel, type: qtype, text: qtext, inst: qinst2, answer: answer, options: options, extra: extraData });
     });
     return questions;
   }
