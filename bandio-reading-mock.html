@@ -517,12 +517,28 @@ function chk(){
   });
   // Score all gap/text inputs
   for(var q=1;q<=T;q++){
-    var i=document.getElementById('g'+q);
-    if(!i)continue;
+    var i=document.getElementById('g'+q);if(!i)continue;
+    // For hidden inputs (match headings radio), read from radio buttons
+    if(i.type==='hidden'){
+      document.querySelectorAll('input[name="mh_'+q+'"]').forEach(function(r){if(r.checked)A[q]=r.value;});
+    }
+    // For select dropdowns, sync value to A[]
+    if(i.tagName==='SELECT'&&i.value) A[q]=i.value;
     i.classList.remove('ok','bad');
+    i.style.borderColor='';i.style.background='';
     if(!A[q]){b++;continue;}
     var ok=K[q]&&(A[q]||'').toLowerCase().trim()===(K[q]||'').toLowerCase().trim();
-    i.classList.add(ok?'ok':'bad');
+    if(i.tagName==='SELECT'){
+      i.style.borderColor=ok?'#2a9d68':'#e24b4a';
+      i.style.background=ok?'#e8f5ee':'#fef2f2';
+    } else if(i.type==='hidden'){
+      // Highlight the selected radio button cell
+      document.querySelectorAll('input[name="mh_'+q+'"]:checked').forEach(function(r){
+        r.closest('td').style.background=ok?'#dcfce7':'#fee2e2';
+      });
+    } else {
+      i.classList.add(ok?'ok':'bad');
+    }
     if(ok)c++;
   }
   var w=T-c-b;
@@ -726,25 +742,106 @@ function _buildQHTML(q,num,num2){
       }
     });
     html+='<div class="nform">'+(ffTitle?'<div class="nform-title">'+_escHtml(ffTitle)+'</div>':'')+rowsHtml+'</div>';
-  } else if(type==='Match headings'||type==='Match features'){
-    // Match — one input per question in range
-    if(rMatch){
-      var rSM=parseInt(rMatch[1]),rEM=parseInt(rMatch[2]);
-      html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">';
-      for(var riM=rSM;riM<=rEM;riM++){
-        var rnM=num+(riM-rSM);
-        html+='<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;">'
-             +'<span style="font-size:.72rem;font-weight:700;color:#888;min-width:1.5rem;text-align:right;">'+riM+'</span>'
-             +'<input class="gap" id="g'+rnM+'" oninput="ma('+rnM+',this.value)" autocomplete="off" style="min-width:80px" placeholder="e.g. ii or B"/>'
+  } else if(type==='Match headings'){
+    var matchListH=(q.extra&&q.extra.matchList)||'';
+    var matchOptsH=matchListH.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    if(rMatch && matchOptsH.length>0){
+      var rSH=parseInt(rMatch[1]),rEH=parseInt(rMatch[2]);
+      // Extract label and text from each option line - supports ANY label format
+      var parsedOpts=matchOptsH.map(function(opt){
+        var m=opt.match(/^([^\.\)\s]+)[.\)\s]+(.+)/);
+        return m?{lbl:m[1],txt:m[2]}:{lbl:opt,txt:''};
+      });
+      // Radio button table
+      html+='<div style="overflow-x:auto;margin-top:.4rem;margin-bottom:.85rem;">';
+      html+='<table style="border-collapse:collapse;width:100%;font-size:.86rem;">';
+      html+='<thead><tr>';
+      html+='<th style="text-align:left;padding:.45rem .6rem;border-bottom:2px solid #d8d5d0;min-width:200px;"></th>';
+      parsedOpts.forEach(function(o){
+        html+='<th style="text-align:center;padding:.45rem .35rem;border-bottom:2px solid #d8d5d0;min-width:36px;font-weight:700;color:#c8102e;">'+_escHtml(o.lbl)+'</th>';
+      });
+      html+='</tr></thead><tbody>';
+      for(var riH=rSH;riH<=rEH;riH++){
+        var rnH=num+(riH-rSH);
+        var oddH=(riH-rSH)%2===0;
+        html+='<tr style="background:'+(oddH?'#fff':'#fafaf8')+';border-bottom:1px solid #f0eeea;">';
+        html+='<td style="padding:.5rem .6rem;font-size:.87rem;line-height:1.5;">'
+             +'<strong style="color:#555;margin-right:.35rem;">'+riH+'</strong>'
+             +_renderBold(q.text||'')+'</td>';
+        parsedOpts.forEach(function(o){
+          html+='<td style="text-align:center;padding:.4rem .3rem;">'
+               +'<input type="radio" name="mh_'+rnH+'" value="'+_escHtml(o.lbl)+'" '
+               +'onchange="A['+rnH+']=this.value;dot('+rnH+',true);up();" '
+               +'style="width:17px;height:17px;cursor:pointer;accent-color:#c8102e;"/>'
+               +'</td>';
+        });
+        html+='</tr>';
+      }
+      html+='</tbody></table></div>';
+      for(var riH2=rSH;riH2<=rEH;riH2++){
+        html+='<input type="hidden" id="g'+(num+(riH2-rSH))+'"/>';
+      }
+    } else {
+      if(rMatch){
+        var rSHf=parseInt(rMatch[1]),rEHf=parseInt(rMatch[2]);
+        html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.85rem;">';
+        for(var riHf=rSHf;riHf<=rEHf;riHf++){
+          var rnHf=num+(riHf-rSHf);
+          html+='<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;">'
+               +'<span style="font-size:.72rem;font-weight:700;color:#888;min-width:1.5rem;">'+riHf+'</span>'
+               +'<input class="gap" id="g'+rnHf+'" oninput="ma('+rnHf+',this.value)" autocomplete="off" style="min-width:80px" placeholder="e.g. ii or B"/>'
+               +'</div>';
+        }
+        html+='</div>';
+      } else {
+        html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.85rem;">'
+             +'<input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:80px" placeholder="e.g. ii or B"/>'
              +'</div>';
+      }
+    }
+  } else if(type==='Match features'){
+    var matchListF=(q.extra&&q.extra.matchList)||'';
+    var matchOptsF=matchListF.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    var parsedF=matchOptsF.map(function(opt){
+      var m=opt.match(/^([^\.\)\s]+)[.\)\s]+(.+)/);
+      return m?{lbl:m[1],txt:m[2]}:{lbl:opt,txt:opt};
+    });
+    if(matchOptsF.length>0){
+      html+='<div style="background:#f9f7f4;border:1px solid #d8d5d0;border-radius:8px;padding:.75rem 1rem;margin:.3rem 0 .75rem 0;font-size:.88rem;">';
+      html+='<div style="font-weight:700;text-align:center;margin-bottom:.4rem;">List of Options</div>';
+      parsedF.forEach(function(o){
+        html+='<div style="padding:.1rem 0;"><strong>'+_escHtml(o.lbl)+'</strong>&nbsp;&nbsp;'+_escHtml(o.txt)+'</div>';
+      });
+      html+='</div>';
+    }
+    if(rMatch){
+      var rSF=parseInt(rMatch[1]),rEF=parseInt(rMatch[2]);
+      html+='<div style="padding-left:0;margin-bottom:.85rem;">';
+      for(var riF=rSF;riF<=rEF;riF++){
+        var rnF=num+(riF-rSF);
+        html+='<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;padding:.3rem 0;border-bottom:1px solid #f5f3f0;">'
+             +'<span style="font-size:.85rem;font-weight:700;min-width:1.8rem;color:#555;">'+riF+'</span>'
+             +'<div style="flex:1;font-size:.88rem;line-height:1.5;">'+_renderBold(q.text||'')+'</div>'
+             +'<select id="g'+rnF+'" onchange="A['+rnF+']=this.value;dot('+rnF+',this.value!==\'\');up();" '
+             +'style="min-width:65px;padding:.3rem .4rem;border:1px solid #ccc;border-radius:6px;font-family:inherit;font-size:.85rem;cursor:pointer;">'
+             +'<option value=""></option>';
+        parsedF.forEach(function(o){
+          html+='<option value="'+_escHtml(o.lbl)+'">'+_escHtml(o.lbl)+'</option>';
+        });
+        html+='</select></div>';
       }
       html+='</div>';
     } else {
-      html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">'
-           +'<input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:80px" placeholder="e.g. ii or B"/>'
-           +'</div>';
+      html+='<div style="padding-left:2rem;margin-bottom:.85rem;">'
+           +'<select id="g'+num+'" onchange="A['+num+']=this.value;dot('+num+',this.value!==\'\');up();" '
+           +'style="min-width:65px;padding:.3rem .4rem;border:1px solid #ccc;border-radius:6px;font-family:inherit;font-size:.85rem;cursor:pointer;">'
+           +'<option value=""></option>';
+      parsedF.forEach(function(o){
+        html+='<option value="'+_escHtml(o.lbl)+'">'+_escHtml(o.lbl)+'</option>';
+      });
+      html+='</select></div>';
     }
-  } else if(type==='Sentence endings'){
+    } else if(type==='Sentence endings'){
     if(rMatch){
       var rSE=parseInt(rMatch[1]),rEE=parseInt(rMatch[2]);
       html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">';
