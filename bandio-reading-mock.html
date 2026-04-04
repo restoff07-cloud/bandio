@@ -456,7 +456,7 @@ var T=13;var A={};
 function buildDots(){var w=document.getElementById('dots');w.innerHTML='';for(var q=1;q<=T;q++){var d=document.createElement('div');d.className='qdot';d.id='dd'+q;d.textContent=q;w.appendChild(d);}}
 function ma(q,v){if(v.trim()){A[q]=v.trim();dot(q,true);}else{delete A[q];dot(q,false);}up();}
 function dot(q,on){var d=document.getElementById('dd'+q);if(d)d.classList.toggle('ans',on);}
-function up(){document.getElementById('scr').textContent=Object.keys(A).length+'/'+T;}
+function up(){var el=document.getElementById('scr');if(el)el.textContent=Object.keys(A).length+'/'+T;}
 function pr(el,q,v){el.closest('.ropts').querySelectorAll('.ropt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');A[q]=v;dot(q,true);up();}
 function pm(el,q,v){el.closest('.mopts').querySelectorAll('.mopt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');A[q]=v;dot(q,true);up();}
 function pm2(el,q1,q2,v){
@@ -591,6 +591,33 @@ function goToPart(n) {
   if (pass) pass.scrollTop = 0;
 }
 
+var ts=60*60,tr=false,ti=null;
+function resetTimer(){
+  clearInterval(ti);tr=false;ts=60*60;
+  var tv=document.getElementById('tv');
+  var bt=document.getElementById('bt');
+  if(tv){tv.textContent='60:00';tv.classList.remove('warn');}
+  if(bt){bt.textContent='Start';bt.className='tbtn';}
+}
+function toggleTimer(){
+  if(tr){
+    clearInterval(ti);tr=false;
+    var bt=document.getElementById('bt');
+    if(bt){bt.textContent='Resume';bt.classList.remove('on');}
+  } else {
+    tr=true;
+    var bt=document.getElementById('bt');
+    if(bt){bt.textContent='Pause';bt.classList.add('on');}
+    ti=setInterval(function(){
+      ts--;
+      var m=Math.floor(ts/60),s=ts%60;
+      var tv=document.getElementById('tv');
+      if(tv){tv.textContent=m+':'+(s<10?'0':'')+s;tv.classList.toggle('warn',ts<=300&&ts>0);}
+      if(ts<=0){clearInterval(ti);tr=false;chk();}
+    },1000);
+  }
+}
+
 renderList();
 
 
@@ -659,8 +686,8 @@ function _escHtml(s){var d=document.createElement('div');d.textContent=String(s|
 function _buildQHTML(q,num,num2){
   var type=q.type||'Gap fill';
   var labelNum=(type==='2-answer MCQ'&&num2)?(num+' \u2013 '+num2):String(q.num||num);
-  var inst=q.inst?'<div class="q-section-inst">'+_renderBold((q.inst||'').replace(/\n/g,'<br>'))+'</div>':'';
-  var html=inst+'<div class="qi" id="qi'+num+'"><div class="qrow"><div class="qn">'+labelNum+'</div><div class="qt">'+_renderBold((q.text||'').replace(/\n/g,'<br>'))+'</div></div>';
+  var inst=q.inst?'<div class="q-section-inst">'+_renderBold(q.inst).replace(/\n/g,'<br>')+'</div>':'';
+  var html=inst+'<div class="qi" id="qi'+num+'"><div class="qrow"><div class="qn">'+labelNum+'</div><div class="qt">'+_renderBold(q.text||'').replace(/\n/g,'<br>')+'</div></div>';
   if(type==='Multiple choice'||type==='multiple-choice'){
     html+='<div class="mopts">';
     (q.options||[]).forEach(function(o){html+='<div class="mopt" onclick="pm(this,'+num+',\''+o.letter+'\')"><div class="mc">'+o.letter+'</div><span class="ml">'+_escHtml(o.text)+'</span></div>';});
@@ -740,9 +767,14 @@ function _buildQHTML(q,num,num2){
     if(gapSentST){
       var sentLinesST=gapSentST.split('\n');
       html+='<div style="padding-left:0;margin-top:.3rem">';
+      var gapCountST=0;
       sentLinesST.forEach(function(sent,si){
-        var gnST=num+si;
-        K[gnST]=aLinesST[si]||aLinesST[0]||'';
+        var gnST=num+gapCountST;
+        // Only assign K and increment counter for lines that have a gap (***)
+        if(sent.indexOf('___')!==-1){
+          K[gnST]=aLinesST[gapCountST]||'';
+          gapCountST++;
+        }
         var partsST=sent.split('___');
         if(partsST.length>1){
           html+='<div style="font-size:.89rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;margin-bottom:.2rem;">';
@@ -887,7 +919,7 @@ function renderReadingContent(passages){
   var ph1=document.querySelector('.ph1');
   var ph2=document.querySelector('.ph2');
   if(ph1) ph1.textContent='Passage 1';
-  if(ph2&&passages[0]) ph2.innerHTML=_renderBold((passages[0].instruction||('Read the text and answer questions 1\u2013'+newT+'.')).replace(/\n/g,'<br>'));
+  if(ph2&&passages[0]) ph2.innerHTML=_renderBold(passages[0].instruction||('Read the text and answer questions 1\u2013'+newT+'.')).replace(/\n/g,'<br>');
 }
 
 </script>
