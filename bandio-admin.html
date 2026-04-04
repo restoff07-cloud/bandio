@@ -1485,8 +1485,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function buildShort(qn) {
     return `<div class="form-field" style="margin-top:.35rem">
       <label>Correct answer (max 3 words)</label>
-      <input type="text" placeholder="e.g. Matthew White"/>
-      <span class="form-hint">Short answer — students write from the passage, no more than 3 words.</span>
+      <input type="text" id="gap-ans-${qn}" placeholder="e.g. Matthew White" style="font-family:monospace;font-size:.85rem;"/>
+      <span class="form-hint">Type the correct answer students must write.</span>
     </div>`;
   }
 
@@ -1521,14 +1521,19 @@ document.addEventListener('DOMContentLoaded', function() {
   function buildMatchHead(qn) {
     return `<div style="margin-top:.35rem">
       <div class="form-field" style="margin-bottom:.6rem">
-        <label>Headings list (one per line, e.g. "i. The origins...")</label>
+        <label>Headings list (one per line, any label format)</label>
         <textarea id="match-list-${qn}" style="min-height:80px;font-family:monospace;font-size:.82rem" placeholder="i. The origins of urban planning&#10;ii. Economic consequences of green spaces&#10;iii. Psychological benefits of nature&#10;iv. Criticism of green space research"></textarea>
-        <span class="form-hint">One heading per line. Students will see these as options to choose from.</span>
+        <span class="form-hint">Any labels work: i/ii/iii, A/B/C, 1/2/3. One heading per line.</span>
+      </div>
+      <div class="form-field" style="margin-bottom:.6rem">
+        <label>Row labels + statements (one per line, one per question)</label>
+        <textarea id="stmt-list-${qn}" style="min-height:70px" placeholder="Paragraph A&#10;Paragraph B&#10;Paragraph C&#10;Paragraph D"></textarea>
+        <span class="form-hint">What shows in the left column. Can be "Paragraph A", "1", "A", anything. One per question in range.</span>
       </div>
       <div class="form-field">
-        <label>Correct answers — one per line matching each question in range</label>
+        <label>Correct answers — one per line matching each row</label>
         <textarea id="gap-ans-${qn}" style="min-height:52px;font-family:monospace;font-size:.82rem" placeholder="iii&#10;i&#10;iv"></textarea>
-        <span class="form-hint">One answer per line, matching each question number in order (e.g. Q14=iii, Q15=i, Q16=iv).</span>
+        <span class="form-hint">One answer label per line matching each row above.</span>
       </div>
     </div>`;
   }
