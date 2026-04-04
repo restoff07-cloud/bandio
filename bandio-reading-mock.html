@@ -453,7 +453,7 @@ function goBack(){
 }
 var K={1:'FALSE',2:'FALSE',3:'TRUE',4:'TRUE',5:'FALSE',6:'TRUE',7:'B',8:'C',9:'B',10:'exeter',11:'focused',12:'cortisol',13:'tree canopy'};
 var T=13;var A={};
-function buildDots(){var w=document.getElementById('dots');w.innerHTML='';for(var q=1;q<=T;q++){var d=document.createElement('div');d.className='qdot';d.id='dd'+q;d.textContent=q;w.appendChild(d);}}
+function buildDots(){var w=document.getElementById('dots');if(!w)return;w.innerHTML='';for(var q=1;q<=T;q++){var d=document.createElement('div');d.className='qdot';d.id='dd'+q;d.textContent=q;w.appendChild(d);}}
 function ma(q,v){if(v.trim()){A[q]=v.trim();dot(q,true);}else{delete A[q];dot(q,false);}up();}
 function dot(q,on){var d=document.getElementById('dd'+q);if(d)d.classList.toggle('ans',on);}
 function up(){var el=document.getElementById('scr');if(el)el.textContent=Object.keys(A).length+'/'+T;}
@@ -521,7 +521,7 @@ function chk(){
     if(!i)continue;
     i.classList.remove('ok','bad');
     if(!A[q]){b++;continue;}
-    var ok=(A[q]||'').toLowerCase().trim()===(K[q]||'').toLowerCase().trim();
+    var ok=K[q]&&(A[q]||'').toLowerCase().trim()===(K[q]||'').toLowerCase().trim();
     i.classList.add(ok?'ok':'bad');
     if(ok)c++;
   }
@@ -686,6 +686,7 @@ function _escHtml(s){var d=document.createElement('div');d.textContent=String(s|
 function _buildQHTML(q,num,num2){
   var type=q.type||'Gap fill';
   var labelNum=(type==='2-answer MCQ'&&num2)?(num+' \u2013 '+num2):String(q.num||num);
+  var rMatch=labelNum.match(/^(\d+)[\u2013\u2014\-](\d+)$/);
   var inst=q.inst?'<div class="q-section-inst">'+_renderBold(q.inst).replace(/\n/g,'<br>')+'</div>':'';
   var html=inst+'<div class="qi" id="qi'+num+'"><div class="qrow"><div class="qn">'+labelNum+'</div><div class="qt">'+_renderBold(q.text||'').replace(/\n/g,'<br>')+'</div></div>';
   if(type==='Multiple choice'||type==='multiple-choice'){
@@ -800,7 +801,6 @@ function _buildQHTML(q,num,num2){
     // Check for inline sentence with ___
     var gapSentR = (q.extra && q.extra.gapSentence) || '';
     var aLinesR = (q.answer||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
-    var rMatch=String(q.num||num).match(/^(\d+)[\u2013\u2014\-](\d+)$/);
     if(gapSentR){
       // Inline mode: sentence with ___ replaced by input
       var sentLinesR = gapSentR.split('\n');
