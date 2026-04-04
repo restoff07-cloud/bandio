@@ -819,9 +819,12 @@ function _buildQHTML(q,num,num2){
       html+='<div style="padding-left:0;margin-bottom:.85rem;">';
       for(var riF=rSF;riF<=rEF;riF++){
         var rnF=num+(riF-rSF);
+        var stmtListF=(q.extra&&q.extra.stmtList)||'';
+        var stmtsF=stmtListF.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+        var stmtTxtF=stmtsF[riF-rSF]||q.text||'';
         html+='<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;padding:.3rem 0;border-bottom:1px solid #f5f3f0;">'
              +'<span style="font-size:.85rem;font-weight:700;min-width:1.8rem;color:#555;">'+riF+'</span>'
-             +'<div style="flex:1;font-size:.88rem;line-height:1.5;">'+_renderBold(q.text||'')+'</div>'
+             +'<div style="flex:1;font-size:.88rem;line-height:1.5;">'+_renderBold(stmtTxtF)+'</div>'
              +'<select id="g'+rnF+'" onchange="A['+rnF+']=this.value;dot('+rnF+',this.value!==\'\');up();" '
              +'style="min-width:65px;padding:.3rem .4rem;border:1px solid #ccc;border-radius:6px;font-family:inherit;font-size:.85rem;cursor:pointer;">'
              +'<option value=""></option>';
@@ -875,7 +878,7 @@ function _buildQHTML(q,num,num2){
         }
         var partsST=sent.split('___');
         if(partsST.length>1){
-          html+='<div style="font-size:.89rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;margin-bottom:.2rem;">';
+          html+='<div style="font-size:.89rem;line-height:2;display:inline;">';
           partsST.forEach(function(part,pi){
             if(part) html+='<span>'+_escHtml(part)+'</span>';
             if(pi<partsST.length-1) html+='<input class="gap" id="g'+gnST+'" oninput="ma('+gnST+',this.value)" autocomplete="off" style="min-width:90px;vertical-align:middle;"/>';

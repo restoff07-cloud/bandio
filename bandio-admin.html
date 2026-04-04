@@ -1536,16 +1536,23 @@ document.addEventListener('DOMContentLoaded', function() {
   function buildMatchFeat(qn) {
     return `<div style="margin-top:.35rem">
       <div class="form-field" style="margin-bottom:.6rem">
-        <label>List of features / people / places (one per line, e.g. "A. Matthew White")</label>
-        <textarea id="match-list-${qn}" style="min-height:70px;font-family:monospace;font-size:.82rem" placeholder="A. Matthew White&#10;B. Roger Ulrich&#10;C. Jennifer Wolch"></textarea>
+        <label>Options list (one per line, e.g. "A. Matthew White")</label>
+        <textarea id="match-list-${qn}" style="min-height:70px;font-family:monospace;font-size:.82rem" placeholder="A. Matthew White&#10;B. Roger Ulrich&#10;C. Jennifer Wolch&#10;D. Johann Franz Encke"></textarea>
+        <span class="form-hint">Each line becomes a dropdown option. Any labels work: A/B/C, i/ii/iii, 1/2/3.</span>
+      </div>
+      <div class="form-field" style="margin-bottom:.6rem">
+        <label>Statements (one per line — one per question in range)</label>
+        <textarea id="stmt-list-${qn}" style="min-height:80px" placeholder="He calculated the distance of the Sun from the Earth&#10;He understood that the distance could be worked out by comparing observations&#10;He realised that the time taken by a planet determines the solar distance"></textarea>
+        <span class="form-hint">One statement per line, in order matching question numbers.</span>
       </div>
       <div class="form-field">
-        <label>Correct answers — one per line matching each question</label>
-        <textarea id="gap-ans-${qn}" style="min-height:52px;font-family:monospace;font-size:.82rem" placeholder="B&#10;C"></textarea>
-        <span class="form-hint">One answer per line (the letter/label), matching each question in order.</span>
+        <label>Correct answers — one per line matching each statement</label>
+        <textarea id="gap-ans-${qn}" style="min-height:52px;font-family:monospace;font-size:.82rem" placeholder="A&#10;C&#10;B"></textarea>
+        <span class="form-hint">One answer (the label) per line, matching each statement above.</span>
       </div>
     </div>`;
   }
+
 
   function buildSentEnd(qn) {
     return `<div style="margin-top:.35rem">
@@ -1883,6 +1890,10 @@ document.addEventListener('DOMContentLoaded', function() {
               if (matchListTA && matchListTA.value.trim()) {
                 extraData = Object.assign(extraData||{}, { matchList: matchListTA.value.trim() });
               }
+              const stmtListTA = qitem.querySelector('textarea[id^="stmt-list-"]');
+              if (stmtListTA && stmtListTA.value.trim()) {
+                extraData = Object.assign(extraData||{}, { stmtList: stmtListTA.value.trim() });
+              }
             } else {
               const inp = qitem.querySelector('input[type=text]');
               if (inp) answer = inp.value.trim();
@@ -2081,9 +2092,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check for dedicated gap-ans textarea first (supports per-line answers for ranges)
         const gapTA2 = qitem.querySelector('textarea[id^="gap-ans-"]');
         const gapSentTA = qitem.querySelector('textarea[id^="gap-sentence-"]');
+        const matchListTA2 = qitem.querySelector('textarea[id^="match-list-"]');
+        const stmtListTA2 = qitem.querySelector('textarea[id^="stmt-list-"]');
         if (gapTA2) {
           answer = gapTA2.value.trim();
-          if (gapSentTA) extraData = Object.assign(extraData||{}, { gapSentence: gapSentTA.value.trim() });
+          if (gapSentTA && gapSentTA.value.trim()) extraData = Object.assign(extraData||{}, { gapSentence: gapSentTA.value.trim() });
+          if (matchListTA2 && matchListTA2.value.trim()) extraData = Object.assign(extraData||{}, { matchList: matchListTA2.value.trim() });
+          if (stmtListTA2 && stmtListTA2.value.trim()) extraData = Object.assign(extraData||{}, { stmtList: stmtListTA2.value.trim() });
         } else {
           const inp = qitem.querySelectorAll('input[type=text]');
           if (inp.length > 0) answer = inp[inp.length-1].value.trim();
