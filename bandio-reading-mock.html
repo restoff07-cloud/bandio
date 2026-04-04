@@ -845,21 +845,43 @@ function _buildQHTML(q,num,num2){
       html+='</select></div>';
     }
     } else if(type==='Sentence endings'){
+    var matchListSE=(q.extra&&q.extra.matchList)||'';
+    var stmtListSE=(q.extra&&q.extra.stmtList)||'';
+    var matchOptsSE=matchListSE.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    var stmtsSE=stmtListSE.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    var parsedSE=matchOptsSE.map(function(opt){
+      var m=opt.match(/^([^\s.\)]+)[.\)\s]+(.+)/);
+      return m?{lbl:m[1],txt:m[2]}:{lbl:opt,txt:opt};
+    });
+    if(parsedSE.length>0){
+      html+='<div style="background:#f9f7f4;border:1px solid #d8d5d0;border-radius:8px;padding:.75rem 1rem;margin:.3rem 0 .75rem 0;font-size:.88rem;">';
+      html+='<div style="font-weight:700;text-align:center;margin-bottom:.4rem;">List of Endings</div>';
+      parsedSE.forEach(function(o){
+        html+='<div style="padding:.1rem 0;"><strong>'+_escHtml(o.lbl)+'</strong>&nbsp;&nbsp;'+_escHtml(o.txt)+'</div>';
+      });
+      html+='</div>';
+    }
     if(rMatch){
       var rSE=parseInt(rMatch[1]),rEE=parseInt(rMatch[2]);
-      html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">';
+      html+='<div style="padding-left:0;margin-bottom:.85rem;">';
       for(var riE=rSE;riE<=rEE;riE++){
         var rnE=num+(riE-rSE);
-        html+='<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;">'
-             +'<span style="font-size:.72rem;font-weight:700;color:#888;min-width:1.5rem;text-align:right;">'+riE+'</span>'
-             +'<input class="gap" id="g'+rnE+'" oninput="ma('+rnE+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/>'
-             +'</div>';
+        var stmtTxtSE=stmtsSE[riE-rSE]||q.text||'';
+        html+='<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;padding:.3rem 0;border-bottom:1px solid #f5f3f0;">'
+             +'<span style="font-size:.85rem;font-weight:700;min-width:1.8rem;color:#555;">'+riE+'</span>'
+             +'<div style="flex:1;font-size:.88rem;line-height:1.5;">'+_renderBold(stmtTxtSE)+'</div>';
+        if(parsedSE.length>0){
+          html+='<select id="g'+rnE+'" onchange="A['+rnE+']=this.value;dot('+rnE+',this.value!==\'\');up();" style="min-width:65px;padding:.3rem .4rem;border:1px solid #ccc;border-radius:6px;font-family:inherit;font-size:.85rem;cursor:pointer;"><option value=""></option>';
+          parsedSE.forEach(function(o){ html+='<option value="'+_escHtml(o.lbl)+'">'+_escHtml(o.lbl)+'</option>'; });
+          html+='</select>';
+        } else {
+          html+='<input class="gap" id="g'+rnE+'" oninput="ma('+rnE+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/>';
+        }
+        html+='</div>';
       }
       html+='</div>';
     } else {
-      html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.3rem;">'
-           +'<input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/>'
-           +'</div>';
+      html+='<div style="padding-left:2rem;margin-top:.3rem;margin-bottom:.85rem;"><input class="gap" id="g'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/></div>';
     }
   } else if(type==='Summary fill'||type==='Table/Note fill'||type==='Short answer'){
     // Summary / Table / Short answer — same as gap fill, supports gapSentence

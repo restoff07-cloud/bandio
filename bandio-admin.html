@@ -1557,16 +1557,19 @@ document.addEventListener('DOMContentLoaded', function() {
   function buildSentEnd(qn) {
     return `<div style="margin-top:.35rem">
       <div class="form-field" style="margin-bottom:.6rem">
-        <label>Sentence beginnings (one per line)</label>
-        <textarea style="min-height:70px" placeholder="1. The 2019 study concluded that&#10;2. Attention Restoration Theory suggests that"></textarea>
+        <label>Sentence beginnings (one per line, one per question)</label>
+        <textarea id="stmt-list-${qn}" style="min-height:70px" placeholder="The 2019 study concluded that&#10;Attention Restoration Theory suggests that&#10;Green spaces in cities are important because"></textarea>
+        <span class="form-hint">One incomplete sentence per line, matching each question number in order.</span>
       </div>
       <div class="form-field" style="margin-bottom:.6rem">
-        <label>Sentence endings list (label A, B, C…)</label>
-        <textarea style="min-height:70px" placeholder="A. natural environments restore focused attention.&#10;B. two hours per week is enough to improve wellbeing."></textarea>
+        <label>Sentence endings list (one per line, e.g. "A. natural environments...")</label>
+        <textarea id="match-list-${qn}" style="min-height:70px" placeholder="A. natural environments restore focused attention.&#10;B. two hours per week is enough to improve wellbeing.&#10;C. they reduce stress in urban populations."></textarea>
+        <span class="form-hint">Students pick the ending that completes each sentence.</span>
       </div>
       <div class="form-field">
-        <label>Answer key (e.g. 1=B, 2=A)</label>
-        <input type="text" placeholder="1=B, 2=A"/>
+        <label>Correct answers — one per line matching each beginning</label>
+        <textarea id="gap-ans-${qn}" style="min-height:40px;font-family:monospace;font-size:.82rem" placeholder="B&#10;A"></textarea>
+        <span class="form-hint">One answer label per line (e.g. B then A means Q1=B, Q2=A).</span>
       </div>
     </div>`;
   }
@@ -1922,6 +1925,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             if (answEl) answer = answEl.value.trim();
           }
+          console.log('[Bandio DEBUG] Saving Q:', qnum, 'type:', qtype, 'answer:', answer ? answer.substring(0,30) : '(empty)', 'extra:', JSON.stringify(extraData));
           questions.push({ num: qnum, type: qtype, text: qtext, inst: qinst, answer, options, extra: extraData });
         });
       }
