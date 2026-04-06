@@ -768,9 +768,16 @@ function _buildQHTML(q,num,num2){
         var rnH=num+(riH-rSH);
         var oddH=(riH-rSH)%2===0;
         // Row label: use stmtList entry if available, else use number
-        var rowLbl=rowLabelsH[riH-rSH]?_escHtml(rowLabelsH[riH-rSH]):String(riH);
+        var rowEntry=rowLabelsH[riH-rSH]||String(riH);
+        // Split label from statement: "Paragraph A: The text discusses..." or just "A"
+        var rowMatch=rowEntry.match(/^([^:]+?)(?::\s*(.+))?$/);
+        var rowLbl=rowMatch?_escHtml(rowMatch[1].trim()):_escHtml(rowEntry);
+        var rowStmt=rowMatch&&rowMatch[2]?_renderBold(rowMatch[2].trim()):'';
         html+='<tr style="background:'+(oddH?'#fff':'#fafaf8')+';border-bottom:1px solid #f0eeea;">';
-        html+='<td style="padding:.5rem .6rem;font-size:.87rem;line-height:1.5;font-weight:500;">'+rowLbl+'</td>';
+        html+='<td style="padding:.5rem .6rem;font-size:.87rem;line-height:1.5;">'
+             +'<span style="font-weight:700;color:#333;margin-right:.4rem;">'+rowLbl+'</span>'
+             +(rowStmt?'<span style="color:#555;">'+rowStmt+'</span>':'')
+             +'</td>';
         parsedOpts.forEach(function(o){
           html+='<td style="text-align:center;padding:.4rem .3rem;">'
                +'<input type="radio" name="mh_'+rnH+'" value="'+_escHtml(o.lbl)+'" '

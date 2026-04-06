@@ -1887,7 +1887,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (checked) answer = checked.value;
           } else {
             // Gap fill / short answer — check for dedicated gap-ans textarea first
-            const gapTA = qitem.querySelector('textarea[id^="gap-ans-"]');
+            const gapTA = qitem.querySelector('textarea[id^="gap-ans-"], input[id^="gap-ans-"]');
             const gapSentTA2 = qitem.querySelector('textarea[id^="gap-sentence-"]');
             const matchListTA = qitem.querySelector('textarea[id^="match-list-"]');
             if (gapTA) {
@@ -2099,7 +2099,7 @@ document.addEventListener('DOMContentLoaded', function() {
         extraData = { ffTitle: ffTitle, ffRows: ffRows };
       } else {
         // Check for dedicated gap-ans textarea first (supports per-line answers for ranges)
-        const gapTA2 = qitem.querySelector('textarea[id^="gap-ans-"]');
+        const gapTA2 = qitem.querySelector('textarea[id^="gap-ans-"], input[id^="gap-ans-"]');
         const gapSentTA = qitem.querySelector('textarea[id^="gap-sentence-"]');
         const matchListTA2 = qitem.querySelector('textarea[id^="match-list-"]');
         const stmtListTA2 = qitem.querySelector('textarea[id^="stmt-list-"]');
