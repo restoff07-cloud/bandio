@@ -265,6 +265,18 @@ var timerSecs = 0;
 var timerOn   = false;
 var timerInt  = null;
 
+function handleCheckScore(){
+  var plan=localStorage.getItem('bnd_plan')||'free';
+  if(plan==='premium'||plan==='intensive'){
+    var btn=document.getElementById('csBtn');
+    if(btn){btn.textContent='⏳ Checking...';btn.disabled=true;}
+    if(typeof runAIScoreCheck==='function') runAIScoreCheck();
+    else if(typeof checkScore==='function') checkScore();
+  } else {
+    window.location.href='bandio-pricing.html';
+  }
+}
+
 function setTab(tab, el) {
   activeTab = tab;
   document.querySelectorAll('.ft').forEach(function(t){ t.classList.remove('on'); });
@@ -440,7 +452,7 @@ function doSubmit() {
     + '<div class="crit"><span class="crit-ico">&#9881;</span><div><div class="crit-n">Grammatical Range</div><div class="crit-d">Range and accuracy of grammar.</div></div></div>'
     + '</div>'
     + '<button class="csbtn" onclick="window.location.href=\'bandio-pricing.html\'">&#127919; Check my score &mdash; Upgrade to Premium</button>'
-    + '<div class="csnote">From $9/month &middot; Cancel anytime &middot; Instant AI feedback</div>'
+    + '<div class="csnote">From $9/month &middot; Instant AI feedback</div>'
     + '</div>'
 
     + '<div class="rbtns">'
@@ -450,6 +462,12 @@ function doSubmit() {
     + '</div>';
 
   document.getElementById('rcard').innerHTML = html;
+  var _pl=localStorage.getItem('bnd_plan')||'free';
+  var _cb=document.getElementById('csBtn');
+  if(_cb){
+    if(_pl==='premium'||_pl==='intensive'){_cb.textContent='🎯 Check my score';}
+    else{_cb.textContent='🎯 Check my score — Upgrade to Premium';}
+  }
   document.getElementById('ovl').classList.add('show');
 }
 
