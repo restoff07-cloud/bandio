@@ -379,12 +379,24 @@ var chkType    = 'task1';
 function handleCheckScore(){
   var plan=localStorage.getItem('bnd_plan')||'free';
   if(plan==='premium'||plan==='intensive'){
-    var btn=document.getElementById('csBtn');
-    if(btn){btn.textContent='⏳ Checking...';btn.disabled=true;}
-    if(typeof runAIScoreCheck==='function') runAIScoreCheck();
-    else if(typeof checkScore==='function') checkScore();
+    document.getElementById('ovl').classList.remove('show');
+    doCheck();
   } else {
     window.location.href='bandio-pricing.html';
+  }
+}
+
+function updateCsBtn(){
+  var plan=localStorage.getItem('bnd_plan')||'free';
+  var btn=document.getElementById('csBtn');
+  var note=document.getElementById('csNote');
+  if(!btn) return;
+  if(plan==='premium'||plan==='intensive'){
+    btn.textContent='🎯 Check my score';
+    if(note) note.style.display='none';
+  } else {
+    btn.textContent='🎯 Check my score — Upgrade to Premium';
+    if(note) note.style.display='';
   }
 }
 
@@ -569,21 +581,16 @@ function doSubmit() {
     +'<div class="crit2"><span class="crit2-ico">&#128218;</span><div><div class="crit2-n">Lexical Resource</div><div class="crit2-d">Vocabulary range?</div></div></div>'
     +'<div class="crit2"><span class="crit2-ico">&#9881;</span><div><div class="crit2-n">Grammatical Range</div><div class="crit2-d">Grammar accuracy?</div></div></div>'
     +'</div>'
-    +'<button class="csbtn" onclick="window.location.href=\'bandio-pricing.html\'">&#127919; Check my score — Upgrade to Premium</button>'
-    +'<div class="csnote">From 99,000 som/month</div>'
+    +'<button class="csbtn" id="csBtn" onclick="handleCheckScore()">&#127919; Check my score — Upgrade to Premium</button>'
+    +'<div class="csnote" id="csNote">From 99,000 som/month</div>'
     +'</div>'
     +'<div class="rbtns">'
     +'<button class="rbtn" onclick="document.getElementById(\'ovl\').classList.remove(\'show\')">Edit &amp; retry</button>'
     +'<button class="rbtn" onclick="goBack()">Choose another</button>'
     +'<button class="rbtn p" onclick="window.location.href=\'bandio-dashboard.html\'">Dashboard</button>'
     +'</div>';
-  var _pl=localStorage.getItem('bnd_plan')||'free';
-  var _cb=document.getElementById('csBtn');
-  if(_cb){
-    if(_pl==='premium'||_pl==='intensive'){_cb.textContent='🎯 Check my score';}
-    else{_cb.textContent='🎯 Check my score — Upgrade to Premium';}
-  }
   document.getElementById('ovl').classList.add('show');
+  updateCsBtn();
 }
 
 function doCopy() {
@@ -815,12 +822,6 @@ async function doCheck() {
 
   var res = document.getElementById('chkResult');
   var btn = document.getElementById('chkBtn');
-
-  // Block if Gemini key missing
-  if(GEMINI_API_KEY === 'PASTE_YOUR_GEMINI_API_KEY_HERE'){
-    alert('Gemini API key not set yet.');
-    return;
-  }
 
   // Show checking while Firebase validates
   res.style.display='block';
