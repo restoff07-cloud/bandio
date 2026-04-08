@@ -735,9 +735,8 @@ function updateChkWC() {
 }
 
 // ── GEMINI API KEY (paste yours here) ──────────────────────────
-var GEMINI_API_KEY = 'AIzaSyCS-l7iMGe2Ck5wCF7RLoSS96y2fZCr7oM';
-var GEMINI_MODEL   = 'gemini-3.1-flash-lite-preview';
-var GEMINI_URL     = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent?key=' + GEMINI_API_KEY;
+var GEMINI_MODEL = 'gemini-3.1-flash-lite-preview';
+var GEMINI_URL   = 'https://bandio-gemini-proxy.aslbekabduganiev5.workers.dev/v1beta/models/' + GEMINI_MODEL + ':generateContent';
 
 var SYSTEM_PROMPT = `You are a Senior IELTS Writing Examiner with 20+ years of experience. Your role is to evaluate IELTS Task 1 (Academic Reports) and Task 2 (Essays) based on official public band descriptors.
 
