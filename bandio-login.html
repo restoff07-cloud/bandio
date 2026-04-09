@@ -509,8 +509,13 @@
       const cred = await signInWithEmailAndPassword(auth, email, pw);
       const user = cred.user;
       const snap = await getDoc(doc(db, 'users', user.uid));
-      const name = snap.exists() ? snap.data().name : email.split('@')[0];
+      const data  = snap.exists() ? snap.data() : {};
+      const name  = data.name || email.split('@')[0];
       const display = name.charAt(0).toUpperCase() + name.slice(1);
+      // Save plan to localStorage so other pages can read it immediately
+      localStorage.setItem('bnd_plan', data.plan || 'free');
+      localStorage.setItem('bnd_w_used',  String(data.writingChecksUsed  || 0));
+      localStorage.setItem('bnd_w_limit', String(data.writingChecksTotal || 2));
       document.getElementById('welcome-name').textContent = 'Welcome back, ' + display + '!';
       hide('login-screen');
       show('success-screen');

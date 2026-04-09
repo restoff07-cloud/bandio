@@ -198,7 +198,7 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
 
 <!-- MODE SWITCHER NAV -->
 <div class="modenav">
-  <a class="logo-sm" href="bandio-dashboard.html">Band<span>io</span></a>
+  <a class="logo-sm" href="bandio-home.html">Band<span>io</span></a>
   <button class="mbtn on" id="mb-practice" onclick="switchMode('practice')">Practice</button>
   <button class="mbtn" id="mb-yours"    onclick="switchMode('yours')">Your writing</button>
   <button class="mbtn" id="mb-check"    onclick="switchMode('check')">Check my writing</button>
@@ -270,7 +270,7 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
         <div class="yw-sub">Paste any IELTS question and your essay. Get an instant band score on all 4 criteria.</div>
 
         <div style="background:#fef9c3;border:1px solid #fde68a;border-radius:9px;padding:.7rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
-          <div style="font-size:.82rem;color:#78350f;"><strong id="chk-badge-txt">2 free checks remaining this month</strong> &#183; Resets on the 1st</div>
+          <div style="font-size:.82rem;color:#78350f;"><strong id="chk-badge-txt">2 checks remaining</strong> &#183; Included with your free account</div>
           <a href="bandio-pricing.html" style="font-size:.74rem;font-weight:600;color:#c8102e;text-decoration:none;">Upgrade for more &#8594;</a>
         </div>
 
@@ -377,7 +377,7 @@ var chkType    = 'task1';
 
 /* MODE SWITCHING */
 function handleCheckScore(){
-  var plan=localStorage.getItem('bnd_plan')||'free';
+  var plan=(window._bandioUserData&&window._bandioUserData.plan)||localStorage.getItem('bnd_plan')||'free';
   if(plan==='premium'||plan==='intensive'){
     document.getElementById('ovl').classList.remove('show');
     doCheck();
@@ -387,7 +387,7 @@ function handleCheckScore(){
 }
 
 function updateCsBtn(){
-  var plan=localStorage.getItem('bnd_plan')||'free';
+  var plan=(window._bandioUserData&&window._bandioUserData.plan)||localStorage.getItem('bnd_plan')||'free';
   var btn=document.getElementById('csBtn');
   var note=document.getElementById('csNote');
   if(!btn) return;
@@ -583,12 +583,19 @@ function doSubmit() {
     +'</div>'
     +'<button class="csbtn" id="csBtn" onclick="handleCheckScore()">&#127919; Check my score — Upgrade to Premium</button>'
     +'<div class="csnote" id="csNote">From 99,000 som/month</div>'
+    +'<div class="csnote">From 99,000 som/month</div>'
     +'</div>'
     +'<div class="rbtns">'
     +'<button class="rbtn" onclick="document.getElementById(\'ovl\').classList.remove(\'show\')">Edit &amp; retry</button>'
     +'<button class="rbtn" onclick="goBack()">Choose another</button>'
     +'<button class="rbtn p" onclick="window.location.href=\'bandio-dashboard.html\'">Dashboard</button>'
     +'</div>';
+  var _pl=localStorage.getItem('bnd_plan')||'free';
+  var _cb=document.getElementById('csBtn');
+  if(_cb){
+    if(_pl==='premium'||_pl==='intensive'){_cb.textContent='🎯 Check my score';}
+    else{_cb.textContent='🎯 Check my score — Upgrade to Premium';}
+  }
   document.getElementById('ovl').classList.add('show');
   updateCsBtn();
 }
@@ -662,13 +669,8 @@ document.addEventListener('paste',function(e){
 });
 
 /* CHECK MY WRITING */
+// No monthly reset — free users get 2 checks at registration only.
 function getWritingUsed() {
-  var month=new Date().toISOString().slice(0,7);
-  if(localStorage.getItem('bnd_w_month')!==month){
-    localStorage.setItem('bnd_w_month',month);
-    localStorage.setItem('bnd_w_used','0');
-    return 0;
-  }
   return parseInt(localStorage.getItem('bnd_w_used')||'0');
 }
 function getWritingLimit() {
@@ -1069,6 +1071,7 @@ updateChkBadge();
     try {
       const snap = await getDoc(doc(_db, 'users', user.uid));
       _userData = snap.exists() ? snap.data() : {};
+      window._bandioUserData = _userData; // expose for plan checks
 
       const plan        = _userData.plan || 'free';
       const bonusEssays = _userData.aiWritingBonus || 0;
@@ -1080,6 +1083,7 @@ updateChkBadge();
       const used = _userData.writingChecksUsed || 0;
 
       // Cache for display only
+      localStorage.setItem('bnd_plan',    plan);
       localStorage.setItem('bnd_w_used',  String(used));
       localStorage.setItem('bnd_w_limit', String(limit));
       _limitLoaded = true;
