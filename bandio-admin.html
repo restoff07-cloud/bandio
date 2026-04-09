@@ -2633,7 +2633,7 @@ function renderStudents(list) {
       '<td style="font-weight:500">' + (s.name||'—') + '</td>' +
       '<td style="color:var(--muted);font-family:monospace;font-size:.82rem">' + (s.email||'—') + '</td>' +
       '<td>' + planBadge(s.plan||'free') + '</td>' +
-      '<td style="font-size:.82rem;color:var(--muted)">' + (s.plan==='free'?'—':'<span style="color:#2a9d68;font-weight:600">Lifetime ✓</span>') + '</td>' +
+      '<td style="font-size:.82rem;color:var(--muted)">' + (s.plan==='free'||!s.plan ? '—' : '<span style="color:#2a9d68;font-weight:600">' + (s.planExpires && s.planExpires !== '—' ? 'Expires ' + s.planExpires : 'Active') + '</span>') + '</td>' +
       '<td>' + (s.targetBand||'—') + '</td>' +
       '<td style="color:var(--muted);font-size:.82rem">' + joined + '</td>' +
       '<td style="white-space:nowrap">' + actions + '</td>' +
@@ -2674,13 +2674,20 @@ function setPlan(uid, plan) {
   if (window.fbSetPlan) {
     window.fbSetPlan(uid, plan).then(function() {
       s.plan = plan;
-      s.planExpires = plan==='free' ? '—' : 'Lifetime';
+      if (plan === 'free') {
+        s.planExpires = '—';
+      } else {
+        var exp = new Date();
+        exp.setMonth(exp.getMonth() + (plan === 'intensive' ? 3 : 1));
+        s.planExpires = exp.toISOString().slice(0, 10);
+      }
       filterStudents();
-      window.showToast('✓ ' + s.name + (plan==='free' ? ' downgraded to Free' : ' upgraded to '+planNames[plan]+' ✦'));
+      var dur = plan === 'free' ? '' : plan === 'intensive' ? ' (3 months)' : ' (1 month)';
+      window.showToast('✓ ' + s.name + (plan==='free' ? ' downgraded to Free' : ' upgraded to '+planNames[plan]+dur+' ✦'));
     });
   } else {
     s.plan = plan;
-    s.planExpires = plan==='free' ? '—' : 'Lifetime';
+    s.planExpires = plan==='free' ? '—' : 'not saved';
     filterStudents();
     window.showToast('✓ Updated (Firebase not connected yet)');
   }
@@ -3020,19 +3027,26 @@ window.saveVocabSet = saveVocabSet;
 
   // Set plan in Firestore
   window.fbSetPlan = async function(uid, plan) {
-    var expiry = plan === 'free' ? null : 'Lifetime';
+    // Calculate real expiry: premium = 1 month, intensive = 3 months
+    var planExpires = '—';
+    if (plan === 'premium') {
+      var exp = new Date(); exp.setMonth(exp.getMonth() + 1);
+      planExpires = exp.toISOString().slice(0, 10);
+    } else if (plan === 'intensive') {
+      var exp = new Date(); exp.setMonth(exp.getMonth() + 3);
+      planExpires = exp.toISOString().slice(0, 10);
+    }
 
-    // Writing checks per plan
-    // Premium: 25 total, Intensive: 60 total, Free: 0
-    var writingChecksTotal = 0;
+    // Writing checks per plan (reset used count on plan change)
+    var writingChecksTotal = 2; // free gets 2 total at registration, no refill
     if (plan === 'premium')   writingChecksTotal = 25;
     if (plan === 'intensive') writingChecksTotal = 60;
 
     await updateDoc(doc(db, 'users', uid), {
-      plan:              plan,
-      planExpires:       plan === 'free' ? '—' : 'Lifetime',
-      planUpdatedAt:     serverTimestamp(),
-      writingChecksUsed: 0,
+      plan:               plan,
+      planExpires:        planExpires,
+      planUpdatedAt:      serverTimestamp(),
+      writingChecksUsed:  0,
       writingChecksTotal: writingChecksTotal
     });
   };
