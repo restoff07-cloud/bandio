@@ -380,14 +380,11 @@ function handleCheckScore(){
   var plan=(window._bandioUserData&&window._bandioUserData.plan)||localStorage.getItem('bnd_plan')||'free';
   if(plan==='premium'||plan==='intensive'){
     document.getElementById('ovl').classList.remove('show');
-    // Fill chk-q and chk-essay from the exam screen before calling doCheck()
-    var essay    = (document.getElementById('essayTA')||{}).value || '';
+    var essay = (document.getElementById('essayTA')||{}).value || '';
     var question = '';
     if(currentQ){
       question = currentQ.sub || '';
-      if(currentQ.inst) question += '
-
-' + currentQ.inst;
+      if(currentQ.inst) question += '\n\n' + currentQ.inst;
       chkType = currentQ.task || 'task2';
     }
     if(question) document.getElementById('chk-q').value = question;
@@ -404,10 +401,10 @@ function updateCsBtn(){
   var note=document.getElementById('csNote');
   if(!btn) return;
   if(plan==='premium'||plan==='intensive'){
-    btn.textContent='🎯 Check my score';
+    btn.textContent='Check my score';
     if(note) note.style.display='none';
   } else {
-    btn.textContent='🎯 Check my score — Upgrade to Premium';
+    btn.textContent='Check my score — Upgrade to Premium';
     if(note) note.style.display='';
   }
 }
@@ -593,7 +590,7 @@ function doSubmit() {
     +'<div class="crit2"><span class="crit2-ico">&#128218;</span><div><div class="crit2-n">Lexical Resource</div><div class="crit2-d">Vocabulary range?</div></div></div>'
     +'<div class="crit2"><span class="crit2-ico">&#9881;</span><div><div class="crit2-n">Grammatical Range</div><div class="crit2-d">Grammar accuracy?</div></div></div>'
     +'</div>'
-    +'<button class="csbtn" id="csBtn" onclick="handleCheckScore()">&#127919; Check my score — Upgrade to Premium</button>'
+    +'<button class="csbtn" id="csBtn" onclick="handleCheckScore()">Check my score \u2014 Upgrade to Premium</button>'
     +'<div class="csnote" id="csNote">From 99,000 som/month</div>'
     +'<div class="csnote">From 99,000 som/month</div>'
     +'</div>'
@@ -605,8 +602,8 @@ function doSubmit() {
   var _pl=localStorage.getItem('bnd_plan')||'free';
   var _cb=document.getElementById('csBtn');
   if(_cb){
-    if(_pl==='premium'||_pl==='intensive'){_cb.textContent='🎯 Check my score';}
-    else{_cb.textContent='🎯 Check my score — Upgrade to Premium';}
+    if(_pl==='premium'||_pl==='intensive'){_cb.textContent='Check my score';}
+    else{_cb.textContent='Check my score — Upgrade to Premium';}
   }
   document.getElementById('ovl').classList.add('show');
   updateCsBtn();
