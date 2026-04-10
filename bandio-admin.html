@@ -237,6 +237,8 @@
   <button class="s-item" onclick="window.showPage('tests',this)"><span class="si">📝</span> All tests</button>
   <button class="s-item" onclick="window.showPage('speaking',this)"><span class="si">🎤</span> Speaking practice Qs</button>
   <button class="s-item" onclick="window.showPage('vocab',this)"><span class="si">📚</span> Vocabulary sets</button>
+  <button class="s-item" onclick="window.showPage('articles',this)"><span class="si">📰</span> Articles</button>
+  <button class="s-item" onclick="window.showPage('books',this)"><span class="si">📖</span> Books &amp; News</button>
   <button class="s-item" onclick="window.showPage('feedback',this)"><span class="si">💬</span> Feedback</button>
   <button class="s-item" onclick="window.showPage('referrals',this)"><span class="si">🔗</span> Referrals</button>
   <button class="s-item" onclick="window.showPage('students',this)"><span class="si">👥</span> Students</button>
@@ -609,6 +611,157 @@
         </thead>
         <tbody id="vocab-tbody">
           <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;font-size:.85rem;">No vocabulary sets yet. Click "Add new set" to create one.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ARTICLES PAGE -->
+  <div class="page" id="page-articles">
+    <div class="page-hdr">
+      <div class="page-hdr-left"><h1>Articles</h1><p>Add, edit and remove IELTS reading articles. Free = open to all. Premium = paid users only.</p></div>
+      <button class="btn-primary" onclick="showArticleForm()">+ Add article</button>
+    </div>
+
+    <!-- ADD / EDIT FORM -->
+    <div class="card" id="article-form-card" style="display:none;margin-bottom:1.5rem;">
+      <div class="form-section-title" id="article-form-title">New article</div>
+      <div class="form-grid" style="margin-bottom:1rem;">
+        <div class="form-field full">
+          <label>Article title</label>
+          <input type="text" id="af-title" placeholder="e.g. The Future of Renewable Energy"/>
+        </div>
+        <div class="form-field">
+          <label>Access</label>
+          <select id="af-tier">
+            <option value="free">Free — all students</option>
+            <option value="premium">Premium only</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>PDF download link (Google Drive direct link)</label>
+          <input type="url" id="af-pdf" placeholder="https://drive.google.com/uc?export=download&id=FILE_ID"/>
+          <span class="form-hint">See instructions below for how to get this link from Google Drive.</span>
+        </div>
+        <div class="form-field full">
+          <label>Article text</label>
+          <textarea id="af-text" style="min-height:220px;" placeholder="Paste the full article text here. Use double line breaks to separate paragraphs."></textarea>
+        </div>
+      </div>
+
+      <!-- VOCAB HIGHLIGHTS -->
+      <div class="form-section-title" style="margin-bottom:.75rem;">Highlighted vocabulary words <span style="font-weight:400;font-size:.78rem;color:var(--muted)">(students hover/tap to see meaning)</span></div>
+      <div id="vocab-rows"></div>
+      <button class="btn-secondary" style="margin-top:.5rem;margin-bottom:1.25rem;" onclick="addVocabRow()">+ Add word</button>
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="saveArticle()">Save article</button>
+        <button class="btn-secondary" onclick="hideArticleForm()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- GOOGLE DRIVE INSTRUCTIONS -->
+    <div style="background:rgba(212,84,26,.06);border:1px solid rgba(212,84,26,.2);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:.82rem;line-height:1.7;color:var(--ink);">
+      <strong style="display:block;margin-bottom:.4rem;">How to get a Google Drive PDF link:</strong>
+      1. Upload the PDF to Google Drive &rarr; Right-click &rarr; <em>Share</em> &rarr; set access to <em>Anyone with the link</em><br>
+      2. Copy the share link. It looks like: <code>https://drive.google.com/file/d/FILE_ID/view</code><br>
+      3. Change it to: <code>https://drive.google.com/uc?export=download&amp;id=FILE_ID</code><br>
+      4. Paste that into the PDF link field above.
+    </div>
+
+    <!-- ARTICLES TABLE -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="tests-table">
+        <thead><tr><th>#</th><th>Title</th><th>Access</th><th>PDF</th><th>Vocab words</th><th>Actions</th></tr></thead>
+        <tbody id="articles-tbody">
+          <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;font-size:.85rem;">No articles yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- BOOKS PAGE -->
+  <div class="page" id="page-books">
+    <div class="page-hdr">
+      <div class="page-hdr-left"><h1>Books &amp; News</h1><p>Add graded readers and short news PDFs by level. 5 free per level, rest Premium.</p></div>
+      <button class="btn-primary" onclick="showBookForm()">+ Add book / news</button>
+    </div>
+
+    <!-- ADD / EDIT FORM -->
+    <div class="card" id="book-form-card" style="display:none;margin-bottom:1.5rem;">
+      <div class="form-section-title" id="book-form-title">New book / news item</div>
+      <div class="form-grid" style="margin-bottom:1rem;">
+        <div class="form-field full">
+          <label>Title</label>
+          <input type="text" id="bf-title" placeholder="e.g. The Secret Garden (Graded Reader)"/>
+        </div>
+        <div class="form-field">
+          <label>Type</label>
+          <select id="bf-type" onchange="toggleNewsFields(this.value)">
+            <option value="book">Book (graded reader)</option>
+            <option value="news">Short news article</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Level</label>
+          <select id="bf-level">
+            <option value="beginner">Beginner</option>
+            <option value="elementary">Elementary</option>
+            <option value="pre-intermediate">Pre-Intermediate</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Access</label>
+          <select id="bf-tier">
+            <option value="free">Free — all students</option>
+            <option value="premium">Premium only</option>
+          </select>
+        </div>
+        <div class="form-field full">
+          <label>PDF download link (Google Drive direct link)</label>
+          <input type="url" id="bf-pdf" placeholder="https://drive.google.com/uc?export=download&id=FILE_ID"/>
+        </div>
+        <div class="form-field full">
+          <label>Short description (optional)</label>
+          <textarea id="bf-desc" style="min-height:70px;" placeholder="A short 1-2 sentence description shown to students."></textarea>
+        </div>
+      </div>
+      <!-- NEWS-ONLY FIELDS (hidden for books) -->
+      <div id="news-extra-fields" style="display:none;">
+        <div class="form-section-title" style="margin-bottom:.75rem;margin-top:.5rem;">News article text &amp; vocabulary</div>
+        <div class="form-field" style="margin-bottom:1rem;">
+          <label>Article text</label>
+          <textarea id="bf-text" style="min-height:180px;" placeholder="Paste the full news article text here. Use double line breaks to separate paragraphs."></textarea>
+        </div>
+        <div class="form-section-title" style="margin-bottom:.75rem;">Highlighted vocabulary words <span style="font-weight:400;font-size:.78rem;color:var(--muted)">(students hover/tap to see meaning)</span></div>
+        <div id="news-vocab-rows"></div>
+        <button class="btn-secondary" style="margin-top:.5rem;margin-bottom:1.25rem;" onclick="addNewsVocabRow()">+ Add word</button>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="saveBook()">Save</button>
+        <button class="btn-secondary" onclick="hideBookForm()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- FILTER TABS -->
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="q-type-btn on" id="bl-tab-all" onclick="filterBooks('all',this)">All</button>
+      <button class="q-type-btn" id="bl-tab-beg" onclick="filterBooks('beginner',this)">Beginner</button>
+      <button class="q-type-btn" id="bl-tab-elem" onclick="filterBooks('elementary',this)">Elementary</button>
+      <button class="q-type-btn" id="bl-tab-pre" onclick="filterBooks('pre-intermediate',this)">Pre-Int</button>
+      <button class="q-type-btn" id="bl-tab-int" onclick="filterBooks('intermediate',this)">Intermediate</button>
+      <button class="q-type-btn" id="bl-tab-adv" onclick="filterBooks('advanced',this)">Advanced</button>
+    </div>
+
+    <!-- BOOKS TABLE -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="tests-table">
+        <thead><tr><th>Title</th><th>Type</th><th>Level</th><th>Access</th><th>PDF</th><th>Actions</th></tr></thead>
+        <tbody id="books-tbody">
+          <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;font-size:.85rem;">No books yet.</td></tr>
         </tbody>
       </table>
     </div>
@@ -2936,6 +3089,273 @@ window.hideVocabForm = hideVocabForm;
 window.addWordRow = addWordRow;
 window.saveVocabSet = saveVocabSet;
 
+// ── ARTICLES ADMIN ─────────────────────────────────────────────
+var articlesList = [];
+var editingArticleId = null;
+
+window.showArticleForm = function(id) {
+  editingArticleId = id || null;
+  var card = document.getElementById('article-form-card');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior:'smooth', block:'start' });
+  document.getElementById('vocab-rows').innerHTML = '';
+  if (id) {
+    var a = articlesList.find(function(x){ return x.id === id; });
+    if (!a) return;
+    document.getElementById('af-title').value = a.title || '';
+    document.getElementById('af-tier').value  = a.tier  || 'free';
+    document.getElementById('af-pdf').value   = a.pdfUrl || '';
+    document.getElementById('af-text').value  = a.text  || '';
+    document.getElementById('article-form-title').textContent = 'Edit article';
+    (a.vocab || []).forEach(function(v){ addVocabRow(v); });
+  } else {
+    document.getElementById('af-title').value = '';
+    document.getElementById('af-tier').value  = 'free';
+    document.getElementById('af-pdf').value   = '';
+    document.getElementById('af-text').value  = '';
+    document.getElementById('article-form-title').textContent = 'New article';
+  }
+};
+
+window.hideArticleForm = function() {
+  document.getElementById('article-form-card').style.display = 'none';
+  editingArticleId = null;
+};
+
+window.addVocabRow = function(v) {
+  var wrap = document.getElementById('vocab-rows');
+  var row  = document.createElement('div');
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 2fr auto;gap:.6rem;margin-bottom:.5rem;align-items:start;';
+  row.innerHTML =
+    '<div><label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:.22rem">Word</label>'
+    + '<input type="text" placeholder="e.g. sustainable" value="'+(v?v.word:'')+'" style="width:100%"/></div>'
+    + '<div><label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:.22rem">Meaning (shown on hover)</label>'
+    + '<input type="text" placeholder="Able to be maintained long-term" value="'+(v?v.meaning:'')+'" style="width:100%"/></div>'
+    + '<button onclick="this.parentElement.remove()" style="margin-top:1.3rem;background:none;border:none;cursor:pointer;color:#e24b4a;font-size:1rem;" title="Remove">&#10005;</button>';
+  wrap.appendChild(row);
+};
+
+window.saveArticle = function() {
+  var title = document.getElementById('af-title').value.trim();
+  var tier  = document.getElementById('af-tier').value;
+  var pdf   = document.getElementById('af-pdf').value.trim();
+  var text  = document.getElementById('af-text').value.trim();
+  if (!title) { alert('Please enter a title.'); return; }
+  if (!text)  { alert('Please enter the article text.'); return; }
+  var vocabRows = document.getElementById('vocab-rows').children;
+  var vocab = [];
+  for (var i = 0; i < vocabRows.length; i++) {
+    var inputs = vocabRows[i].querySelectorAll('input');
+    var word   = inputs[0].value.trim();
+    var meaning = inputs[1].value.trim();
+    if (word && meaning) vocab.push({ word: word, meaning: meaning });
+  }
+  var id = editingArticleId || 'article_' + Date.now();
+  var order = editingArticleId ? (articlesList.find(function(a){ return a.id===id; })||{}).order || articlesList.length : articlesList.length;
+  var data = { id: id, title: title, tier: tier, pdfUrl: pdf, text: text, vocab: vocab, order: order, updatedAt: new Date().toISOString() };
+  if (editingArticleId) {
+    var idx = articlesList.findIndex(function(a){ return a.id===editingArticleId; });
+    if (idx !== -1) articlesList[idx] = data; else articlesList.push(data);
+  } else {
+    articlesList.push(data);
+  }
+  if (window.fbSaveArticle) {
+    window.fbSaveArticle(id, data).then(function(){
+      window.showToast('Article saved!');
+    }).catch(function(e){ window.showToast('Save failed: '+e.message); });
+  } else { window.showToast('Saved locally.'); }
+  renderArticlesTable();
+  window.hideArticleForm();
+};
+
+window.deleteArticle = function(id) {
+  if (!confirm('Delete this article? Students will no longer see it.')) return;
+  articlesList = articlesList.filter(function(a){ return a.id !== id; });
+  if (window.fbDeleteArticle) window.fbDeleteArticle(id).catch(function(){});
+  renderArticlesTable();
+  window.showToast('Article deleted.');
+};
+
+function renderArticlesTable() {
+  var tbody = document.getElementById('articles-tbody');
+  if (!tbody) return;
+  if (!articlesList.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;font-size:.85rem;">No articles yet. Click &ldquo;+ Add article&rdquo; to create one.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = articlesList.map(function(a, i) {
+    var tierBadge = a.tier==='free'
+      ? '<span style="font-size:.72rem;font-weight:600;padding:.18rem .55rem;border-radius:100px;background:#dcfce7;color:#166534">Free</span>'
+      : '<span style="font-size:.72rem;font-weight:600;padding:.18rem .55rem;border-radius:100px;background:#fef9c3;color:#854d0e">Premium</span>';
+    var pdfIcon = a.pdfUrl ? '<span style="color:#2a9d68;font-weight:600;font-size:.8rem;">&#10003; Set</span>' : '<span style="color:#aaa;font-size:.8rem;">None</span>';
+    return '<tr>'
+      +'<td style="color:var(--muted);font-size:.8rem">'+(i+1)+'</td>'
+      +'<td style="font-weight:500">'+escA(a.title)+'</td>'
+      +'<td>'+tierBadge+'</td>'
+      +'<td>'+pdfIcon+'</td>'
+      +'<td style="font-size:.8rem;color:var(--muted)">'+(a.vocab||[]).length+' words</td>'
+      +'<td style="display:flex;gap:.5rem;">'
+      +'<button class="btn-secondary" style="padding:.3rem .7rem;font-size:.76rem;" onclick="window.showArticleForm(''+a.id+'')">Edit</button>'
+      +'<button style="padding:.3rem .7rem;font-size:.76rem;background:none;border:1px solid #e24b4a;color:#e24b4a;border-radius:6px;cursor:pointer;" onclick="window.deleteArticle(''+a.id+'')">Delete</button>'
+      +'</td></tr>';
+  }).join('');
+}
+
+// ── BOOKS ADMIN ─────────────────────────────────────────────────
+var booksList = [];
+var editingBookId = null;
+var booksFilter = 'all';
+
+window.toggleNewsFields = function(type) {
+  var extra = document.getElementById('news-extra-fields');
+  if (extra) extra.style.display = type === 'news' ? 'block' : 'none';
+};
+
+window.addNewsVocabRow = function(v) {
+  var wrap = document.getElementById('news-vocab-rows');
+  var row  = document.createElement('div');
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 2fr auto;gap:.6rem;margin-bottom:.5rem;align-items:start;';
+  row.innerHTML =
+    '<div><label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:.22rem">Word</label>'
+    + '<input type="text" placeholder="e.g. inflation" value="'+(v?v.word:'')+'" style="width:100%"/></div>'
+    + '<div><label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:.22rem">Meaning</label>'
+    + '<input type="text" placeholder="A rise in prices over time" value="'+(v?v.meaning:'')+'" style="width:100%"/></div>'
+    + '<button onclick="this.parentElement.remove()" style="margin-top:1.3rem;background:none;border:none;cursor:pointer;color:#e24b4a;font-size:1rem;" title="Remove">&#10005;</button>';
+  wrap.appendChild(row);
+};
+
+window.showBookForm = function(id) {
+  editingBookId = id || null;
+  var card = document.getElementById('book-form-card');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior:'smooth', block:'start' });
+  document.getElementById('news-vocab-rows').innerHTML = '';
+  if (id) {
+    var b = booksList.find(function(x){ return x.id === id; });
+    if (!b) return;
+    document.getElementById('bf-title').value = b.title || '';
+    document.getElementById('bf-type').value  = b.type  || 'book';
+    document.getElementById('bf-level').value = b.level || 'beginner';
+    document.getElementById('bf-tier').value  = b.tier  || 'free';
+    document.getElementById('bf-pdf').value   = b.pdfUrl || '';
+    document.getElementById('bf-desc').value  = b.description || '';
+    document.getElementById('bf-text').value  = b.text || '';
+    (b.vocab || []).forEach(function(v){ addNewsVocabRow(v); });
+    document.getElementById('book-form-title').textContent = 'Edit book / news';
+    window.toggleNewsFields(b.type || 'book');
+  } else {
+    document.getElementById('bf-title').value = '';
+    document.getElementById('bf-type').value  = 'book';
+    document.getElementById('bf-level').value = 'beginner';
+    document.getElementById('bf-tier').value  = 'free';
+    document.getElementById('bf-pdf').value   = '';
+    document.getElementById('bf-desc').value  = '';
+    document.getElementById('bf-text').value  = '';
+    document.getElementById('book-form-title').textContent = 'New book / news item';
+    window.toggleNewsFields('book');
+  }
+};
+
+window.hideBookForm = function() {
+  document.getElementById('book-form-card').style.display = 'none';
+  editingBookId = null;
+};
+
+window.saveBook = function() {
+  var title = document.getElementById('bf-title').value.trim();
+  var type  = document.getElementById('bf-type').value;
+  var level = document.getElementById('bf-level').value;
+  var tier  = document.getElementById('bf-tier').value;
+  var pdf   = document.getElementById('bf-pdf').value.trim();
+  var desc  = document.getElementById('bf-desc').value.trim();
+  var text  = type === 'news' ? document.getElementById('bf-text').value.trim() : '';
+  var vocab = [];
+  if (type === 'news') {
+    var vocabRows = document.getElementById('news-vocab-rows').children;
+    for (var i = 0; i < vocabRows.length; i++) {
+      var inputs = vocabRows[i].querySelectorAll('input');
+      var word = inputs[0].value.trim();
+      var meaning = inputs[1].value.trim();
+      if (word && meaning) vocab.push({ word: word, meaning: meaning });
+    }
+  }
+  if (!title) { alert('Please enter a title.'); return; }
+  var id    = editingBookId || 'book_' + Date.now();
+  var order = editingBookId ? (booksList.find(function(b){ return b.id===id; })||{}).order || booksList.length : booksList.length;
+  var data  = { id: id, title: title, type: type, level: level, tier: tier, pdfUrl: pdf, description: desc, text: text, vocab: vocab, order: order, updatedAt: new Date().toISOString() };
+  if (editingBookId) {
+    var idx = booksList.findIndex(function(b){ return b.id===editingBookId; });
+    if (idx !== -1) booksList[idx] = data; else booksList.push(data);
+  } else {
+    booksList.push(data);
+  }
+  if (window.fbSaveBook) {
+    window.fbSaveBook(id, data).then(function(){
+      window.showToast('Book saved!');
+    }).catch(function(e){ window.showToast('Save failed: '+e.message); });
+  } else { window.showToast('Saved locally.'); }
+  renderBooksTable();
+  window.hideBookForm();
+};
+
+window.deleteBook = function(id) {
+  if (!confirm('Delete this book?')) return;
+  booksList = booksList.filter(function(b){ return b.id !== id; });
+  if (window.fbDeleteBook) window.fbDeleteBook(id).catch(function(){});
+  renderBooksTable();
+  window.showToast('Book deleted.');
+};
+
+window.filterBooks = function(level, btn) {
+  booksFilter = level;
+  document.querySelectorAll('[id^="bl-tab-"]').forEach(function(t){ t.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  renderBooksTable();
+};
+
+function renderBooksTable() {
+  var tbody = document.getElementById('books-tbody');
+  if (!tbody) return;
+  var filtered = booksFilter === 'all' ? booksList : booksList.filter(function(b){ return b.level === booksFilter; });
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;font-size:.85rem;">No books for this filter yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map(function(b) {
+    var tierBadge = b.tier==='free'
+      ? '<span style="font-size:.72rem;font-weight:600;padding:.18rem .55rem;border-radius:100px;background:#dcfce7;color:#166534">Free</span>'
+      : '<span style="font-size:.72rem;font-weight:600;padding:.18rem .55rem;border-radius:100px;background:#fef9c3;color:#854d0e">Premium</span>';
+    var pdfIcon = b.pdfUrl ? '<span style="color:#2a9d68;font-weight:600;font-size:.8rem;">&#10003; Set</span>' : '<span style="color:#aaa;font-size:.8rem;">None</span>';
+    var lvlLabel = {beginner:'Beginner',elementary:'Elementary','pre-intermediate':'Pre-Int',intermediate:'Intermediate',advanced:'Advanced'}[b.level]||b.level;
+    return '<tr>'
+      +'<td style="font-weight:500">'+escA(b.title)+'</td>'
+      +'<td style="font-size:.82rem;color:var(--muted)">'+(b.type==='news'?'News':'Book')+'</td>'
+      +'<td style="font-size:.82rem">'+lvlLabel+'</td>'
+      +'<td>'+tierBadge+'</td>'
+      +'<td>'+pdfIcon+'</td>'
+      +'<td style="display:flex;gap:.5rem;">'
+      +'<button class="btn-secondary" style="padding:.3rem .7rem;font-size:.76rem;" onclick="window.showBookForm(''+b.id+'')">Edit</button>'
+      +'<button style="padding:.3rem .7rem;font-size:.76rem;background:none;border:1px solid #e24b4a;color:#e24b4a;border-radius:6px;cursor:pointer;" onclick="window.deleteBook(''+b.id+'')">Delete</button>'
+      +'</td></tr>';
+  }).join('');
+}
+
+function escA(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+window.showArticleForm = window.showArticleForm;
+window.hideArticleForm = window.hideArticleForm;
+window.addVocabRow     = window.addVocabRow;
+window.saveArticle     = window.saveArticle;
+window.deleteArticle   = window.deleteArticle;
+window.showBookForm    = window.showBookForm;
+window.hideBookForm    = window.hideBookForm;
+window.saveBook        = window.saveBook;
+window.deleteBook      = window.deleteBook;
+window.filterBooks        = window.filterBooks;
+window.toggleNewsFields   = window.toggleNewsFields;
+window.addNewsVocabRow    = window.addNewsVocabRow;
+
+
 }); // end DOMContentLoaded
 
 </script>
@@ -3118,6 +3538,34 @@ window.saveVocabSet = saveVocabSet;
     });
   };
 
+  // ── ARTICLES FIRESTORE ──────────────────────────────────────────
+  window.fbSaveArticle = async function(id, data) {
+    const { setDoc, doc: fsDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await setDoc(fsDoc(db, 'articles', String(id)), data);
+  };
+  window.fbDeleteArticle = async function(id) {
+    const { deleteDoc, doc: fsDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await deleteDoc(fsDoc(db, 'articles', String(id)));
+  };
+  window.fbLoadArticles = async function() {
+    const snap = await getDocs(collection(db, 'articles'));
+    var items = []; snap.forEach(function(d){ items.push(d.data()); }); return items;
+  };
+
+  // ── BOOKS FIRESTORE ─────────────────────────────────────────────
+  window.fbSaveBook = async function(id, data) {
+    const { setDoc, doc: fsDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await setDoc(fsDoc(db, 'books', String(id)), data);
+  };
+  window.fbDeleteBook = async function(id) {
+    const { deleteDoc, doc: fsDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await deleteDoc(fsDoc(db, 'books', String(id)));
+  };
+  window.fbLoadBooks = async function() {
+    const snap = await getDocs(collection(db, 'books'));
+    var items = []; snap.forEach(function(d){ items.push(d.data()); }); return items;
+  };
+
   // Load students whenever Students page is opened
   var _orig = window.showPage;
   window.showPage = function(name, btn) {
@@ -3127,12 +3575,27 @@ window.saveVocabSet = saveVocabSet;
     if (name === 'dashboard') loadStudentsFromFirestore();
     if (name === 'feedback') loadFeedbackFromFirestore();
     if (name === 'vocab') {
-      // Load vocab sets from Firestore
       if (window.fbLoadVocab) {
         window.fbLoadVocab().then(function(sets) {
           vocabSets = sets;
           renderVocabTable();
         }).catch(function(e){ console.log('Vocab load error:', e.message); });
+      }
+    }
+    if (name === 'articles') {
+      if (window.fbLoadArticles) {
+        window.fbLoadArticles().then(function(items) {
+          articlesList = items.sort(function(a,b){ return (a.order||0)-(b.order||0); });
+          renderArticlesTable();
+        }).catch(function(e){ console.log('Articles load error:', e.message); });
+      }
+    }
+    if (name === 'books') {
+      if (window.fbLoadBooks) {
+        window.fbLoadBooks().then(function(items) {
+          booksList = items.sort(function(a,b){ return (a.order||0)-(b.order||0); });
+          renderBooksTable();
+        }).catch(function(e){ console.log('Books load error:', e.message); });
       }
     }
   };
