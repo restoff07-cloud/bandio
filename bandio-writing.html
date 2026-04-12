@@ -379,7 +379,9 @@ var chkType    = 'task1';
 function handleCheckScore(){
   var plan=(window._bandioUserData&&window._bandioUserData.plan)||localStorage.getItem('bnd_plan')||'free';
   if(plan==='premium'||plan==='intensive'){
+    // Close the result overlay
     document.getElementById('ovl').classList.remove('show');
+    // Grab essay and question from the exam screen
     var essay = (document.getElementById('essayTA')||{}).value || '';
     var question = '';
     if(currentQ){
@@ -387,9 +389,16 @@ function handleCheckScore(){
       if(currentQ.inst) question += '\n\n' + currentQ.inst;
       chkType = currentQ.task || 'task2';
     }
+    // Pre-fill the check panel fields
     if(question) document.getElementById('chk-q').value = question;
     if(essay)    document.getElementById('chk-essay').value = essay;
-    doCheck();
+    // Switch to the check panel so user can see the result
+    switchMode('check');
+    // Go back to selection screen first so check panel is visible
+    document.getElementById('exam').classList.remove('show');
+    document.getElementById('sel').classList.remove('hide');
+    // Small delay to let the UI settle then run the check
+    setTimeout(function(){ doCheck(); }, 100);
   } else {
     window.location.href='bandio-pricing.html';
   }

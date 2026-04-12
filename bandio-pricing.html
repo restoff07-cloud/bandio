@@ -118,6 +118,8 @@ tr:hover td{background:#fafaf9;}
     <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Writing practice (all questions)</div></div>
     <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Speaking practice with sample answers</div></div>
     <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx"><strong>2 AI writing checks</strong> — band score on all 4 criteria</div></div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx"><strong>5 free articles</strong> — IELTS-level reading with vocabulary</div></div>
+    <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx"><strong>5 free books</strong> from each level — Beginner to Advanced</div></div>
     <div class="ft dim"><span class="ft-ic">&#10007;</span><div class="ft-tx">Unlimited AI writing feedback</div></div>
     <div class="ft dim"><span class="ft-ic">&#10007;</span><div class="ft-tx">Mock tests &amp; vocabulary</div></div>
   </div>
@@ -126,13 +128,13 @@ tr:hover td{background:#fafaf9;}
   <div class="plan pop">
     <div class="pop-tag">&#127381; Most popular</div>
     <div class="plan-name">Premium</div>
-    <div style="font-size:.8rem;color:#aaa;text-decoration:line-through;margin-bottom:.15rem;">110,000 so'm</div>
+    <div style="font-size:.8rem;color:#aaa;text-decoration:line-through;margin-bottom:.15rem;">149,000 so'm</div>
     <div class="plan-price">
-      <span class="plan-amt">80,000</span>
+      <span class="plan-amt" id="prem-amt">99,000</span>
       <span class="plan-per">&nbsp;so'm</span>
     </div>
-    <div class="plan-bill">One-time payment — yours forever &nbsp;<span style="background:#dcfce7;color:#166534;font-size:.72rem;font-weight:700;padding:.1rem .45rem;border-radius:5px;">Save 27%</span></div>
-    <div class="plan-desc">Everything you need to reach your target band score — pay once, keep forever.</div>
+    <div class="plan-bill" id="prem-bill">Per month — 1 month access &nbsp;<span style="background:#dcfce7;color:#166534;font-size:.72rem;font-weight:700;padding:.1rem .45rem;border-radius:5px;">Save 34%</span></div>
+    <div class="plan-desc">Everything you need to reach your target band score. Access all premium features for one month.</div>
     <button class="plan-btn dark" onclick="buyPlan('premium')">Get Premium</button>
     <div class="ft-title">Everything in Free, plus</div>
     <div class="ft"><span class="ft-ic">&#127919;</span><div class="ft-tx"><strong>25 AI writing checks</strong> — band score on all 4 criteria</div></div>
@@ -140,24 +142,28 @@ tr:hover td{background:#fafaf9;}
     <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx"><strong>Topic-specific high-level vocabulary</strong> — curated for IELTS</div></div>
     <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Model band 8 answers for every question</div></div>
     <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Priority support</div></div>
+    <div class="ft"><span class="ft-ic">&#128218;</span><div class="ft-tx"><strong>30 premium articles</strong> — topic-specific for 30-40 most common IELTS topics, useful for writing ideas &amp; vocabulary</div></div>
+    <div class="ft"><span class="ft-ic">&#128218;</span><div class="ft-tx"><strong>Full books &amp; news library</strong> — graded readers and news from all levels to boost your reading to Band 8-9</div></div>
   </div>
 
   <!-- INTENSIVE -->
   <div class="plan">
     <div class="plan-name">Intensive</div>
-    <div style="font-size:.8rem;color:#aaa;text-decoration:line-through;margin-bottom:.15rem;">180,000 so'm</div>
+    <div style="font-size:.8rem;color:#aaa;text-decoration:line-through;margin-bottom:.15rem;">450,000 so'm</div>
     <div class="plan-price">
-      <span class="plan-amt">130,000</span>
+      <span class="plan-amt" id="int-amt">199,000</span>
       <span class="plan-per">&nbsp;so'm</span>
     </div>
-    <div class="plan-bill">One-time payment — yours forever &nbsp;<span style="background:#dcfce7;color:#166534;font-size:.72rem;font-weight:700;padding:.1rem .45rem;border-radius:5px;">Save 28%</span></div>
+    <div class="plan-bill" id="int-bill">Per 3 months — full intensive access &nbsp;<span style="background:#dcfce7;color:#166534;font-size:.72rem;font-weight:700;padding:.1rem .45rem;border-radius:5px;">Save 56%</span></div>
     <div class="plan-desc">Maximum preparation for students targeting a high band score with personalised support.</div>
     <button class="plan-btn acc" onclick="buyPlan('intensive')">Get Intensive</button>
     <div class="ft-title">Everything in Premium, plus</div>
     <div class="ft"><span class="ft-ic">&#127919;</span><div class="ft-tx"><strong>60 AI writing checks</strong> total</div></div>
-    <div class="ft"><span class="ft-ic">&#127775;</span><div class="ft-tx"><strong>2 real speaking mock tests with the founder</strong> — first 50 students only</div></div>
+    <div class="ft"><span class="ft-ic">&#127775;</span><div class="ft-tx"><strong>1 real speaking mock test with the founder</strong> — first 50 students only</div></div>
     <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Priority Telegram support from the teacher</div></div>
     <div class="ft"><span class="ft-ic">&#10003;</span><div class="ft-tx">Exam strategy &amp; personalised roadmap</div></div>
+    <div class="ft"><span class="ft-ic">&#128218;</span><div class="ft-tx"><strong>30 premium articles</strong> — topic-specific for 30-40 most common IELTS topics, useful for writing ideas &amp; vocabulary</div></div>
+    <div class="ft"><span class="ft-ic">&#128218;</span><div class="ft-tx"><strong>Full books &amp; news library</strong> — graded readers and short news ideal for teachers needing ready-made materials</div></div>
   </div>
 
 </div>
@@ -177,13 +183,15 @@ tr:hover td{background:#fafaf9;}
       <tr><td>Speaking practice</td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
       <tr><td>Vocabulary practice</td><td>100 words/mo</td><td>Unlimited</td><td>Unlimited</td></tr>
       <tr><td>AI writing checks</td><td>2 checks</td><td>25 checks</td><td>60 checks</td></tr>
+      <tr><td>Articles (topic-specific)</td><td>5 free</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>Books &amp; news (all levels)</td><td>5 free/level</td><td>Full library</td><td>Full library</td></tr>
       <tr><td>Unlimited mock tests</td><td><span class="cx">&#10007;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
       <tr><td>Topic-specific vocabulary</td><td><span class="cx">&#10007;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
       <tr><td>Band score (all 4 criteria)</td><td><span class="cx">&#10007;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
       <tr><td>Model band 8 answers</td><td><span class="cx">&#10007;</span></td><td><span class="ck">&#10003;</span></td><td><span class="ck">&#10003;</span></td></tr>
-      <tr><td>2 speaking mocks with founder</td><td><span class="cx">&#10007;</span></td><td><span class="cx">&#10007;</span></td><td>&#127775; First 50 only</td></tr>
+      <tr><td>1 speaking mock with founder</td><td><span class="cx">&#10007;</span></td><td><span class="cx">&#10007;</span></td><td>&#127775; First 50 only</td></tr>
       <tr><td>Priority Telegram support</td><td><span class="cx">&#10007;</span></td><td><span class="cx">&#10007;</span></td><td><span class="ck">&#10003;</span></td></tr>
-      <tr><td>Payment</td><td>Free forever</td><td>One-time 80,000 so'm</td><td>One-time 130,000 so'm</td></tr>
+      <tr><td>Payment</td><td>Free forever</td><td>99,000 so'm/month</td><td>199,000 so'm/3 months</td></tr>
       <tr>
         <td></td>
         <td><button class="plan-btn free" style="padding:.45rem .65rem;font-size:.76rem;margin:0" onclick="location.href='bandio-dashboard.html'">Start free</button></td>
@@ -246,7 +254,7 @@ tr:hover td{background:#fafaf9;}
     <!-- Amount -->
     <div style="background:#f0eeea;border-radius:10px;padding:.85rem 1rem;margin-bottom:1.1rem;display:flex;align-items:center;justify-content:space-between;font-size:.88rem;">
       <span style="color:#666">Amount:</span>
-      <strong id="modalAmount" style="font-size:1rem;color:#1a1a1a">80,000 so'm</strong>
+      <strong id="modalAmount" style="font-size:1rem;color:#1a1a1a">99,000 so'm</strong>
     </div>
 
     <!-- Steps -->
@@ -286,15 +294,15 @@ function toggleBilling() {
   document.getElementById('lbl-m').classList.toggle('on', !annual);
   document.getElementById('lbl-a').classList.toggle('on', annual);
   // One-time pricing — no toggle needed
-  document.getElementById('prem-amt').textContent = '80,000';
-  document.getElementById('int-amt').textContent  = '130,000';
+  document.getElementById('prem-amt').textContent = '99,000';
+  document.getElementById('int-amt').textContent  = '199,000';
   document.getElementById('prem-bill').textContent = annual ? "Billed 1,009,800 so'm/year (save 178,200)" : 'Billed monthly';
   document.getElementById('int-bill').textContent  = annual ? "Billed 1,621,800 so'm/year (save 286,200)" : 'Billed monthly';
 }
 
 function buyPlan(plan) {
   var titles  = { premium: 'Upgrade to Premium', intensive: 'Upgrade to Intensive' };
-  var amounts = { premium: "80,000 so'm", intensive: "130,000 so'm" };
+  var amounts = { premium: "99,000 so'm", intensive: "199,000 so'm" };
   document.getElementById('modalTitle').textContent  = titles[plan];
   document.getElementById('modalAmount').textContent = amounts[plan];
   document.getElementById('payModal').style.display  = 'flex';
