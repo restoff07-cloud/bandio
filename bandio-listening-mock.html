@@ -686,7 +686,74 @@ function _renderGapSentences(sentences, answers, startNum, qNumOffset) {
   });
   return html;
 }
+var _allPassages = []; // store globally for goToSection
+
+function goToSection(n){
+  var passages = _allPassages;
+  if(!passages.length) return;
+  var idx = n-1;
+  var p = passages[idx];
+  if(!p) return;
+
+  // Update nav active state
+  document.querySelectorAll('.part-nav').forEach(function(b,i){
+    b.classList.toggle('on', i+1===n);
+  });
+
+  // Scroll to the section heading in content
+  var headings = document.querySelectorAll('.content .q-heading');
+  if(headings[idx]){
+    headings[idx].scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  // Switch audio to this section
+  var audioEl = document.getElementById('audEl');
+  var gdriveFrame = document.getElementById('gdriveFrame');
+  var noAudioEl = document.getElementById('apNoAudio');
+  var tabLink = document.getElementById('audioTabLink');
+  var btnPlay = document.getElementById('btnPlay');
+  var apTrackWrap = btnPlay ? btnPlay.closest ? null : null : null;
+
+  // Hide both players first
+  if(gdriveFrame){ gdriveFrame.src=''; gdriveFrame.style.display='none'; }
+  if(btnPlay) btnPlay.style.display='';
+  var trackWrap = document.querySelector('.ap-track-wrap');
+  if(trackWrap) trackWrap.style.display='';
+
+  var aUrl = p.audioUrl || '';
+  if(!aUrl){
+    if(noAudioEl) noAudioEl.style.display='';
+    if(tabLink) tabLink.style.display='none';
+    if(audioEl){ audioEl.src=''; audioEl.load(); }
+    return;
+  }
+  if(noAudioEl) noAudioEl.style.display='none';
+  if(tabLink){ tabLink.href=aUrl; tabLink.style.display='inline-flex'; }
+
+  var gdFile=null;
+  var m1=aUrl.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
+  var m2=aUrl.match(/[?&]id=([^&\s]+)/);
+  if(m1) gdFile=m1[1];
+  else if(m2 && aUrl.indexOf('google')!==-1) gdFile=m2[1];
+
+  if(gdFile){
+    var embedUrl='https://drive.google.com/file/d/'+gdFile+'/preview';
+    if(gdriveFrame){ gdriveFrame.src=embedUrl; gdriveFrame.style.display='block'; }
+    if(btnPlay) btnPlay.style.display='none';
+    if(trackWrap) trackWrap.style.display='none';
+  } else {
+    if(audioEl){ audioEl.src=aUrl; audioEl.load(); }
+  }
+
+  // Update section header text
+  var ph1=document.querySelector('.ph1');
+  var ph2=document.querySelector('.ph2');
+  if(ph1) ph1.textContent='Section '+n;
+  if(ph2 && p.questions) ph2.textContent='Listen and answer questions.';
+}
+
 function renderListeningContent(passages){
+  _allPassages = passages; // store for goToSection
   var newK={};
   var qNum=1;
   var botParts=[];
@@ -697,7 +764,8 @@ function renderListeningContent(passages){
     var sectionTitle=p.title||('Section '+(pi+1));
 
     // Section header
-    contentHTML+='<div class="q-heading">Questions '+qStart;
+    var _qStartForHeading = qStart;
+    contentHTML+='<div class="q-heading" data-section="'+(pi+1)+'">Questions '+qStart;
 
     // Build questions HTML for this section
     var secQ='';
@@ -743,14 +811,31 @@ function renderListeningContent(passages){
         secQ+='</div>';
         qNum=Math.max(qNum,q2numL+1);
       } else if(type==='Match headings'||type==='match-head'||type==='Match features'||type==='match-feat'){
-        // Match headings / features — show a dropdown or text input per statement
+        // Show the options list at the top of this group (only once per group)
         var matchList=(q.extra&&q.extra.matchList)||'';
-        if(matchList){
-          secQ+='<div style="background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:.75rem 1rem;margin:.3rem 0 .85rem .5rem;font-size:.85rem;">';
-          secQ+='<div style="font-weight:600;margin-bottom:.5rem;">'+_escL(matchList.split('\n').slice(0,3).join(' · '))+'...</div>';
+        if(matchList&&!secQ.includes('data-match-list')){
+          secQ+='<div data-match-list="1" style="background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:.75rem 1rem;margin:.3rem 0 .85rem .5rem;font-size:.85rem;">';
+          matchList.split('\n').forEach(function(line){
+            if(line.trim()) secQ+='<div style="padding:.15rem 0;">'+_escL(line.trim())+'</div>';
+          });
           secQ+='</div>';
         }
-        secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:80px"/><span class="qn">'+labelNum+'</span></span></div>';
+        // Dropdown with all match options
+        var matchOpts = matchList ? matchList.split('\n').filter(function(l){return l.trim();}) : [];
+        secQ+='<div style="display:flex;align-items:center;gap:.6rem;padding-left:1.9rem;margin-bottom:.65rem;">';
+        if(matchOpts.length>0){
+          secQ+='<select id="q'+num+'" onchange="ma('+num+',this.value)" style="border:1px solid #b0aca6;background:#f0eeea;border-radius:4px;padding:.25rem .5rem;font-family:inherit;font-size:.82rem;max-width:280px;">';
+          secQ+='<option value=""></option>';
+          matchOpts.forEach(function(opt){
+            var letter = opt.trim().charAt(0);
+            secQ+='<option value="'+letter+'">'+_escL(opt.trim())+'</option>';
+          });
+          secQ+='</select>';
+        } else {
+          secQ+='<span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:80px" placeholder="e.g. A"/><span class="qn">'+labelNum+'</span></span>';
+        }
+        secQ+='<span style="font-size:.72rem;font-weight:700;color:#888;">'+labelNum+'</span>';
+        secQ+='</div>';
       } else if(type==='Sentence endings'||type==='sent-end'){
         // Sentence endings — text input for the matching letter
         secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/><span class="qn">'+labelNum+'</span></span></div>';
@@ -812,7 +897,22 @@ function renderListeningContent(passages){
         // Advance qNum for all the gaps we created
         qNum+=ffGapIdx-1; // -1 because qNum was already incremented once at start
       } else if(type==='Diagram label'||type==='Map/Plan label'){
-        secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:120px"/><span class="qn">'+labelNum+'</span></span></div>';
+        // Show map/diagram image if provided
+        if(q.extra&&q.extra.diagramImage&&!secQ.includes('data-map-shown')){
+          secQ+='<div data-map-shown="1" style="margin:.5rem 0 1rem;"><img src="'+q.extra.diagramImage+'" style="max-width:100%;border-radius:6px;border:1px solid #e0ddd8;" alt="Map/Diagram"/></div>';
+        }
+        // Show dropdown with letters A-J for map labelling
+        var mapOpts = (q.extra&&q.extra.matchList) ? q.extra.matchList.split('\n') : ['A','B','C','D','E','F','G','H','I','J'];
+        secQ+='<div style="display:flex;align-items:center;gap:.6rem;padding-left:1.9rem;margin-bottom:.85rem;">';
+        secQ+='<select id="q'+num+'" onchange="ma('+num+',this.value)" style="border:1px solid #b0aca6;background:#f0eeea;border-radius:4px;padding:.25rem .5rem;font-family:inherit;font-size:.88rem;">';
+        secQ+='<option value=""></option>';
+        mapOpts.forEach(function(opt){
+          var letter = opt.trim().charAt(0);
+          secQ+='<option value="'+letter+'">'+opt.trim()+'</option>';
+        });
+        secQ+='</select>';
+        secQ+='<span class="qn" style="font-size:.72rem;font-weight:700;color:#888;">'+labelNum+'</span>';
+        secQ+='</div>';
       } else {
         // Gap fill: check for inline sentence format first
         var gapSent = (q.extra && q.extra.gapSentence) || '';
@@ -887,38 +987,8 @@ function renderListeningContent(passages){
     bb.innerHTML=botParts.join('')+subbtn;
   }
 
-  // Set audio source if provided
-  var audioEl=document.getElementById('audEl');
-  if(audioEl && passages[0] && passages[0].audioUrl){
-    console.log('[Bandio Audio] URL:', passages[0].audioUrl);
-    var aUrl=passages[0].audioUrl;
-    var noAudioEl=document.getElementById('apNoAudio');
-    var tabLink=document.getElementById('audioTabLink');
-    var gdriveFrame=document.getElementById('gdriveFrame');
-    // Always show "open in tab" link
-    if(noAudioEl) noAudioEl.style.display='none';
-    if(tabLink){ tabLink.href=aUrl; tabLink.style.display='inline-flex'; }
-    // Detect Google Drive
-    var gdFile=null;
-    var m1=aUrl.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
-    var m2=aUrl.match(/[?&]id=([^&\s]+)/);
-    if(m1) gdFile=m1[1];
-    else if(m2 && aUrl.indexOf('google')!==-1) gdFile=m2[1];
-    if(gdFile){
-      // Google Drive: use their embed iframe — works without CORS issues
-      var embedUrl='https://drive.google.com/file/d/'+gdFile+'/preview';
-      if(gdriveFrame){ gdriveFrame.src=embedUrl; gdriveFrame.style.display='block'; }
-      // Hide the custom audio player controls (keep phdr visible)
-      var btnPlay=document.getElementById('btnPlay');
-      var apTrack=document.getElementById('apTrack');
-      if(btnPlay) btnPlay.style.display='none';
-      if(apTrack) apTrack.closest('.ap-track-wrap').style.display='none';
-    } else {
-      // Direct URL (GitHub raw, Dropbox dl) — works natively in browser
-      audioEl.src=aUrl;
-      audioEl.load();
-    }
-  }
+  // Load section 1 audio via goToSection (handles all sections)
+  setTimeout(function(){ goToSection(1); }, 50);
 
   // Update section header
   var ph1=document.querySelector('.ph1');
