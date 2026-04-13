@@ -700,11 +700,13 @@ function goToSection(n){
     b.classList.toggle('on', i+1===n);
   });
 
-  // Scroll to the section heading in content
-  var headings = document.querySelectorAll('.content .q-heading');
-  if(headings[idx]){
-    headings[idx].scrollIntoView({behavior:'smooth', block:'start'});
-  }
+  // Show only the active section panel
+  document.querySelectorAll('.section-panel').forEach(function(panel, i){
+    panel.style.display = (i === idx) ? 'block' : 'none';
+  });
+  // Scroll content to top
+  var contentEl = document.querySelector('.content');
+  if(contentEl) contentEl.scrollTop = 0;
 
   // Switch audio to this section
   var audioEl = document.getElementById('audEl');
@@ -757,15 +759,15 @@ function renderListeningContent(passages){
   var newK={};
   var qNum=1;
   var botParts=[];
-  var contentHTML='';
+  var sectionsHTML=[]; // one per section
 
   passages.forEach(function(p,pi){
     var qStart=qNum;
     var sectionTitle=p.title||('Section '+(pi+1));
+    var contentHTML='';
 
     // Section header
-    var _qStartForHeading = qStart;
-    contentHTML+='<div class="q-heading" data-section="'+(pi+1)+'">Questions '+qStart;
+    contentHTML+='<div class="q-heading">Questions '+qStart;
 
     // Build questions HTML for this section
     var secQ='';
@@ -970,15 +972,17 @@ function renderListeningContent(passages){
     contentHTML+='<div class="sec-title">'+_boldMd(_escL(sectionTitle))+'</div>';
     if(p.text) contentHTML+='<div class="sec-label">'+_escL(p.text)+'</div>';
     contentHTML+=secQ;
+    contentHTML+='<div style="height:3rem"></div>';
+
+    // Wrap in a panel — only section 1 visible initially
+    sectionsHTML.push('<div class="section-panel" id="sec-panel-'+(pi+1)+'" style="display:'+(pi===0?'block':'none')+'">'+contentHTML+'</div>');
 
     botParts.push('<button class="part-nav'+(pi===0?' on':'')+'" id="pnav'+(pi+1)+'" onclick="goToSection('+(pi+1)+')">Section '+(pi+1)+' \u00b7 Q'+qStart+'\u2013'+qEnd+'</button>');
   });
 
-  contentHTML+='<div style="height:3rem"></div>';
-
-  // Replace content div
+  // Replace content div with section panels
   var contentDiv=document.querySelector('.content');
-  if(contentDiv) contentDiv.innerHTML=contentHTML;
+  if(contentDiv) contentDiv.innerHTML=sectionsHTML.join('');
 
   // Replace botbar
   var bb=document.querySelector('.botbar');

@@ -816,7 +816,14 @@ document.addEventListener('DOMContentLoaded', function() {
   // ⚠️ SECURITY: Change this password and keep this file off public repos
   // Consider moving to Firebase auth with admin custom claim for production
   const ADMIN_PW = '13010528mzsx';
-  let tests = []; // loaded from Firestore only
+  let tests = [
+    { id:1, title:'Cambridge IELTS 18 — Reading Test 1', type:'mock-reading', access:'free', status:'live', students:142, avg:'7.5' },
+    { id:2, title:'Cambridge IELTS 17 — Reading Test 2', type:'mock-reading', access:'premium', status:'live', students:88, avg:'7.0' },
+    { id:3, title:'Urban Green Spaces — Practice', type:'practice-reading', access:'free', status:'live', students:201, avg:'7.2' },
+    { id:4, title:'Cambridge IELTS 18 — Listening Test 1', type:'mock-listening', access:'free', status:'live', students:76, avg:'6.5' },
+    { id:5, title:'Writing Task 2 — Urban Migration', type:'mock-writing', access:'premium', status:'live', students:54, avg:'7.0' },
+    { id:6, title:'Climate Change — Practice', type:'practice-reading', access:'free', status:'draft', students:0, avg:'—' },
+  ];
 
   // passage question counters per passage: { passageId: count }
   let qCounters = {};
@@ -1670,7 +1677,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="lu-sub">PNG or JPG · The map students will label</div>
         <div class="lu-filename" id="mapname-${qn}"></div>
         <input type="file" accept=".png,.jpg,.jpeg" class="lu-input" id="map-${qn}"
-          onchange="document.getElementById('mapname-${qn}').textContent='✓ '+this.files[0].name;document.getElementById('mapname-${qn}').style.display='block'"/>
+          onchange="window._mapImageData=window._mapImageData||{};var rd=new FileReader();rd.onload=function(e){window._mapImageData['${qn}']=e.target.result;var prev=document.getElementById('mappreview-${qn}');if(prev){prev.src=e.target.result;prev.style.display='block';}};rd.readAsDataURL(this.files[0]);document.getElementById('mapname-${qn}').textContent='✓ '+this.files[0].name;document.getElementById('mapname-${qn}').style.display='block'"/>
+      <img id="mappreview-${qn}" style="display:none;max-width:100%;margin-top:.5rem;border-radius:6px;" alt="Map preview"/>
       </div>
       <div class="form-field">
         <label>Answer key (letter = location name, one per line)</label>
@@ -1986,6 +1994,13 @@ document.addEventListener('DOMContentLoaded', function() {
               correctLetters.push(chk.dataset.letter || '');
             });
             if (correctLetters.length) answer = correctLetters.join(',');
+          } else if (qtype === 'Map/Plan label') {
+            const mapFileInput = qitem.querySelector('input[type=file]');
+            const mapQn = mapFileInput ? mapFileInput.id.replace('map-','') : '';
+            const mapImg = (window._mapImageData && mapQn && window._mapImageData[mapQn]) ? window._mapImageData[mapQn] : '';
+            const mapAnsTA = qitem.querySelector('textarea');
+            extraData = { diagramImage: mapImg, matchList: mapAnsTA ? mapAnsTA.value.trim() : '' };
+            if (mapAnsTA) answer = mapAnsTA.value.trim();
           } else if (qtype === 'Form fill') {
             const titleEl = qitem.querySelector('[id^="ff-title-"]');
             const rowsEl  = qitem.querySelector('[id^="ff-rows-"]');
