@@ -771,197 +771,136 @@ function renderListeningContent(passages){
 
     // Build questions HTML for this section
     var secQ='';
+    var mapShown=false;
+    var matchListShown=false;
     (p.questions||[]).forEach(function(q){
       var num=qNum++;
       newK[num]=q.answer||'';
       var type=q.type||'Gap fill';
       var labelNum=String(q.num||num);
-      // Question text row
-      secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem;">'
-           +'<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span>'
-           +'<span style="font-size:.9rem;flex:1;line-height:1.5;">'+_escL(q.text).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span>'
-           +'</div>';
-      // Answer input based on type
+      var qText=(q.text||'').trim();
+
       if(type==='Multiple choice'||type==='multiple-choice'){
+        if(qText) secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.4rem;"><span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span><span style="font-size:.9rem;flex:1;line-height:1.5;">'+_escL(qText).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span></div>';
         secQ+='<div class="mopts" style="margin-left:1.9rem;margin-bottom:.85rem;">';
-        (q.options||[]).forEach(function(o){
-          secQ+='<div class="mopt" onclick="pm(this,'+num+',\''+o.letter+'\')"><div class="mc">'+o.letter+'</div><span class="ml">'+_escL(o.text)+'</span></div>';
-        });
+        (q.options||[]).forEach(function(o){ secQ+='<div class="mopt" onclick="pm(this,'+num+',\''+o.letter+'\')"><div class="mc">'+o.letter+'</div><span class="ml">'+_escL(o.text)+'</span></div>'; });
         secQ+='</div>';
-      } else if(type==='T/F/NG'||type==='t/f/ng'){
-        secQ+='<div class="ropts" style="margin-left:1.9rem;margin-bottom:.85rem;">';
-        ['TRUE','FALSE','NOT GIVEN'].forEach(function(v){
-          secQ+='<div class="ropt" onclick="pr(this,'+num+',\''+v+'\')"><div class="rc"></div><span class="rl">'+v+'</span></div>';
-        });
-        secQ+='</div>';
-      } else if(type==='Y/N/NG'||type==='y/n/ng'){
-        secQ+='<div class="ropts" style="margin-left:1.9rem;margin-bottom:.85rem;">';
-        ['YES','NO','NOT GIVEN'].forEach(function(v){
-          secQ+='<div class="ropt" onclick="pr(this,'+num+',\''+v+'\')"><div class="rc"></div><span class="rl">'+v+'</span></div>';
-        });
-        secQ+='</div>';
+
       } else if(type==='2-answer MCQ'){
-        // Two-answer MCQ
         var q2numL=q.extra&&q.extra.q2num?parseInt(q.extra.q2num):(num+1);
         var ans2arr=(q.answer||'').split(',').map(function(s){return s.trim();});
-        newK[num]=ans2arr[0]||'';
-        newK[q2numL]=ans2arr[1]||'';
+        newK[num]=ans2arr[0]||''; newK[q2numL]=ans2arr[1]||'';
+        if(qText) secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.4rem;"><span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span><span style="font-size:.9rem;flex:1;line-height:1.5;">'+_escL(qText).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span></div>';
         secQ+='<div class="m2opts" id="m2opts_'+num+'" data-q1="'+num+'" data-q2="'+q2numL+'" style="margin-left:1.9rem;margin-bottom:.85rem;">';
-        (q.options||[]).forEach(function(o){
-          secQ+='<div class="m2opt" onclick="pm2(this,'+num+','+q2numL+',\''+o.letter+'\')">' +'<div class="mc2">'+o.letter+'</div><span class="ml">'+_escL(o.text)+'</span></div>';
-        });
+        (q.options||[]).forEach(function(o){ secQ+='<div class="m2opt" onclick="pm2(this,'+num+','+q2numL+',\''+o.letter+'\')"><div class="mc2">'+o.letter+'</div><span class="ml">'+_escL(o.text)+'</span></div>'; });
         secQ+='</div>';
         qNum=Math.max(qNum,q2numL+1);
+
+      } else if(type==='T/F/NG'||type==='t/f/ng'){
+        if(qText) secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.4rem;"><span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span><span style="font-size:.9rem;flex:1;">'+_escL(qText)+'</span></div>';
+        secQ+='<div class="ropts" style="margin-left:1.9rem;margin-bottom:.85rem;">';
+        ['TRUE','FALSE','NOT GIVEN'].forEach(function(v){ secQ+='<div class="ropt" onclick="pr(this,'+num+',\''+v+'\')"><div class="rc"></div><span class="rl">'+v+'</span></div>'; });
+        secQ+='</div>';
+
+      } else if(type==='Y/N/NG'||type==='y/n/ng'){
+        if(qText) secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.4rem;"><span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span><span style="font-size:.9rem;flex:1;">'+_escL(qText)+'</span></div>';
+        secQ+='<div class="ropts" style="margin-left:1.9rem;margin-bottom:.85rem;">';
+        ['YES','NO','NOT GIVEN'].forEach(function(v){ secQ+='<div class="ropt" onclick="pr(this,'+num+',\''+v+'\')"><div class="rc"></div><span class="rl">'+v+'</span></div>'; });
+        secQ+='</div>';
+
       } else if(type==='Match headings'||type==='match-head'||type==='Match features'||type==='match-feat'){
-        // Show the options list at the top of this group (only once per group)
         var matchList=(q.extra&&q.extra.matchList)||'';
-        if(matchList&&!secQ.includes('data-match-list')){
-          secQ+='<div data-match-list="1" style="background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:.75rem 1rem;margin:.3rem 0 .85rem .5rem;font-size:.85rem;">';
-          matchList.split('\n').forEach(function(line){
-            if(line.trim()) secQ+='<div style="padding:.15rem 0;">'+_escL(line.trim())+'</div>';
-          });
+        if(matchList&&!matchListShown){ matchListShown=true;
+          secQ+='<div style="background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:.75rem 1rem;margin:.3rem 0 .85rem 0;font-size:.85rem;">';
+          matchList.split('\n').forEach(function(line){ if(line.trim()) secQ+='<div style="padding:.15rem 0;">'+_escL(line.trim())+'</div>'; });
           secQ+='</div>';
         }
-        // Dropdown with all match options
-        var matchOpts = matchList ? matchList.split('\n').filter(function(l){return l.trim();}) : [];
-        secQ+='<div style="display:flex;align-items:center;gap:.6rem;padding-left:1.9rem;margin-bottom:.65rem;">';
+        var matchOpts=matchList?matchList.split('\n').filter(function(l){return l.trim();}):[];
+        secQ+='<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.55rem;flex-wrap:wrap;">';
+        secQ+='<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;">'+labelNum+'</span>';
+        if(qText) secQ+='<span style="font-size:.9rem;flex:1;">'+_escL(qText)+'</span>';
         if(matchOpts.length>0){
-          secQ+='<select id="q'+num+'" onchange="ma('+num+',this.value)" style="border:1px solid #b0aca6;background:#f0eeea;border-radius:4px;padding:.25rem .5rem;font-family:inherit;font-size:.82rem;max-width:280px;">';
+          secQ+='<select id="q'+num+'" onchange="ma('+num+',this.value)" style="border:1px solid #b0aca6;background:#f0eeea;border-radius:4px;padding:.25rem .5rem;font-family:inherit;font-size:.82rem;">';
           secQ+='<option value=""></option>';
-          matchOpts.forEach(function(opt){
-            var letter = opt.trim().charAt(0);
-            secQ+='<option value="'+letter+'">'+_escL(opt.trim())+'</option>';
-          });
+          matchOpts.forEach(function(opt){ secQ+='<option value="'+opt.trim().charAt(0)+'">'+_escL(opt.trim())+'</option>'; });
           secQ+='</select>';
         } else {
-          secQ+='<span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:80px" placeholder="e.g. A"/><span class="qn">'+labelNum+'</span></span>';
+          secQ+='<span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px"/></span>';
         }
-        secQ+='<span style="font-size:.72rem;font-weight:700;color:#888;">'+labelNum+'</span>';
         secQ+='</div>';
+
+      } else if(type==='Diagram label'||type==='Map/Plan label'){
+        if(q.extra&&q.extra.diagramImage&&!mapShown){ mapShown=true;
+          secQ+='<div style="margin:.5rem 0 1rem;"><img src="'+q.extra.diagramImage+'" style="max-width:100%;border-radius:6px;border:1px solid #e0ddd8;" alt="Map"/></div>';
+        }
+        // Parse answer key: each line is "15 B" or "15. B" - extract the letter for this question
+        var mapAnsKey = q.extra&&q.extra.matchList ? q.extra.matchList : (q.answer||'');
+        var mapCorrectLetter = '';
+        mapAnsKey.split('\n').forEach(function(line){
+          var parts = line.trim().split(/[\s\.]+/);
+          if(parts.length>=2 && String(parts[0]).replace('.','')===String(labelNum)){
+            mapCorrectLetter = parts[parts.length-1].toUpperCase();
+          }
+        });
+        if(mapCorrectLetter) newK[num] = mapCorrectLetter;
+        secQ+='<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.55rem;flex-wrap:wrap;">';
+        secQ+='<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;">'+labelNum+'</span>';
+        if(qText) secQ+='<span style="font-size:.9rem;min-width:80px;">'+_escL(qText)+'</span>';
+        secQ+='<span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. B"/></span>';
+        secQ+='</div>';
+
       } else if(type==='Sentence endings'||type==='sent-end'){
-        // Sentence endings — text input for the matching letter
-        secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/><span class="qn">'+labelNum+'</span></span></div>';
+        if(qText) secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.4rem;"><span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span><span style="font-size:.9rem;flex:1;">'+_escL(qText)+'</span></div>';
+        secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/></span></div>';
+
       } else if(type==='Summary fill'||type==='summary'||type==='Table/Note fill'||type==='table'||type==='Short answer'||type==='short'){
-        // Summary/Table/Short answer — treat same as gap fill with gapSentence
         var gapSentS=(q.extra&&q.extra.gapSentence)||'';
         var ansLinesS=(q.answer||'').split('\n').map(function(s){return s.trim();});
+        if(qText) secQ+='<div style="font-size:.9rem;margin-bottom:.4rem;font-weight:600;">'+_escL(qText)+'</div>';
         if(gapSentS){
           var sentLinesS=gapSentS.split('\n');
           secQ+='<ul style="list-style:none;padding-left:.5rem;margin-bottom:.85rem;">';
           sentLinesS.forEach(function(sent,si){
-            var rqNumS=(si===0)?num:(qNum++);
-            newK[rqNumS]=ansLinesS[si]||ansLinesS[0]||'';
+            var rqNumS=(si===0)?num:(qNum++); newK[rqNumS]=ansLinesS[si]||'';
             var partsS=sent.split('___');
             if(partsS.length>1){
               secQ+='<li style="padding:.22rem 0;font-size:.91rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">';
-              partsS.forEach(function(part,pi){
-                if(part) secQ+='<span>'+_escL(part)+'</span>';
-                if(pi<partsS.length-1) secQ+='<span class="qbox"><input id="q'+rqNumS+'" oninput="ma('+rqNumS+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+rqNumS+'</span></span>';
-              });
+              partsS.forEach(function(part,pi){ if(part) secQ+='<span>'+_escL(part)+'</span>'; if(pi<partsS.length-1) secQ+='<span class="qbox"><input id="q'+rqNumS+'" oninput="ma('+rqNumS+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+rqNumS+'</span></span>'; });
               secQ+='</li>';
-            } else if(sent.trim()){
-              secQ+='<li style="font-size:.91rem;line-height:2;font-weight:600;">'+_escL(sent)+'</li>';
-              qNum--;
-            }
+            } else if(sent.trim()){ secQ+='<li style="font-size:.91rem;line-height:2;font-weight:600;">'+_escL(sent)+'</li>'; qNum--; }
           });
           secQ+='</ul>';
         } else {
           secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:120px"/><span class="qn">'+labelNum+'</span></span></div>';
         }
+
       } else if(type==='Form fill'||type==='form-fill'){
-        // Form fill - render rows with inline gaps
         var ffRows2=(q.extra&&q.extra.ffRows)||'';
         var ffTitle2=(q.extra&&q.extra.ffTitle)||'';
-        var ffAnsList=(q.answer||'').split('\n').map(function(s){return s.trim();});
-        var ffGapIdx=0;
+        var ffAnsList=(q.answer||'').split('\n').map(function(s){return s.trim();}); var ffGapIdx=0;
         var ffHtml='<div style="background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:1rem 1.2rem;margin:.4rem 0 .85rem .5rem;">';
         if(ffTitle2) ffHtml+='<div style="font-weight:700;text-align:center;margin-bottom:.65rem;font-size:.9rem;">'+_escL(ffTitle2)+'</div>';
-        (ffRows2.split('\n')).forEach(function(row){
-          var rowParts=row.split('___');
-          if(rowParts.length===1){
-            ffHtml+='<div style="font-size:.88rem;line-height:2;">'+_escL(row)+'</div>';
-          } else {
-            ffHtml+='<div style="font-size:.88rem;line-height:2.2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">';
-            rowParts.forEach(function(part,pi){
-              if(part) ffHtml+='<span>'+_escL(part)+'</span>';
-              if(pi<rowParts.length-1){
-                var gqNum=num+ffGapIdx;
-                newK[gqNum]=ffAnsList[ffGapIdx]||'';
-                ffHtml+='<span class="qbox"><input id="q'+gqNum+'" oninput="ma('+gqNum+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+gqNum+'</span></span>';
-                ffGapIdx++;
-              }
-            });
-            ffHtml+='</div>';
-          }
-        });
-        ffHtml+='</div>';
-        secQ+=ffHtml;
-        // Advance qNum for all the gaps we created
-        qNum+=ffGapIdx-1; // -1 because qNum was already incremented once at start
-      } else if(type==='Diagram label'||type==='Map/Plan label'){
-        // Show map/diagram image if provided
-        if(q.extra&&q.extra.diagramImage&&!secQ.includes('data-map-shown')){
-          secQ+='<div data-map-shown="1" style="margin:.5rem 0 1rem;"><img src="'+q.extra.diagramImage+'" style="max-width:100%;border-radius:6px;border:1px solid #e0ddd8;" alt="Map/Diagram"/></div>';
-        }
-        // Show dropdown with letters A-J for map labelling
-        var mapOpts = (q.extra&&q.extra.matchList) ? q.extra.matchList.split('\n') : ['A','B','C','D','E','F','G','H','I','J'];
-        secQ+='<div style="display:flex;align-items:center;gap:.6rem;padding-left:1.9rem;margin-bottom:.85rem;">';
-        secQ+='<select id="q'+num+'" onchange="ma('+num+',this.value)" style="border:1px solid #b0aca6;background:#f0eeea;border-radius:4px;padding:.25rem .5rem;font-family:inherit;font-size:.88rem;">';
-        secQ+='<option value=""></option>';
-        mapOpts.forEach(function(opt){
-          var letter = opt.trim().charAt(0);
-          secQ+='<option value="'+letter+'">'+opt.trim()+'</option>';
-        });
-        secQ+='</select>';
-        secQ+='<span class="qn" style="font-size:.72rem;font-weight:700;color:#888;">'+labelNum+'</span>';
-        secQ+='</div>';
+        (ffRows2.split('\n')).forEach(function(row){ var rowParts=row.split('___'); if(rowParts.length===1){ ffHtml+='<div style="font-size:.88rem;line-height:2;">'+_escL(row)+'</div>'; } else { ffHtml+='<div style="font-size:.88rem;line-height:2.2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">'; rowParts.forEach(function(part,pi){ if(part) ffHtml+='<span>'+_escL(part)+'</span>'; if(pi<rowParts.length-1){ var gqNum=num+ffGapIdx; newK[gqNum]=ffAnsList[ffGapIdx]||''; ffHtml+='<span class="qbox"><input id="q'+gqNum+'" oninput="ma('+gqNum+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+gqNum+'</span></span>'; ffGapIdx++; } }); ffHtml+='</div>'; } });
+        ffHtml+='</div>'; secQ+=ffHtml; qNum+=ffGapIdx-1;
+
       } else {
-        // Gap fill: check for inline sentence format first
-        var gapSent = (q.extra && q.extra.gapSentence) || '';
-        var ansLines2 = (q.answer||'').split('\n').map(function(s){return s.trim();});
-        var rangeMatch = labelNum.match(/^(\d+)[\u2013\u2014\-](\d+)$/);
+        // Default: Gap fill
+        if(qText) secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.3rem;"><span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span><span style="font-size:.9rem;flex:1;line-height:1.5;">'+_escL(qText).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span></div>';
+        var gapSent=(q.extra&&q.extra.gapSentence)||'';
+        var ansLines2=(q.answer||'').split('\n').map(function(s){return s.trim();});
+        var rangeMatch=labelNum.match(/^(\d+)[\u2013\u2014\-](\d+)$/);
         if(gapSent){
-          // Inline sentence mode: render sentence with ___ replaced by input boxes
-          var sentLines = gapSent.split('\n');
-          secQ += '<ul style="list-style:none;padding-left:.5rem;margin-bottom:.85rem;">';
-          sentLines.forEach(function(sent, si){
-            var rqNum = (si===0) ? num : (qNum++);
-            newK[rqNum] = ansLines2[si] || ansLines2[0] || '';
-            var parts = sent.split('___');
-            if(parts.length > 1){
-              secQ += '<li style="padding:.22rem 0;font-size:.91rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">';
-              parts.forEach(function(part, pi){
-                if(part) secQ += '<span>'+_escL(part)+'</span>';
-                if(pi < parts.length-1){
-                  secQ += '<span class="qbox"><input id="q'+rqNum+'" oninput="ma('+rqNum+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+rqNum+'</span></span>';
-                }
-              });
-              secQ += '</li>';
-            } else if(sent.trim()) {
-              // no gap = plain label (like "Granary Cottage")
-              secQ += '<li style="font-size:.91rem;line-height:2;font-weight:600;">'+_escL(sent)+'</li>';
-              qNum--; // undo the increment, this line has no input
-            }
-          });
-          secQ += '</ul>';
+          var sentLines=gapSent.split('\n');
+          secQ+='<ul style="list-style:none;padding-left:.5rem;margin-bottom:.85rem;">';
+          sentLines.forEach(function(sent,si){ var rqNum=(si===0)?num:(qNum++); newK[rqNum]=ansLines2[si]||ansLines2[0]||''; var parts=sent.split('___'); if(parts.length>1){ secQ+='<li style="padding:.22rem 0;font-size:.91rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">'; parts.forEach(function(part,pi){ if(part) secQ+='<span>'+_escL(part)+'</span>'; if(pi<parts.length-1) secQ+='<span class="qbox"><input id="q'+rqNum+'" oninput="ma('+rqNum+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+rqNum+'</span></span>'; }); secQ+='</li>'; } else if(sent.trim()){ secQ+='<li style="font-size:.91rem;line-height:2;font-weight:600;">'+_escL(sent)+'</li>'; qNum--; } });
+          secQ+='</ul>';
         } else if(rangeMatch){
-          // Range mode: numbered vertical inputs
-          var rStart=parseInt(rangeMatch[1]), rEnd=parseInt(rangeMatch[2]);
+          var rStart=parseInt(rangeMatch[1]),rEnd=parseInt(rangeMatch[2]);
           secQ+='<div style="padding-left:0;margin-bottom:.85rem;">';
-          for(var ri=rStart;ri<=rEnd;ri++){
-            var rqNum=(ri===rStart)?num:(qNum++);
-            newK[rqNum]=ansLines2[ri-rStart]||ansLines2[0]||'';
-            secQ+='<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;">'
-                 +'<span style="min-width:1.6rem;font-size:.72rem;font-weight:700;color:#888;text-align:right;">'+ri+'</span>'
-                 +'<span class="qbox"><input id="q'+rqNum+'" oninput="ma('+rqNum+',this.value)" autocomplete="off" style="min-width:140px"/></span>'
-                 +'</div>';
-          }
+          for(var ri=rStart;ri<=rEnd;ri++){ var rqNum=(ri===rStart)?num:(qNum++); newK[rqNum]=ansLines2[ri-rStart]||ansLines2[0]||''; secQ+='<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;"><span style="min-width:1.6rem;font-size:.72rem;font-weight:700;color:#888;text-align:right;">'+ri+'</span><span class="qbox"><input id="q'+rqNum+'" oninput="ma('+rqNum+',this.value)" autocomplete="off" style="min-width:140px"/></span></div>'; }
           secQ+='</div>';
         } else {
-          // Single standalone input
-          secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;">'
-               +'<span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:100px"/><span class="qn">'+labelNum+'</span></span>'
-               +'</div>';
+          secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:100px"/><span class="qn">'+labelNum+'</span></span></div>';
         }
       }
     });
