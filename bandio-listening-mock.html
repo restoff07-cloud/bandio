@@ -495,7 +495,7 @@ function pm2(el,q1,q2,v){
   if(!A[q1]){A[q1]=v;dot(q1,true);}else{A[q2]=v;dot(q2,true);}
   up();
 }
-function pm(el,q,v){el.closest('.mopts').querySelectorAll('.mopt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');A[q]=v;dot(q,true);up();}
+function pm(el,q,v){el.closest('.mopts').querySelectorAll('.mopt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');A[q]=v;dot(q,true);up();var hi=document.getElementById('q'+q);if(hi&&hi.type==='hidden')hi.value=v;}
 function pr(el,q,v){el.closest('.ropts').querySelectorAll('.ropt').forEach(function(o){o.classList.remove('sel');});el.classList.add('sel');A[q]=v;dot(q,true);up();}
 function chk(){
   var c=0,b=0;
@@ -766,10 +766,7 @@ function renderListeningContent(passages){
     var sectionTitle=p.title||('Section '+(pi+1));
     var contentHTML='';
 
-    // Section header
-    contentHTML+='<div class="q-heading">Questions '+qStart;
-
-    // Build questions HTML for this section
+    // Build questions HTML for this section first, so we know qEnd
     var secQ='';
     var mapShown=false;
     var matchListShown=false;
@@ -782,8 +779,18 @@ function renderListeningContent(passages){
 
       if(type==='Multiple choice'||type==='multiple-choice'){
         if(qText) secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.4rem;"><span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span><span style="font-size:.9rem;flex:1;line-height:1.5;">'+_escL(qText).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span></div>';
+        // Hidden input carries the selected value for scoring
+        secQ+='<input class="input-q" id="q'+num+'" type="hidden" value=""/>';
         secQ+='<div class="mopts" style="margin-left:1.9rem;margin-bottom:.85rem;">';
-        (q.options||[]).forEach(function(o){ secQ+='<div class="mopt" onclick="pm(this,'+num+',\''+o.letter+'\')"><div class="mc">'+o.letter+'</div><span class="ml">'+_escL(o.text)+'</span></div>'; });
+        var mcqOpts = Array.isArray(q.options) ? q.options : [];
+        if(mcqOpts.length===0 && q.answer){
+          // Fallback: no options array — render a plain text input
+          secQ+='<span class="qbox"><input class="input-q" id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:80px"/><span class="qn">'+labelNum+'</span></span>';
+        } else {
+          mcqOpts.forEach(function(o){
+            secQ+='<div class="mopt" onclick="pm(this,'+num+',\''+_escL(o.letter)+'\')"><div class="mc">'+_escL(o.letter)+'</div><span class="ml">'+_escL(o.text)+'</span></div>';
+          });
+        }
         secQ+='</div>';
 
       } else if(type==='2-answer MCQ'){
@@ -833,21 +840,47 @@ function renderListeningContent(passages){
         if(q.extra&&q.extra.diagramImage&&!mapShown){ mapShown=true;
           secQ+='<div style="margin:.5rem 0 1rem;"><img src="'+q.extra.diagramImage+'" style="max-width:100%;border-radius:6px;border:1px solid #e0ddd8;" alt="Map"/></div>';
         }
-        // Parse answer key: each line is "15 B" or "15. B" - extract the letter for this question
-        var mapAnsKey = q.extra&&q.extra.matchList ? q.extra.matchList : (q.answer||'');
-        var mapCorrectLetter = '';
-        mapAnsKey.split('\n').forEach(function(line){
-          var parts = line.trim().split(/[\s\.]+/);
-          if(parts.length>=2 && String(parts[0]).replace('.','')===String(labelNum)){
-            mapCorrectLetter = parts[parts.length-1].toUpperCase();
-          }
-        });
-        if(mapCorrectLetter) newK[num] = mapCorrectLetter;
-        secQ+='<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.55rem;flex-wrap:wrap;">';
-        secQ+='<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;">'+labelNum+'</span>';
-        if(qText) secQ+='<span style="font-size:.9rem;min-width:80px;">'+_escL(qText)+'</span>';
-        secQ+='<span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. B"/></span>';
-        secQ+='</div>';
+        // Each line of matchList is one labelled location: "15 B" or "15. B" or just "River mouth"
+        var mapRawList = (q.extra&&q.extra.matchList ? q.extra.matchList : (q.answer||''));
+        var mapLines = mapRawList.split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});
+        if(mapLines.length > 1){
+          // Multi-line: render a separate input row for each line
+          secQ+='<div style="margin-left:.5rem;margin-bottom:.85rem;">';
+          mapLines.forEach(function(line, li){
+            var mNum = (li===0) ? num : qNum++;
+            // Try to extract answer key from "N Answer" format
+            var mParts = line.split(/[\s\.]+/);
+            var mAnswer = '';
+            var mLabel = line;
+            if(mParts.length>=2 && /^\d+$/.test(mParts[0].replace('.',''))) {
+              mLabel = line; // show full line as label
+              mAnswer = mParts[mParts.length-1].toUpperCase();
+            }
+            if(mAnswer) newK[mNum]=mAnswer;
+            secQ+='<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.45rem;flex-wrap:wrap;">';
+            secQ+='<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;">'+mNum+'</span>';
+            secQ+='<span style="font-size:.88rem;flex:1;">'+_escL(mLabel)+'</span>';
+            secQ+='<span class="qbox"><input class="input-q" id="q'+mNum+'" oninput="ma('+mNum+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. B"/></span>';
+            secQ+='</div>';
+          });
+          secQ+='</div>';
+        } else {
+          // Single line or plain answer key
+          var mapAnsKey = mapRawList;
+          var mapCorrectLetter = '';
+          mapAnsKey.split('\n').forEach(function(line){
+            var parts2 = line.trim().split(/[\s\.]+/);
+            if(parts2.length>=2 && String(parts2[0]).replace('.','')===String(labelNum)){
+              mapCorrectLetter = parts2[parts2.length-1].toUpperCase();
+            }
+          });
+          if(mapCorrectLetter) newK[num] = mapCorrectLetter;
+          secQ+='<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.55rem;flex-wrap:wrap;">';
+          secQ+='<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;">'+labelNum+'</span>';
+          if(qText) secQ+='<span style="font-size:.9rem;min-width:80px;">'+_escL(qText)+'</span>';
+          secQ+='<span class="qbox"><input class="input-q" id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. B"/></span>';
+          secQ+='</div>';
+        }
 
       } else if(type==='Sentence endings'||type==='sent-end'){
         if(qText) secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.4rem;"><span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span><span style="font-size:.9rem;flex:1;">'+_escL(qText)+'</span></div>';
@@ -906,7 +939,15 @@ function renderListeningContent(passages){
     });
 
     var qEnd=qNum-1;
-    contentHTML+='\u2013'+qEnd+'</div>';
+
+    // Dynamic header — compute range from actual question numbers in this section
+    (function(){
+      var nums=[];
+      (p.questions||[]).forEach(function(q2){ if(q2.num) nums.push(parseInt(q2.num)||0); });
+      var dynStart=nums.length?Math.min.apply(null,nums):qStart;
+      var dynEnd=nums.length?Math.max.apply(null,nums):qEnd;
+      contentHTML+='<div class="q-heading">Questions '+dynStart+'\u2013'+dynEnd+'</div>';
+    })();
     contentHTML+='<div class="q-inst">'+_boldMd(p.instruction||'Write **ONE WORD AND/OR A NUMBER** for each answer.')+'</div>';
     contentHTML+='<div class="sec-title">'+_boldMd(_escL(sectionTitle))+'</div>';
     if(p.text) contentHTML+='<div class="sec-label">'+_escL(p.text)+'</div>';
