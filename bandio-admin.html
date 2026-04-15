@@ -1780,26 +1780,27 @@ document.addEventListener('DOMContentLoaded', function() {
     t.status = t.status === 'live' ? 'draft' : 'live';
     renderTests();
     showToast(t.status === 'live' ? '✓ Test published!' : '✓ Test unpublished.');
-    // Sync to Firestore
-    if (window.fbSaveTest && t.status) {
-      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fs){
-        var app = window._adminFirebaseApp;
-        if(!app) return;
-        var db = fs.getFirestore(app);
-        fs.updateDoc(fs.doc(db,'tests',String(id)),{status:t.status}).catch(function(e){
-          console.log('toggleStatus Firestore error:',e.message);
-        });
+    // Sync to Firestore directly
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fs){
+      var app = window._adminFirebaseApp;
+      if(!app) return;
+      var db2 = fs.getFirestore(app);
+      fs.updateDoc(fs.doc(db2,'tests',String(id)),{status:t.status}).catch(function(e){
+        console.log('toggleStatus Firestore error:',e.message);
       });
-    }
+    });
   };
 
   window.deleteTest = function(id) {
     if (!confirm('Delete this test? This cannot be undone.')) return;
     tests = tests.filter(t => String(t.id) !== String(id));
     renderTests();
-    if (window.fbDeleteTest) {
-      window.fbDeleteTest(id).catch(function(e){ console.log('Firestore delete error:', e.message); });
-    }
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fs){
+      var app = window._adminFirebaseApp;
+      if(!app) return;
+      var db2 = fs.getFirestore(app);
+      fs.deleteDoc(fs.doc(db2,'tests',String(id))).catch(function(e){ console.log('Firestore delete error:', e.message); });
+    });
     showToast('🗑 Test deleted.');
   };
 
@@ -2094,22 +2095,20 @@ document.addEventListener('DOMContentLoaded', function() {
     renderTests();
 
     // ── Save to Firestore ────────────────────────────────────────────
-    if (window.fbSaveTest) {
-      try {
-        // DEBUG: log exactly what's going to Firestore
-        console.log('[Bandio] Publishing testDoc:', JSON.stringify(testDoc, null, 2));
-        testDoc.passages.forEach(function(p, pi) {
-          (p.questions||[]).forEach(function(q, qi) {
-            console.log('[Bandio] Passage', pi, 'Q', qi, '| type:', q.type, '| num:', q.num, '| extra:', JSON.stringify(q.extra), '| answer:', q.answer);
-          });
-        });
-        await window.fbSaveTest(testId, testDoc);
-        showToast('Test published — students can see it now!');
-      } catch(e) {
-        showToast('Saved locally. Firestore error: ' + e.message);
-      }
-    } else {
-      showToast('Test saved locally (Firestore not connected).');
+    // Always save directly via dynamic import — do NOT wait for window.fbSaveTest
+    try {
+      console.log('[Bandio] Publishing testDoc:', JSON.stringify(testDoc, null, 2));
+      const firebaseApp  = window._adminFirebaseApp || (await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js").then(m => {
+        const cfg2 = {apiKey:"AIzaSyBZdCEYUded-YT9RMSr1R7wg8VAqK9HCz0",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"};
+        try { return m.getApp(); } catch(e2) { return m.initializeApp(cfg2); }
+      }));
+      const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const db2 = getFirestore(firebaseApp);
+      await setDoc(doc(db2, 'tests', String(testId)), testDoc);
+      showToast('✅ Test published — students can see it now!');
+    } catch(e) {
+      console.error('[Bandio] Firestore save error:', e);
+      showToast('⚠️ Firestore error: ' + e.message + '. Check console.');
     }
 
     // Reset form
