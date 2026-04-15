@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>IELTS — Listening Mock Test</title>
+<link rel="icon" href="data:,">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -817,68 +818,90 @@ function renderListeningContent(passages){
 
       } else if(type==='Match headings'||type==='match-head'||type==='Match features'||type==='match-feat'){
         var matchList=(q.extra&&q.extra.matchList)||'';
+        var stmtList=(q.extra&&q.extra.stmtList)||'';
+        // Always show the options/headings box once per section
         if(matchList&&!matchListShown){ matchListShown=true;
           secQ+='<div style="background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:.75rem 1rem;margin:.3rem 0 .85rem 0;font-size:.85rem;">';
           matchList.split('\n').forEach(function(line){ if(line.trim()) secQ+='<div style="padding:.15rem 0;">'+_escL(line.trim())+'</div>'; });
           secQ+='</div>';
         }
         var matchOpts=matchList?matchList.split('\n').filter(function(l){return l.trim();}):[];
-        secQ+='<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.55rem;flex-wrap:wrap;">';
-        secQ+='<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;">'+labelNum+'</span>';
-        if(qText) secQ+='<span style="font-size:.9rem;flex:1;">'+_escL(qText)+'</span>';
-        if(matchOpts.length>0){
-          secQ+='<select id="q'+num+'" onchange="ma('+num+',this.value)" style="border:1px solid #b0aca6;background:#f0eeea;border-radius:4px;padding:.25rem .5rem;font-family:inherit;font-size:.82rem;">';
-          secQ+='<option value=""></option>';
-          matchOpts.forEach(function(opt){ secQ+='<option value="'+opt.trim().charAt(0)+'">'+_escL(opt.trim())+'</option>'; });
-          secQ+='</select>';
+
+        if(stmtList){
+          // Render one row per statement with its own dropdown
+          var stmtLines=stmtList.split('\n').filter(function(l){return l.trim();});
+          stmtLines.forEach(function(stmt,si){
+            var sqNum=(si===0)?num:(qNum++);
+            newK[sqNum]=(q.answer||'').split('\n').map(function(s){return s.trim();})[si]||'';
+            secQ+='<div style="display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.65rem;flex-wrap:wrap;">';
+            secQ+='<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;padding-top:.25rem;">'+sqNum+'</span>';
+            secQ+='<span style="font-size:.9rem;flex:1;line-height:1.5;">'+_escL(stmt)+'</span>';
+            if(matchOpts.length>0){
+              secQ+='<select id="q'+sqNum+'" onchange="ma('+sqNum+',this.value)" style="border:1px solid #b0aca6;background:#f0eeea;border-radius:4px;padding:.3rem .55rem;font-family:inherit;font-size:.82rem;min-width:100px;">';
+              secQ+='<option value=""></option>';
+              matchOpts.forEach(function(opt){ var firstChar=opt.trim().charAt(0); secQ+='<option value="'+_escL(firstChar)+'">'+_escL(opt.trim())+'</option>'; });
+              secQ+='</select>';
+            } else {
+              secQ+='<span class="qbox"><input id="q'+sqNum+'" oninput="ma('+sqNum+',this.value)" autocomplete="off" style="min-width:60px"/></span>';
+            }
+            secQ+='</div>';
+          });
         } else {
-          secQ+='<span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px"/></span>';
+          // No stmtList — fall back to single row with question text
+          secQ+='<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.55rem;flex-wrap:wrap;">';
+          secQ+='<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;">'+labelNum+'</span>';
+          if(qText) secQ+='<span style="font-size:.9rem;flex:1;">'+_escL(qText)+'</span>';
+          if(matchOpts.length>0){
+            secQ+='<select id="q'+num+'" onchange="ma('+num+',this.value)" style="border:1px solid #b0aca6;background:#f0eeea;border-radius:4px;padding:.25rem .5rem;font-family:inherit;font-size:.82rem;">';
+            secQ+='<option value=""></option>';
+            matchOpts.forEach(function(opt){ secQ+='<option value="'+opt.trim().charAt(0)+'">'+_escL(opt.trim())+'</option>'; });
+            secQ+='</select>';
+          } else {
+            secQ+='<span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px"/></span>';
+          }
+          secQ+='</div>';
         }
-        secQ+='</div>';
 
       } else if(type==='Diagram label'||type==='Map/Plan label'){
         if(q.extra&&q.extra.diagramImage&&!mapShown){ mapShown=true;
           secQ+='<div style="margin:.5rem 0 1rem;"><img src="'+q.extra.diagramImage+'" style="max-width:100%;border-radius:6px;border:1px solid #e0ddd8;" alt="Map"/></div>';
         }
-        // Each line of matchList is one labelled location: "15 B" or "15. B" or just "River mouth"
-        var mapRawList = (q.extra&&q.extra.matchList ? q.extra.matchList : (q.answer||''));
-        var mapLines = mapRawList.split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});
-        if(mapLines.length > 1){
-          // Multi-line: render a separate input row for each line
+        var mapRawList=(q.extra&&q.extra.matchList ? q.extra.matchList : (q.answer||''));
+        var mapLines=mapRawList.split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});
+        if(mapLines.length>0){
           secQ+='<div style="margin-left:.5rem;margin-bottom:.85rem;">';
-          mapLines.forEach(function(line, li){
-            var mNum = (li===0) ? num : qNum++;
-            // Try to extract answer key from "N Answer" format
-            var mParts = line.split(/[\s\.]+/);
-            var mAnswer = '';
-            var mLabel = line;
-            if(mParts.length>=2 && /^\d+$/.test(mParts[0].replace('.',''))) {
-              mLabel = line; // show full line as label
-              mAnswer = mParts[mParts.length-1].toUpperCase();
+          mapLines.forEach(function(line,li){
+            var mNum=(li===0)?num:(qNum++);
+            var mLabel='', mAnswer='';
+            if(line.indexOf('|')!==-1){
+              // New pipe format: "coffee room|B"
+              var pipeParts=line.split('|');
+              mLabel=pipeParts[0].trim();
+              mAnswer=pipeParts[1]?pipeParts[1].trim().toUpperCase():'';
+            } else {
+              // Legacy "15 B" numeric format
+              var legParts=line.split(/[\s\.]+/);
+              if(legParts.length>=2&&/^\d+$/.test(legParts[0].replace('.',''))) {
+                mLabel=legParts.slice(0,-1).join(' ');
+                mAnswer=legParts[legParts.length-1].toUpperCase();
+              } else {
+                mLabel=line;
+              }
             }
             if(mAnswer) newK[mNum]=mAnswer;
-            secQ+='<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.45rem;flex-wrap:wrap;">';
+            secQ+='<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;flex-wrap:wrap;">';
             secQ+='<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;">'+mNum+'</span>';
-            secQ+='<span style="font-size:.88rem;flex:1;">'+_escL(mLabel)+'</span>';
-            secQ+='<span class="qbox"><input class="input-q" id="q'+mNum+'" oninput="ma('+mNum+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. B"/></span>';
+            secQ+='<span style="font-size:.9rem;flex:1;">'+_escL(mLabel)+'</span>';
+            secQ+='<span class="qbox"><input class="input-q" id="q'+mNum+'" oninput="ma('+mNum+',this.value)" autocomplete="off" style="min-width:65px" placeholder="e.g. B"/></span>';
             secQ+='</div>';
           });
           secQ+='</div>';
         } else {
-          // Single line or plain answer key
-          var mapAnsKey = mapRawList;
-          var mapCorrectLetter = '';
-          mapAnsKey.split('\n').forEach(function(line){
-            var parts2 = line.trim().split(/[\s\.]+/);
-            if(parts2.length>=2 && String(parts2[0]).replace('.','')===String(labelNum)){
-              mapCorrectLetter = parts2[parts2.length-1].toUpperCase();
-            }
-          });
-          if(mapCorrectLetter) newK[num] = mapCorrectLetter;
+          // No rows at all — show one plain input
           secQ+='<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.55rem;flex-wrap:wrap;">';
           secQ+='<span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;">'+labelNum+'</span>';
           if(qText) secQ+='<span style="font-size:.9rem;min-width:80px;">'+_escL(qText)+'</span>';
-          secQ+='<span class="qbox"><input class="input-q" id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. B"/></span>';
+          secQ+='<span class="qbox"><input class="input-q" id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:65px" placeholder="e.g. B"/></span>';
           secQ+='</div>';
         }
 

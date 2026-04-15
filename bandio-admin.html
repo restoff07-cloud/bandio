@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Bandio — Admin Panel</title>
+<link rel="icon" href="data:,">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1458,7 +1459,15 @@ document.addEventListener('DOMContentLoaded', function() {
       'match-feat': buildMatchFeat, 'sent-end': buildSentEnd,
       diagram: buildDiagram, map: buildMap,
     };
-    if (builders[type]) opt.innerHTML = builders[type](qn);
+    if (builders[type]) {
+      opt.innerHTML = builders[type](qn);
+      // Auto-seed starter rows for Map/Plan label
+      if (type === 'map') {
+        window.addMapRow(qn);
+        window.addMapRow(qn);
+        window.addMapRow(qn);
+      }
+    }
   };
 
   function updateQBadge(pid) {
@@ -1678,14 +1687,28 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="lu-filename" id="mapname-${qn}"></div>
         <input type="file" accept=".png,.jpg,.jpeg" class="lu-input" id="map-${qn}"
           onchange="window._mapImageData=window._mapImageData||{};var rd=new FileReader();rd.onload=function(e){window._mapImageData['${qn}']=e.target.result;var prev=document.getElementById('mappreview-${qn}');if(prev){prev.src=e.target.result;prev.style.display='block';}};rd.readAsDataURL(this.files[0]);document.getElementById('mapname-${qn}').textContent='✓ '+this.files[0].name;document.getElementById('mapname-${qn}').style.display='block'"/>
-      <img id="mappreview-${qn}" style="display:none;max-width:100%;margin-top:.5rem;border-radius:6px;" alt="Map preview"/>
+        <img id="mappreview-${qn}" style="display:none;max-width:100%;margin-top:.5rem;border-radius:6px;" alt="Map preview"/>
       </div>
-      <div class="form-field">
-        <label>Answer key (question number → correct letter, one per line)</label>
-        <textarea id="match-list-${qn}" style="min-height:60px" placeholder="15 B&#10;16 E&#10;17 G&#10;18 A&#10;19 C"></textarea>
-      </div>
+      <div style="font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.45rem;">Location labels — one row per location on the map:</div>
+      <div id="map-rows-${qn}" style="display:flex;flex-direction:column;gap:.35rem;margin-bottom:.4rem;"></div>
+      <button type="button" class="btn-add-opt" onclick="window.addMapRow('${qn}')">＋ Add location</button>
+      <span class="form-hint" style="display:block;margin-top:.3rem;">Each row = one question. Write the location name (e.g. "coffee room") and the correct letter (e.g. B). Question numbers are assigned automatically from the Q# field above.</span>
     </div>`;
   }
+
+  window.addMapRow = function(qn) {
+    var wrap = document.getElementById('map-rows-' + qn);
+    if (!wrap) return;
+    var idx = wrap.children.length;
+    var row = document.createElement('div');
+    row.style.cssText = 'display:grid;grid-template-columns:1fr auto;gap:.4rem;align-items:center;';
+    row.innerHTML = '<input class="opt-input map-label-input" placeholder="Location name (e.g. coffee room)" style="flex:1;width:100%;"/>'
+      + '<div style="display:flex;align-items:center;gap:.3rem;flex-shrink:0;">'
+      + '<input class="opt-input map-ans-input" placeholder="Letter (e.g. B)" style="width:72px;text-align:center;text-transform:uppercase;"/>'
+      + '<button type="button" onclick="this.closest(\'div\').parentElement.remove()" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:.9rem;padding:.1rem .25rem;" title="Remove">✕</button>'
+      + '</div>';
+    wrap.appendChild(row);
+  };
 
   window.addOpt = function(qn) {
     const opts = document.getElementById('mcqopts-' + qn);
@@ -1988,6 +2011,15 @@ document.addEventListener('DOMContentLoaded', function() {
           if (qtype === '2-answer MCQ') {
             const q2el = qitem.querySelector('[id^="mcq2-q2num-"]');
             extraData = { q2num: q2el ? q2el.value.trim() : '' };
+            // Collect options from mcq2 opts builder
+            options = [];
+            qitem.querySelectorAll('.opt-row').forEach(function(row) {
+              const txt    = row.querySelector('.opt-input');
+              const letter = row.querySelector('.opt-letter');
+              if (txt && letter) {
+                options.push({ letter: letter.textContent.trim(), text: txt.value.trim() });
+              }
+            });
             // Fix answer for MCQ2
             const correctLetters = [];
             qitem.querySelectorAll('.mcq2-correct:checked').forEach(function(chk) {
@@ -1995,12 +2027,23 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             if (correctLetters.length) answer = correctLetters.join(',');
           } else if (qtype === 'Map/Plan label') {
-            const mapFileInput = qitem.querySelector('input[type=file]');
+            const mapFileInput = qitem.querySelector('input[type=file][id^="map-"]');
             const mapQn = mapFileInput ? mapFileInput.id.replace('map-','') : '';
             const mapImg = (window._mapImageData && mapQn && window._mapImageData[mapQn]) ? window._mapImageData[mapQn] : '';
-            const mapAnsTA = qitem.querySelector('textarea');
-            extraData = { diagramImage: mapImg, matchList: mapAnsTA ? mapAnsTA.value.trim() : '' };
-            if (mapAnsTA) answer = mapAnsTA.value.trim();
+            const mapRowsWrap = mapQn ? document.getElementById('map-rows-' + mapQn) : null;
+            const mapLines = [];
+            if (mapRowsWrap) {
+              mapRowsWrap.querySelectorAll('div').forEach(function(row) {
+                const labelInp = row.querySelector('.map-label-input');
+                const ansInp   = row.querySelector('.map-ans-input');
+                if (labelInp && ansInp && (labelInp.value.trim() || ansInp.value.trim())) {
+                  mapLines.push(labelInp.value.trim() + '|' + ansInp.value.trim().toUpperCase());
+                }
+              });
+            }
+            const matchListStr = mapLines.join('\n');
+            extraData = { diagramImage: mapImg, matchList: matchListStr };
+            answer = matchListStr;
           } else if (qtype === 'Form fill') {
             const titleEl = qitem.querySelector('[id^="ff-title-"]');
             const rowsEl  = qitem.querySelector('[id^="ff-rows-"]');
