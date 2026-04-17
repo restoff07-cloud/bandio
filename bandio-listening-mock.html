@@ -371,14 +371,7 @@ function sanitize(str) {
   d.textContent = String(str || '');
   return d.innerHTML;
 }
-var TESTS=[
-  {name:'Cambridge 16 TEST_4',sections:'1, 2, 3, 4',level:'MEDIUM',time:'27 min 24 s',questions:40,type:'note',tier:'free'},
-  {name:'Cambridge 17 TEST_3',sections:'1, 2, 3, 4',level:'MEDIUM',time:'28 minutes',questions:40,type:'note',tier:'free'},
-  {name:'Cambridge 17 TEST_4',sections:'1, 2, 3, 4',level:'MEDIUM',time:'27 min 24 s',questions:40,type:'mcq',tier:'free'},
-  {name:'Cambridge 18 TEST_1',sections:'1, 2, 3, 4',level:'MEDIUM',time:'30 minutes',questions:40,type:'note',tier:'free'},
-  {name:'Cambridge 18 TEST_2',sections:'1, 2, 3, 4',level:'HARD',time:'29 minutes',questions:40,type:'mcq',tier:'premium'},
-  {name:'Cambridge 18 TEST_3',sections:'1, 2, 3, 4',level:'HARD',time:'30 minutes',questions:40,type:'map',tier:'premium'},
-];
+var TESTS=[];
 var activeTab='all';
 function setTab(t,el){activeTab=t;document.querySelectorAll('.ft').forEach(function(x){x.classList.remove('on');});el.classList.add('on');renderList();}
 function _boldMd(s){
@@ -466,9 +459,15 @@ function _startTestNow(name){
   buildDots();resetTimer();
 }
 function reviewTest(){
+  // Hide overlay — stay on exam, answers are already ok/bad highlighted from chk()
   document.getElementById('ovl').classList.remove('show');
-  var qs=document.querySelector('.qs')||document.querySelector('.content');
-  if(qs)qs.scrollTop=0;
+  // Make sure exam is visible (not hidden by goBack)
+  document.getElementById('exam').classList.add('show');
+  document.getElementById('sel').classList.add('hide');
+  // Scroll back to section 1
+  goToSection(1);
+  var contentEl=document.querySelector('.content');
+  if(contentEl) contentEl.scrollTop=0;
 }
 function goBack(){
   clearInterval(ti);tr=false;
@@ -522,11 +521,8 @@ function chk(){
   document.getElementById('sw').textContent=w;
   document.getElementById('sb').textContent=b;
   document.getElementById('stotal').textContent=c+'/'+T;
-  // Save and redirect to results page
+  // Save result to localStorage for results page
   try { sessionStorage.setItem('bnd_last_result', JSON.stringify({skill:'listening',correct:c,wrong:w,blank:b,total:T,band:band})); } catch(e){}
-  setTimeout(function(){
-    window.location.href='bandio-results.html?skill=listening&correct='+c+'&wrong='+w+'&blank='+b+'&name=Listening+Mock+Test&review=bandio-listening-mock.html';
-  }, 1500);
   var descs2 = {'9.0':'Expert user. Outstanding!','8.5':'Very good user. Excellent!','8.0':'Very good user. Strong performance.','7.5':'Good user. Above average.','7.0':'Good user. Solid performance.','6.5':'Competent user. Good result.','6.0':'Competent user. Keep practising.','5.5':'Modest user. More practice needed.','5.0':'Modest user. Focus on weak areas.','4.5':'Limited user. Keep going.','4.0':'Limited user. Keep studying.','3.5':'Keep studying hard!'};
   var bdEl = document.getElementById('band-desc');
   if (bdEl) bdEl.textContent = descs2[band] || 'Keep practising!';
@@ -752,7 +748,7 @@ function goToSection(n){
   var ph1=document.querySelector('.ph1');
   var ph2=document.querySelector('.ph2');
   if(ph1) ph1.textContent='Section '+n;
-  if(ph2 && p.questions) ph2.textContent='Listen and answer questions.';
+  if(ph2) ph2.textContent='Questions '+(((n-1)*10)+1)+'\u2013'+(n*10)+'.';
 }
 
 function renderListeningContent(passages){
@@ -777,6 +773,11 @@ function renderListeningContent(passages){
       var type=q.type||'Gap fill';
       var labelNum=String(q.num||num);
       var qText=(q.text||'').trim();
+
+      // Render per-question instruction if provided
+      if(q.inst && q.inst.trim()){
+        secQ+='<div class="q-inst" style="margin-bottom:.75rem;margin-top:.25rem;">'+_boldMd(_escL(q.inst))+'</div>';
+      }
 
       if(type==='Multiple choice'||type==='multiple-choice'){
         if(qText) secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.4rem;"><span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span><span style="font-size:.9rem;flex:1;line-height:1.5;">'+_escL(qText).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span></div>';
@@ -963,15 +964,14 @@ function renderListeningContent(passages){
 
     var qEnd=qNum-1;
 
-    // Dynamic header — compute range from actual question numbers in this section
-    (function(){
-      var nums=[];
-      (p.questions||[]).forEach(function(q2){ if(q2.num) nums.push(parseInt(q2.num)||0); });
-      var dynStart=nums.length?Math.min.apply(null,nums):qStart;
-      var dynEnd=nums.length?Math.max.apply(null,nums):qEnd;
-      contentHTML+='<div class="q-heading">Questions '+dynStart+'\u2013'+dynEnd+'</div>';
-    })();
-    contentHTML+='<div class="q-inst">'+_boldMd(p.instruction||'Write **ONE WORD AND/OR A NUMBER** for each answer.')+'</div>';
+    // Fixed section ranges: Section 1=1-10, 2=11-20, 3=21-30, 4=31-40
+    var fixedStart = pi*10+1;
+    var fixedEnd   = pi*10+10;
+    contentHTML+='<div class="q-heading">Questions '+fixedStart+'\u2013'+fixedEnd+'</div>';
+    // Only show instruction if admin wrote one — NO default fallback
+    if(p.instruction && p.instruction.trim()){
+      contentHTML+='<div class="q-inst">'+_boldMd(p.instruction)+'</div>';
+    }
     contentHTML+='<div class="sec-title">'+_boldMd(_escL(sectionTitle))+'</div>';
     if(p.text) contentHTML+='<div class="sec-label">'+_escL(p.text)+'</div>';
     contentHTML+=secQ;
@@ -1001,7 +1001,7 @@ function renderListeningContent(passages){
   var ph1=document.querySelector('.ph1');
   var ph2=document.querySelector('.ph2');
   if(ph1) ph1.textContent='Section 1';
-  if(ph2&&passages[0]&&passages[0].questions) ph2.textContent='Listen and answer questions 1\u2013'+(passages[0].questions.length)+'.';
+  if(ph2) ph2.textContent='Questions 1\u201310.';
 
   // Update K and T
   K=newK;
