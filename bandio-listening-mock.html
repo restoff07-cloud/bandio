@@ -378,6 +378,13 @@ function _boldMd(s){
   // Convert **text** to <b>text</b>
   return String(s||'').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
 }
+// Multi-line version: line break = <br>, blank line = visible gap
+function _boldMdLines(s){
+  return String(s||'').split('\n').map(function(line){
+    if(!line.trim()) return '<span style="display:block;height:.6rem;"></span>';
+    return line.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+  }).join('<br>');
+}
 function renderList(){
   var s=(document.getElementById('srch').value||'').toLowerCase();
   var lv=document.getElementById('ddLv').value;
@@ -776,7 +783,7 @@ function renderListeningContent(passages){
 
       // Render per-question instruction if provided
       if(q.inst && q.inst.trim()){
-        secQ+='<div class="q-inst" style="margin-bottom:.75rem;margin-top:.25rem;">'+_boldMd(_escL(q.inst))+'</div>';
+        secQ+='<div class="q-inst" style="margin-bottom:.75rem;margin-top:.25rem;">'+_boldMdLines(q.inst)+'</div>';
       }
 
       if(type==='Multiple choice'||type==='multiple-choice'){
@@ -913,18 +920,30 @@ function renderListeningContent(passages){
       } else if(type==='Summary fill'||type==='summary'||type==='Table/Note fill'||type==='table'||type==='Short answer'||type==='short'){
         var gapSentS=(q.extra&&q.extra.gapSentence)||'';
         var ansLinesS=(q.answer||'').split('\n').map(function(s){return s.trim();});
-        if(qText) secQ+='<div style="font-size:.9rem;margin-bottom:.4rem;font-weight:600;">'+_escL(qText)+'</div>';
+        if(qText) secQ+='<div style="font-size:.9rem;margin-bottom:.4rem;font-weight:600;">'+qText.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</div>';
         if(gapSentS){
           var sentLinesS=gapSentS.split('\n');
           secQ+='<ul style="list-style:none;padding-left:.5rem;margin-bottom:.85rem;">';
           sentLinesS.forEach(function(sent,si){
             var rqNumS=(si===0)?num:(qNum++); newK[rqNumS]=ansLinesS[si]||'';
+            // Empty line → spacer (don't consume a question number)
+            if(!sent.trim()){
+              secQ+='<li style="height:.6rem;list-style:none;"></li>';
+              qNum--; return;
+            }
             var partsS=sent.split('___');
             if(partsS.length>1){
               secQ+='<li style="padding:.22rem 0;font-size:.91rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">';
-              partsS.forEach(function(part,pi){ if(part) secQ+='<span>'+_escL(part)+'</span>'; if(pi<partsS.length-1) secQ+='<span class="qbox"><input id="q'+rqNumS+'" oninput="ma('+rqNumS+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+rqNumS+'</span></span>'; });
+              partsS.forEach(function(part,pi){
+                if(part) secQ+='<span>'+part.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span>';
+                if(pi<partsS.length-1) secQ+='<span class="qbox"><input id="q'+rqNumS+'" oninput="ma('+rqNumS+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+rqNumS+'</span></span>';
+              });
               secQ+='</li>';
-            } else if(sent.trim()){ secQ+='<li style="font-size:.91rem;line-height:2;font-weight:600;">'+_escL(sent)+'</li>'; qNum--; }
+            } else {
+              // No gap — plain/bold label line, don't consume question number
+              secQ+='<li style="font-size:.91rem;line-height:2;font-weight:600;">'+sent.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</li>';
+              qNum--;
+            }
           });
           secQ+='</ul>';
         } else {
@@ -937,19 +956,58 @@ function renderListeningContent(passages){
         var ffAnsList=(q.answer||'').split('\n').map(function(s){return s.trim();}); var ffGapIdx=0;
         var ffHtml='<div style="background:#f9f7f4;border:1px solid #e0ddd8;border-radius:8px;padding:1rem 1.2rem;margin:.4rem 0 .85rem .5rem;">';
         if(ffTitle2) ffHtml+='<div style="font-weight:700;text-align:center;margin-bottom:.65rem;font-size:.9rem;">'+_escL(ffTitle2)+'</div>';
-        (ffRows2.split('\n')).forEach(function(row){ var rowParts=row.split('___'); if(rowParts.length===1){ ffHtml+='<div style="font-size:.88rem;line-height:2;">'+_escL(row)+'</div>'; } else { ffHtml+='<div style="font-size:.88rem;line-height:2.2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">'; rowParts.forEach(function(part,pi){ if(part) ffHtml+='<span>'+_escL(part)+'</span>'; if(pi<rowParts.length-1){ var gqNum=num+ffGapIdx; newK[gqNum]=ffAnsList[ffGapIdx]||''; ffHtml+='<span class="qbox"><input id="q'+gqNum+'" oninput="ma('+gqNum+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+gqNum+'</span></span>'; ffGapIdx++; } }); ffHtml+='</div>'; } });
+        (ffRows2.split('\n')).forEach(function(row){
+          // Empty line → visible gap spacer
+          if(!row.trim()){ ffHtml+='<div style="height:.65rem"></div>'; return; }
+          var rowParts=row.split('___');
+          if(rowParts.length===1){
+            // Plain text row — apply bold markdown
+            ffHtml+='<div style="font-size:.88rem;line-height:2;">'+row.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</div>';
+          } else {
+            ffHtml+='<div style="font-size:.88rem;line-height:2.2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">';
+            rowParts.forEach(function(part,pi){
+              if(part) ffHtml+='<span>'+part.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span>';
+              if(pi<rowParts.length-1){
+                var gqNum=num+ffGapIdx;
+                newK[gqNum]=ffAnsList[ffGapIdx]||'';
+                ffHtml+='<span class="qbox"><input id="q'+gqNum+'" oninput="ma('+gqNum+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+gqNum+'</span></span>';
+                ffGapIdx++;
+              }
+            });
+            ffHtml+='</div>';
+          }
+        });
         ffHtml+='</div>'; secQ+=ffHtml; qNum+=ffGapIdx-1;
 
       } else {
         // Default: Gap fill
-        if(qText) secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.3rem;"><span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span><span style="font-size:.9rem;flex:1;line-height:1.5;">'+_escL(qText).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span></div>';
+        if(qText) secQ+='<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.3rem;"><span style="min-width:1.4rem;font-size:.72rem;font-weight:700;color:#888;margin-top:3px;">'+labelNum+'</span><span style="font-size:.9rem;flex:1;line-height:1.5;">'+qText.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span></div>';
         var gapSent=(q.extra&&q.extra.gapSentence)||'';
         var ansLines2=(q.answer||'').split('\n').map(function(s){return s.trim();});
         var rangeMatch=labelNum.match(/^(\d+)[\u2013\u2014\-](\d+)$/);
         if(gapSent){
           var sentLines=gapSent.split('\n');
           secQ+='<ul style="list-style:none;padding-left:.5rem;margin-bottom:.85rem;">';
-          sentLines.forEach(function(sent,si){ var rqNum=(si===0)?num:(qNum++); newK[rqNum]=ansLines2[si]||ansLines2[0]||''; var parts=sent.split('___'); if(parts.length>1){ secQ+='<li style="padding:.22rem 0;font-size:.91rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">'; parts.forEach(function(part,pi){ if(part) secQ+='<span>'+_escL(part)+'</span>'; if(pi<parts.length-1) secQ+='<span class="qbox"><input id="q'+rqNum+'" oninput="ma('+rqNum+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+rqNum+'</span></span>'; }); secQ+='</li>'; } else if(sent.trim()){ secQ+='<li style="font-size:.91rem;line-height:2;font-weight:600;">'+_escL(sent)+'</li>'; qNum--; } });
+          sentLines.forEach(function(sent,si){
+            var rqNum=(si===0)?num:(qNum++);
+            newK[rqNum]=ansLines2[si]||ansLines2[0]||'';
+            if(!sent.trim()){
+              secQ+='<li style="height:.6rem;list-style:none;"></li>';
+              qNum--; return;
+            }
+            var parts=sent.split('___');
+            if(parts.length>1){
+              secQ+='<li style="padding:.22rem 0;font-size:.91rem;line-height:2;display:flex;align-items:center;flex-wrap:wrap;gap:.2rem;">';
+              parts.forEach(function(part,pi){
+                if(part) secQ+='<span>'+part.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</span>';
+                if(pi<parts.length-1) secQ+='<span class="qbox"><input id="q'+rqNum+'" oninput="ma('+rqNum+',this.value)" autocomplete="off" style="min-width:90px"/><span class="qn">'+rqNum+'</span></span>';
+              });
+              secQ+='</li>';
+            } else {
+              secQ+='<li style="font-size:.91rem;line-height:2;font-weight:600;">'+sent.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</li>';
+              qNum--;
+            }
+          });
           secQ+='</ul>';
         } else if(rangeMatch){
           var rStart=parseInt(rangeMatch[1]),rEnd=parseInt(rangeMatch[2]);
@@ -970,7 +1028,7 @@ function renderListeningContent(passages){
     contentHTML+='<div class="q-heading">Questions '+fixedStart+'\u2013'+fixedEnd+'</div>';
     // Only show instruction if admin wrote one — NO default fallback
     if(p.instruction && p.instruction.trim()){
-      contentHTML+='<div class="q-inst">'+_boldMd(p.instruction)+'</div>';
+      contentHTML+='<div class="q-inst">'+_boldMdLines(p.instruction)+'</div>';
     }
     contentHTML+='<div class="sec-title">'+_boldMd(_escL(sectionTitle))+'</div>';
     if(p.text) contentHTML+='<div class="sec-label">'+_escL(p.text)+'</div>';
