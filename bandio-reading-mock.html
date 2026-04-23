@@ -211,18 +211,7 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
 </script>
 </head>
 <body>
-<div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
-  <div class="scard" style="max-width:540px;width:100%;margin:auto;padding:2rem;">
-    <!-- Header -->
-    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;">
-      <div style="font-size:1.75rem;">📖</div>
-      <div>
-        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;">Reading — Results</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:#1a1a1a;">Your test is complete</div>
-      </div>
-    </div>
-
-    <!-- Band score -->
+<!-- Band score -->
     <div style="background:#1a1a1a;border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
       <div>
         <div class="sband" id="sband" style="font-size:3.5rem;">—</div>
@@ -543,11 +532,6 @@ function chk(){
   }
   var w=T-c-b;
   var band=c>=39?'9.0':c>=37?'8.5':c>=35?'8.0':c>=33?'7.5':c>=30?'7.0':c>=27?'6.5':c>=23?'6.0':c>=19?'5.5':c>=15?'5.0':c>=13?'4.5':c>=10?'4.0':'3.5';
-  document.getElementById('sband').textContent=band;
-  document.getElementById('sc').textContent=c;
-  document.getElementById('sw').textContent=w;
-  document.getElementById('sb').textContent=b;
-  try{document.getElementById('stotal').textContent=c+'/'+T;}catch(e){}
   // Build answers for overlay
   var answersArr=[];
   for(var qi2=1;qi2<=T;qi2++){
@@ -575,9 +559,18 @@ function chk(){
   if(qlist) qlist.innerHTML=qHtml;
   var ovlName=document.getElementById('ovl-test-name');
   if(ovlName&&window._currentTestName) ovlName.textContent=window._currentTestName;
-  localStorage.setItem('bnd_last_result', JSON.stringify({skill:'Reading Practice',testName:window._currentTestName||'',reviewUrl:'bandio-practice.html',total:T,correct:c,wrong:w,blank:b,band:band,answers:answersArr}));
-  // Stay on page
-  document.getElementById('ovl').classList.add('show');
+    localStorage.setItem('bnd_last_result', JSON.stringify({
+    skill:     'Reading Mock',
+    testName:  window._currentTestName||'',
+    reviewUrl: 'bandio-reading-mock.html',
+    total:     T,
+    correct:   c,
+    wrong:     w,
+    blank:     b,
+    band:      band,
+    answers:   answersArr
+  }));
+  window.location.href = 'bandio-results.html';
 }
 
 var dv=document.getElementById('dv'),pp=document.getElementById('pp');
@@ -1054,6 +1047,51 @@ function renderReadingContent(passages){
   if(ph2&&passages[0]) ph2.innerHTML=_renderBold(passages[0].instruction||('Read the text and answer questions 1\u2013'+newT+'.')).replace(/\n/g,'<br>');
 }
 
+
+// ── REVIEW MODE ──────────────────────────────────────────────────────
+(function(){
+  var raw = localStorage.getItem('bnd_last_result');
+  if(!raw) return;
+  var d; try{ d=JSON.parse(raw); }catch(e){ return; }
+  if(!d || !d.answers || !d.reviewUrl) return;
+  var myPage = location.pathname.split('/').pop() || 'bandio-reading-mock.html';
+  if(d.reviewUrl.split('/').pop() !== myPage) return;
+  window._reviewData = d;
+  function applyReview(){
+    var data = window._reviewData;
+    if(!data || !data.answers) return;
+    data.answers.forEach(function(a){
+      K[a.q] = a.correct; A[a.q] = a.yours;
+      // gap/text inputs use id 'g{n}'
+      var gi = document.getElementById('g'+a.q);
+      if(gi){ gi.value=a.yours||''; gi.classList.remove('ok','bad'); if(a.yours) gi.classList.add(a.status==='correct'?'ok':'bad'); gi.readOnly=true; }
+      // radio options (T/F/NG, MCQ)
+      document.querySelectorAll('.qi#qi'+a.q+' .ropt, .qi#qi'+a.q+' .mopt').forEach(function(o){
+        var lbl = o.querySelector('.rl,.ml'); if(!lbl) return;
+        var l = lbl.textContent.trim();
+        o.classList.remove('ok','bad');
+        if(a.yours===l) o.classList.add(a.status==='correct'?'ok':'bad');
+        else if(l===a.correct) o.classList.add('ok');
+      });
+    });
+    document.querySelectorAll('.qs input, .qs select').forEach(function(i){ i.readOnly=true; i.style.pointerEvents='none'; });
+    var bar = document.createElement('div');
+    bar.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#1e3a5f;color:#fff;padding:.6rem 1.2rem;font-size:.84rem;font-weight:600;display:flex;align-items:center;gap:1rem;z-index:999;';
+    bar.innerHTML='<span>📋 Review mode — answers highlighted</span><a href="bandio-results.html" style="margin-left:auto;background:#d4541a;color:#fff;padding:.35rem .9rem;border-radius:100px;text-decoration:none;font-size:.8rem;">← Back to results</a>';
+    document.body.appendChild(bar);
+  }
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      if(window._reviewData && window._reviewData.testName){
+        if(typeof _startTestNow === 'function'){
+          _startTestNow(window._reviewData.testName);
+          setTimeout(applyReview, 400);
+        }
+      }
+    }, 300);
+  });
+})();
+
 </script>
 
 
@@ -1065,38 +1103,5 @@ function renderReadingContent(passages){
 
 
 </body>
-</html><div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
-  <div class="scard" style="max-width:560px;width:100%;margin:auto;padding:2rem;">
-    <!-- Header -->
-    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;">
-      <div style="font-size:1.6rem;">📖</div>
-      <div>
-        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;">Reading Mock — Results</div>
-        <div style="font-weight:800;font-size:1.1rem;color:#1a1a1a;" id="ovl-test-name">Test complete</div>
-      </div>
-    </div>
-    <!-- Band + stats -->
-    <div style="background:#1a1a1a;border-radius:12px;padding:1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
-      <div>
-        <div class="sband" id="sband" style="font-size:3rem;color:#d4541a;">—</div>
-        <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.1rem;">Band score</div>
-      </div>
-      <div style="display:flex;gap:1.5rem;">
-        <div style="text-align:center;"><div class="snum" id="sc" style="color:#2a9d68;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Correct</div></div>
-        <div style="text-align:center;"><div class="snum" id="sw" style="color:#e24b4a;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Wrong</div></div>
-        <div style="text-align:center;"><div class="snum" id="sb" style="color:#aaa;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Blank</div></div>
-      </div>
-    </div>
-    <!-- Total -->
-    <div style="text-align:center;font-size:.88rem;color:#555;margin-bottom:1rem;">You got <strong id="stotal">0/0</strong> correct</div>
-    <!-- All questions breakdown -->
-    <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:.5rem;">All Questions</div>
-    <div id="ovl-qlist" style="max-height:300px;overflow-y:auto;border:1px solid #eee;border-radius:8px;margin-bottom:1rem;"></div>
-    <!-- Buttons -->
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-      <button style="flex:1;padding:.65rem;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:600;cursor:pointer;" onclick="reviewTest()">📋 Review test</button>
-      <button style="padding:.65rem 1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;" onclick="goBack()">Try another</button>
-      <button style="padding:.65rem 1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;" onclick="location.href='bandio-dashboard.html'">Dashboard</button>
-    </div>
-  </div>
-</div>
+
+</html>

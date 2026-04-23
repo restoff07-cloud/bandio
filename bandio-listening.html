@@ -232,16 +232,7 @@ function resetAudio(){
 </script>
 </head>
 <body>
-<div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
-  <div class="scard" style="max-width:540px;width:100%;margin:auto;padding:2rem;">
-    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;">
-      <div style="font-size:1.75rem;">🎧</div>
-      <div>
-        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;">Listening — Results</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:#1a1a1a;">Your test is complete</div>
-      </div>
-    </div>
-    <div style="background:#1a1a1a;border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+<div style="background:#1a1a1a;border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
       <div>
         <div class="sband" id="sband" style="font-size:3.5rem;">—</div>
         <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:.15rem;">Band score</div>
@@ -516,19 +507,10 @@ function chk(){
   });
   var w=T-c-b;
   var band=c>=39?'9.0':c>=37?'8.5':c>=35?'8.0':c>=32?'7.5':c>=30?'7.0':c>=26?'6.5':c>=23?'6.0':c>=18?'5.5':c>=16?'5.0':c>=13?'4.5':c>=10?'4.0':'3.5';
-  document.getElementById('sband').textContent=band;
-  document.getElementById('sc').textContent=c;
-  document.getElementById('sw').textContent=w;
-  document.getElementById('sb').textContent=b;
-  document.getElementById('stotal').textContent=c+'/'+T;
   // Save and redirect to results page
-  try { sessionStorage.setItem('bnd_last_result', JSON.stringify({skill:'listening',correct:c,wrong:w,blank:b,total:T,band:band})); } catch(e){}
   setTimeout(function(){
     window.location.href='bandio-results.html?skill=listening&correct='+c+'&wrong='+w+'&blank='+b+'&name=Listening+Mock+Test&review=bandio-listening-mock.html';
   }, 1500);
-  var descs2 = {'9.0':'Expert user. Outstanding!','8.5':'Very good user. Excellent!','8.0':'Very good user. Strong performance.','7.5':'Good user. Above average.','7.0':'Good user. Solid performance.','6.5':'Competent user. Good result.','6.0':'Competent user. Keep practising.','5.5':'Modest user. More practice needed.','5.0':'Modest user. Focus on weak areas.','4.5':'Limited user. Keep going.','4.0':'Limited user. Keep studying.','3.5':'Keep studying hard!'};
-  var bdEl = document.getElementById('band-desc');
-  if (bdEl) bdEl.textContent = descs2[band] || 'Keep practising!';
   // Build answers array from A (user answers) and K (correct answers)
   var answersArr = [];
   for (var qi=1; qi<=T; qi++) {
@@ -537,10 +519,10 @@ function chk(){
     var status  = !yours ? 'blank' : (yours.toLowerCase().trim()===correct.toLowerCase().trim() ? 'correct' : 'wrong');
     answersArr.push({q:qi, yours:yours, correct:correct, status:status});
   }
-  localStorage.setItem('bnd_last_result', JSON.stringify({
+    localStorage.setItem('bnd_last_result', JSON.stringify({
     skill:     'Listening Practice',
-    testName:  '',
-    reviewUrl: 'bandio-listening-mock.html',
+    testName:  window._currentTestName||'',
+    reviewUrl: 'bandio-listening.html',
     total:     T,
     correct:   c,
     wrong:     w,
@@ -548,28 +530,7 @@ function chk(){
     band:      band,
     answers:   answersArr
   }));
-  // Populate overlay question list (all questions)
-  var qHtml = '';
-  for(var qi2=1;qi2<=T;qi2++){
-    var st2=answersArr[qi2-1];
-    var bgColor=st2.status==='correct'?'#f0fdf4':st2.status==='wrong'?'#fef2f2':'#f5f5f5';
-    var icon=st2.status==='correct'?'✓':st2.status==='wrong'?'✗':'—';
-    var iconColor=st2.status==='correct'?'#16a34a':st2.status==='wrong'?'#dc2626':'#999';
-    qHtml+='<div style="display:flex;align-items:center;gap:.65rem;padding:.5rem .75rem;background:'+bgColor+';border-bottom:1px solid rgba(0,0,0,.05);">'
-          +'<span style="min-width:1.4rem;font-size:.7rem;font-weight:700;color:#888;">Q'+qi2+'</span>'
-          +'<span style="font-size:.9rem;font-weight:700;color:'+iconColor+';">'+icon+'</span>'
-          +'<div style="flex:1;">'
-          +(st2.yours?'<div style="font-size:.78rem;color:#555;">Your answer: <strong>'+st2.yours+'</strong></div>':'<div style="font-size:.78rem;color:#999;">Left blank</div>')
-          +'<div style="font-size:.78rem;color:#16a34a;">Correct: <strong>'+st2.correct+'</strong></div>'
-          +'</div></div>';
-  }
-  var qlist=document.getElementById('ovl-qlist');
-  if(qlist) qlist.innerHTML=qHtml;
-  var ovlName=document.getElementById('ovl-test-name');
-  if(ovlName&&window._currentTestName) ovlName.textContent=window._currentTestName;
-  // Redirect to results page
-  // Stay on page — results shown in overlay
-  document.getElementById('ovl').classList.add('show');
+  window.location.href = 'bandio-results.html';
 }
 var ts=40*60,tr=false,ti=null;
 function resetTimer(){clearInterval(ti);tr=false;ts=40*60;document.getElementById('tv').textContent='40:00';document.getElementById('tv').classList.remove('warn');document.getElementById('bt').textContent='Start';document.getElementById('bt').className='tbtn';}
@@ -932,6 +893,59 @@ function renderListeningContent(passages){
   A={};
 }
 
+
+// ── REVIEW MODE ──────────────────────────────────────────────────────
+(function(){
+  var raw = localStorage.getItem('bnd_last_result');
+  if(!raw) return;
+  var d; try{ d=JSON.parse(raw); }catch(e){ return; }
+  if(!d || !d.answers || !d.reviewUrl) return;
+  // Only activate review mode if this page is the review target
+  var myPage = location.pathname.split('/').pop() || 'bandio-listening.html';
+  if(d.reviewUrl.split('/').pop() !== myPage) return;
+  // Wait for test to be started — set a flag so _startTestNow activates review
+  window._reviewData = d;
+  // Override _startTestNow to auto-start and apply highlights
+  var _origStart = window._startTestNow;
+  // Patch after DOM ready
+  function applyReview(){
+    var data = window._reviewData;
+    if(!data || !data.answers) return;
+    K = {}; // rebuild from saved answers
+    data.answers.forEach(function(a){ K[a.q] = a.correct; A[a.q] = a.yours; });
+    T = data.total || data.answers.length;
+    // Re-apply highlights to inputs
+    for(var q=1;q<=T;q++){
+      var i=document.getElementById('q'+q); if(!i) continue;
+      i.classList.remove('ok','bad');
+      var val = data.answers[q-1] ? data.answers[q-1].yours : '';
+      var cor = data.answers[q-1] ? data.answers[q-1].correct : '';
+      if(val){ i.value=val; i.classList.add(val.toLowerCase().trim()===cor.toLowerCase().trim()?'ok':'bad'); }
+    }
+    // Disable all inputs
+    document.querySelectorAll('.content input').forEach(function(i){ i.readOnly=true; });
+    // Show review banner
+    var bar = document.createElement('div');
+    bar.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#1e3a5f;color:#fff;padding:.6rem 1.2rem;font-size:.84rem;font-weight:600;display:flex;align-items:center;gap:1rem;z-index:999;';
+    bar.innerHTML='<span>📋 Review mode — answers highlighted</span><a href="bandio-results.html" style="margin-left:auto;background:#d4541a;color:#fff;padding:.35rem .9rem;border-radius:100px;text-decoration:none;font-size:.8rem;">← Back to results</a>';
+    document.body.appendChild(bar);
+  }
+  // Hook into exam show
+  var _orig = document.getElementById;
+  window.addEventListener('load', function(){
+    // If exam div exists and there's review data, auto-launch first test
+    setTimeout(function(){
+      if(window._reviewData && window._reviewData.testName){
+        // Try to auto-start via _startTestNow
+        if(typeof _startTestNow === 'function'){
+          _startTestNow(window._reviewData.testName);
+          setTimeout(applyReview, 400);
+        }
+      }
+    }, 300);
+  });
+})();
+
 </script>
 
 <div id="popup" class="popup-tools">
@@ -941,38 +955,5 @@ function renderListeningContent(passages){
 </div>
 
 </body>
-</html><div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
-  <div class="scard" style="max-width:560px;width:100%;margin:auto;padding:2rem;">
-    <!-- Header -->
-    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;">
-      <div style="font-size:1.6rem;">🎧</div>
-      <div>
-        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;">Listening Practice — Results</div>
-        <div style="font-weight:800;font-size:1.1rem;color:#1a1a1a;" id="ovl-test-name">Test complete</div>
-      </div>
-    </div>
-    <!-- Band + stats -->
-    <div style="background:#1a1a1a;border-radius:12px;padding:1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
-      <div>
-        <div class="sband" id="sband" style="font-size:3rem;color:#d4541a;">—</div>
-        <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.1rem;">Band score</div>
-      </div>
-      <div style="display:flex;gap:1.5rem;">
-        <div style="text-align:center;"><div class="snum" id="sc" style="color:#2a9d68;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Correct</div></div>
-        <div style="text-align:center;"><div class="snum" id="sw" style="color:#e24b4a;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Wrong</div></div>
-        <div style="text-align:center;"><div class="snum" id="sb" style="color:#aaa;font-size:1.6rem;font-weight:800;">0</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Blank</div></div>
-      </div>
-    </div>
-    <!-- Total -->
-    <div style="text-align:center;font-size:.88rem;color:#555;margin-bottom:1rem;">You got <strong id="stotal">0/0</strong> correct</div>
-    <!-- All questions breakdown -->
-    <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:.5rem;">All Questions</div>
-    <div id="ovl-qlist" style="max-height:300px;overflow-y:auto;border:1px solid #eee;border-radius:8px;margin-bottom:1rem;"></div>
-    <!-- Buttons -->
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-      <button style="flex:1;padding:.65rem;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:600;cursor:pointer;" onclick="reviewTest()">📋 Review test</button>
-      <button style="padding:.65rem 1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;" onclick="goBack()">Try another</button>
-      <button style="padding:.65rem 1rem;background:#f0eeea;color:#1a1a1a;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;" onclick="location.href='bandio-dashboard.html'">Dashboard</button>
-    </div>
-  </div>
-</div>
+
+</html>

@@ -3,260 +3,282 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Bandio — Test Results</title>
+<title>Bandio — Results</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:#f0eeea;color:#1a1a1a;min-height:100vh;}
+body{font-family:'DM Sans',sans-serif;background:#f4f4f4;color:#1a1a1a;min-height:100vh;}
+
+/* ── TOP NAV ── */
 .topnav{background:#0e0e0e;padding:.65rem 1.25rem;display:flex;align-items:center;gap:.75rem;position:sticky;top:0;z-index:50;}
 .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#f5f2eb;text-decoration:none;}
 .logo span{color:#d4541a;}
+.nav-lbl{font-size:.8rem;color:rgba(255,255,255,.45);}
 .nav-back{margin-left:auto;padding:.32rem .85rem;border:.5px solid rgba(255,255,255,.2);border-radius:100px;font-size:.76rem;color:rgba(255,255,255,.55);text-decoration:none;}
 .nav-back:hover{background:rgba(255,255,255,.08);color:#fff;}
-.page{max-width:640px;margin:0 auto;padding:2rem 1.25rem 4rem;}
 
-/* HERO */
-.score-hero{background:#0e0e0e;border-radius:18px;padding:2.25rem 2rem;margin-bottom:1.25rem;text-align:center;}
-.sh-skill{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.5rem;}
-.sh-band{font-family:'Syne',sans-serif;font-weight:800;font-size:5rem;color:#f5f2eb;line-height:1;margin-bottom:.15rem;}
-.sh-band-lbl{font-size:.76rem;color:rgba(255,255,255,.35);margin-bottom:1.6rem;}
-.sh-row{display:flex;align-items:center;justify-content:center;gap:2.5rem;}
-.sh-num{font-family:'Syne',sans-serif;font-weight:800;font-size:2.2rem;line-height:1;}
-.sh-num.g{color:#4ade80;}
-.sh-num.r{color:#f87171;}
-.sh-num.grey{color:rgba(255,255,255,.25);}
-.sh-lbl{font-size:.7rem;color:rgba(255,255,255,.4);margin-top:.2rem;}
-.sh-div{width:1px;height:44px;background:rgba(255,255,255,.1);}
-.sh-total{font-size:.86rem;color:rgba(255,255,255,.45);margin-top:1.35rem;}
-.sh-total strong{color:#fff;font-size:1.05rem;}
+/* ── PAGE WRAPPER ── */
+.page{max-width:700px;margin:0 auto;padding:2rem 1.25rem 5rem;}
 
-/* BUTTONS */
+/* ── HERO CHECK ── */
+.hero{text-align:center;padding:2rem 0 1.5rem;}
+.hero-icon{width:64px;height:64px;border-radius:50%;border:3px solid #2a9d68;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem;font-size:1.8rem;}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:.2rem;}
+.hero-sub{font-size:.88rem;color:#888;}
+
+/* ── SCORE CARD ── */
+.score-card{background:#fff;border-radius:14px;padding:1.4rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+.sc-row{display:flex;align-items:center;gap:1.25rem;}
+.sc-band{font-family:'Syne',sans-serif;font-weight:800;font-size:3.6rem;color:#d4541a;line-height:1;}
+.sc-info{flex:1;}
+.sc-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#aaa;margin-bottom:.18rem;}
+.sc-desc{font-size:.92rem;font-weight:600;color:#1a1a1a;margin-bottom:.5rem;}
+.sc-fraction{font-size:.84rem;color:#666;}
+.sc-fraction strong{color:#1a1a1a;font-size:.95rem;}
+
+/* ── STATS ROW ── */
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1rem;}
+.stat{border-radius:12px;padding:1rem 1.1rem;text-align:center;}
+.stat.ok{background:#dcfce7;}
+.stat.ng{background:#fee2e2;}
+.stat.bl{background:#f0f0f0;}
+.stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;line-height:1;margin-bottom:.2rem;}
+.stat.ok .stat-num{color:#16a34a;}
+.stat.ng .stat-num{color:#dc2626;}
+.stat.bl .stat-num{color:#888;}
+.stat-lbl{font-size:.74rem;font-weight:700;}
+.stat.ok .stat-lbl{color:#16a34a;}
+.stat.ng .stat-lbl{color:#dc2626;}
+.stat.bl .stat-lbl{color:#888;}
+
+/* ── ACTION BUTTONS ── */
 .btn-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.25rem;}
-.btn{padding:.62rem 1.25rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:all .15s;white-space:nowrap;}
-.btn.review{background:#1e3a5f;color:#fff;}
-.btn.review:hover{background:#2a4f80;}
+.btn{padding:.65rem 1.25rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:all .15s;white-space:nowrap;}
+.btn.primary{background:#1a1a1a;color:#fff;flex:1;justify-content:center;}
+.btn.primary:hover{background:#d4541a;}
 .btn.sec{background:#fff;color:#1a1a1a;border:1.5px solid #e0ddd8;}
 .btn.sec:hover{border-color:#999;background:#f5f3f0;}
 
-/* CARDS */
-.card{background:#fff;border-radius:14px;padding:1.25rem;margin-bottom:1.1rem;}
-.card-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:.75rem;}
+/* ── ANSWER SHEET ── */
+.sheet-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+.sheet-header{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid #f0f0f0;}
+.sheet-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;}
+.show-toggle{display:flex;align-items:center;gap:.45rem;font-size:.8rem;font-weight:600;color:#1a1a1a;cursor:pointer;user-select:none;}
+.toggle-track{width:38px;height:20px;border-radius:10px;background:#ccc;position:relative;transition:background .15s;flex-shrink:0;}
+.toggle-track.on{background:#d4541a;}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+.toggle-track.on .toggle-thumb{transform:translateX(18px);}
 
-/* BAND GUIDE */
-.bg-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.45rem;}
-.bg-row:last-child{margin-bottom:0;}
-.bg-range{font-size:.76rem;font-family:monospace;font-weight:600;min-width:48px;color:#555;}
-.bg-track{flex:1;height:7px;background:#f0eeea;border-radius:4px;overflow:hidden;}
-.bg-fill{height:100%;border-radius:4px;}
-.bg-band{font-size:.8rem;font-weight:700;min-width:30px;text-align:right;}
-.bg-you{font-size:.65rem;font-weight:700;color:#d4541a;background:rgba(212,84,26,.1);border-radius:100px;padding:.1rem .4rem;flex-shrink:0;min-width:28px;text-align:center;}
+/* answer rows */
+.ans-row{display:flex;align-items:center;gap:.75rem;padding:.55rem 1.25rem;border-bottom:1px solid #f5f5f5;transition:background .1s;}
+.ans-row:last-child{border-bottom:none;}
+.ans-row.ok-row{background:#f0fdf4;}
+.ans-row.ng-row{background:#fff5f5;}
+.ans-row.bl-row{background:#fafafa;}
+.ans-qnum{min-width:28px;font-size:.72rem;font-weight:700;color:#bbb;}
+.ans-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0;}
+.ans-icon.ok{background:#dcfce7;color:#16a34a;}
+.ans-icon.ng{background:#fee2e2;color:#dc2626;}
+.ans-icon.bl{background:#f0f0f0;color:#aaa;}
+.ans-yours{flex:1;font-size:.82rem;}
+.ans-yours .label{font-size:.68rem;color:#aaa;font-weight:600;display:block;margin-bottom:.05rem;}
+.ans-yours .val{font-weight:600;color:#1a1a1a;}
+.ans-yours .val.blank{color:#bbb;font-style:italic;font-weight:400;}
+.ans-correct{flex:1;font-size:.82rem;}
+.ans-correct .label{font-size:.68rem;font-weight:600;display:block;margin-bottom:.05rem;}
+.ans-correct.ok-col .label{color:#aaa;}
+.ans-correct.ng-col .label{color:#16a34a;}
+.ans-correct.bl-col .label{color:#16a34a;}
+.ans-correct .val{font-weight:700;}
+.ans-correct.ok-col .val{color:#aaa;}
+.ans-correct.ng-col .val{color:#16a34a;}
+.ans-correct.bl-col .val{color:#16a34a;}
 
-/* ANSWER GRID */
-.ans-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:.45rem;margin-bottom:.85rem;}
-.a-item{border-radius:8px;padding:.4rem .3rem;text-align:center;}
-.a-num{font-size:.62rem;color:rgba(0,0,0,.35);display:block;margin-bottom:.1rem;}
-.a-val{display:block;font-size:.7rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.a-item.ok{background:#dcfce7;color:#166534;}
-.a-item.no{background:#fee2e2;color:#991b1b;}
-.a-item.bl{background:#f0eeea;color:#aaa;}
-.legend{display:flex;gap:1rem;flex-wrap:wrap;}
-.leg{display:flex;align-items:center;gap:.3rem;font-size:.74rem;color:#666;}
-.leg-dot{width:9px;height:9px;border-radius:2px;}
-
-/* WRONG LIST */
-.wrong-item{background:#fff8f8;border:1px solid #fca5a5;border-radius:9px;padding:.8rem 1rem;margin-bottom:.5rem;}
-.wrong-item:last-child{margin-bottom:0;}
-.wi-q{font-size:.8rem;font-weight:600;margin-bottom:.25rem;}
-.wi-yours{font-size:.76rem;color:#e24b4a;margin-bottom:.1rem;}
-.wi-correct{font-size:.76rem;color:#2a9d68;font-weight:600;}
-
-@media(max-width:480px){.sh-band{font-size:3.8rem;}.sh-row{gap:1.5rem;}.sh-num{font-size:1.8rem;}}
+@media(max-width:500px){
+  .sc-band{font-size:2.8rem;}
+  .stats{gap:.5rem;}
+  .stat-num{font-size:1.6rem;}
+  .btn-row{flex-direction:column;}
+  .btn.primary{flex:none;width:100%;}
+}
 </style>
 </head>
 <body>
 
 <div class="topnav">
-  <a class="logo" href="bandio-home.html">Band<span>io</span></a>
-  <span style="font-size:.78rem;color:rgba(255,255,255,.3)">|</span>
-  <span id="nav-label" style="font-size:.8rem;color:rgba(255,255,255,.5)">Results</span>
+  <a class="logo" href="bandio-dashboard.html">Band<span>io</span></a>
+  <span style="color:rgba(255,255,255,.2)">|</span>
+  <span class="nav-lbl" id="nav-lbl">Results</span>
   <a class="nav-back" href="bandio-dashboard.html">← Dashboard</a>
 </div>
 
 <div class="page">
 
   <!-- HERO -->
-  <div class="score-hero">
-    <div class="sh-skill" id="r-skill">Test Results</div>
-    <div class="sh-band" id="r-band">—</div>
-    <div class="sh-band-lbl">Estimated IELTS band score</div>
-    <div class="sh-row">
-      <div>
-        <div class="sh-num g" id="r-correct">0</div>
-        <div class="sh-lbl">Correct ✓</div>
-      </div>
-      <div class="sh-div"></div>
-      <div>
-        <div class="sh-num r" id="r-wrong">0</div>
-        <div class="sh-lbl">Wrong ✗</div>
-      </div>
-      <div class="sh-div"></div>
-      <div>
-        <div class="sh-num grey" id="r-blank">0</div>
-        <div class="sh-lbl">Blank —</div>
-      </div>
-    </div>
-    <div class="sh-total">You got <strong id="r-fraction">0/40</strong> correct</div>
+  <div class="hero">
+    <div class="hero-icon">✓</div>
+    <div class="hero-title">Test Complete!</div>
+    <div class="hero-sub" id="hero-sub">Here are your results</div>
   </div>
 
-  <!-- ACTION BUTTONS -->
+  <!-- SCORE CARD -->
+  <div class="score-card">
+    <div class="sc-row">
+      <div class="sc-band" id="sc-band">—</div>
+      <div class="sc-info">
+        <div class="sc-label">IELTS Band Score</div>
+        <div class="sc-desc" id="sc-desc">—</div>
+        <div class="sc-fraction">Your Score: <strong id="sc-fraction">0 / 0</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat ok">
+      <div class="stat-num" id="st-correct">0</div>
+      <div class="stat-lbl">Correct ✓</div>
+    </div>
+    <div class="stat ng">
+      <div class="stat-num" id="st-wrong">0</div>
+      <div class="stat-lbl">Wrong ✗</div>
+    </div>
+    <div class="stat bl">
+      <div class="stat-num" id="st-blank">0</div>
+      <div class="stat-lbl">Blank —</div>
+    </div>
+  </div>
+
+  <!-- BUTTONS -->
   <div class="btn-row">
-    <a class="btn review" id="btn-review" href="#">📋 Review test — check your mistakes</a>
-    <a class="btn sec" href="bandio-mocktest.html">Try another</a>
+    <a class="btn primary" id="btn-review" href="#">📋 Review test</a>
     <a class="btn sec" href="bandio-dashboard.html">Dashboard</a>
   </div>
 
-  <!-- BAND GUIDE -->
-  <div class="card">
-    <div class="card-title">IELTS Band Score Guide (out of 40)</div>
-    <div id="band-guide"></div>
-  </div>
-
-  <!-- ANSWER OVERVIEW -->
-  <div class="card">
-    <div class="card-title">Answer overview</div>
-    <div class="ans-grid" id="ans-grid"></div>
-    <div class="legend">
-      <div class="leg"><div class="leg-dot" style="background:#dcfce7;border:1px solid #c8e6c9"></div>Correct</div>
-      <div class="leg"><div class="leg-dot" style="background:#fee2e2;border:1px solid #fca5a5"></div>Wrong</div>
-      <div class="leg"><div class="leg-dot" style="background:#f0eeea;border:1px solid #d8d5d0"></div>Blank</div>
+  <!-- ANSWER SHEET -->
+  <div class="sheet-card">
+    <div class="sheet-header">
+      <div class="sheet-title">Answer Sheet</div>
+      <div class="show-toggle" onclick="toggleCorrect(this)">
+        <div class="toggle-track on" id="toggle-track"><div class="toggle-thumb"></div></div>
+        Show Correct Answers
+      </div>
     </div>
-  </div>
-
-  <!-- WRONG ANSWERS -->
-  <div class="card" id="wrong-card">
-    <div class="card-title">Questions to review</div>
-    <div style="font-size:.78rem;color:#888;margin-bottom:.9rem;line-height:1.6;">These are the questions you got wrong or left blank. Press <strong style="color:#1e3a5f;">Review test</strong> above to go back to the passage or audio and find the correct answers yourself.</div>
-    <div id="wrong-list"></div>
+    <div id="answer-sheet"></div>
   </div>
 
 </div>
 
 <script>
-var BANDS = [
-  {min:39,max:40,band:'9.0',color:'#4ade80'},
-  {min:37,max:38,band:'8.5',color:'#86efac'},
-  {min:35,max:36,band:'8.0',color:'#a3e635'},
-  {min:33,max:34,band:'7.5',color:'#bef264'},
-  {min:30,max:32,band:'7.0',color:'#facc15'},
-  {min:27,max:29,band:'6.5',color:'#fb923c'},
-  {min:23,max:26,band:'6.0',color:'#f97316'},
-  {min:19,max:22,band:'5.5',color:'#f87171'},
-  {min:15,max:18,band:'5.0',color:'#fca5a5'},
-  {min:13,max:14,band:'4.5',color:'#fca5a5'},
-  {min:10,max:12,band:'4.0',color:'#fca5a5'},
-  {min:0, max:9, band:'3.5',color:'#fca5a5'},
-];
+var DESCS = {
+  '9.0':'Expert user — outstanding performance.',
+  '8.5':'Very good user — excellent result.',
+  '8.0':'Very good user — strong performance.',
+  '7.5':'Good user — above average.',
+  '7.0':'Good user — solid performance.',
+  '6.5':'Competent user — good result.',
+  '6.0':'Competent user — keep practising.',
+  '5.5':'Modest user — more practice needed.',
+  '5.0':'Modest user — focus on weak areas.',
+  '4.5':'Limited user — keep going.',
+  '4.0':'Limited user — keep studying.',
+  '3.5':'Keep studying hard!'
+};
 
-function bandFromCorrect(c, total) {
-  var scaled = Math.round((c / (total||40)) * 40);
-  for (var i=0;i<BANDS.length;i++) { if (scaled >= BANDS[i].min) return BANDS[i].band; }
-  return '3.5';
+var showCorrect = true;
+
+function toggleCorrect(el) {
+  showCorrect = !showCorrect;
+  var track = document.getElementById('toggle-track');
+  track.classList.toggle('on', showCorrect);
+  renderSheet();
 }
 
-// Load result from localStorage
+function renderSheet() {
+  var d = window._data;
+  if (!d || !d.answers) return;
+  var html = '';
+  d.answers.forEach(function(a) {
+    var cls = a.status === 'correct' ? 'ok-row' : a.status === 'wrong' ? 'ng-row' : 'bl-row';
+    var icoCls = a.status === 'correct' ? 'ok' : a.status === 'wrong' ? 'ng' : 'bl';
+    var icoChar = a.status === 'correct' ? '✓' : a.status === 'wrong' ? '✗' : '—';
+    var yourVal = a.yours || '';
+    var corrVal = a.correct || '';
+    // Correct column styling
+    var corrColCls = a.status === 'correct' ? 'ok-col' : a.status === 'wrong' ? 'ng-col' : 'bl-col';
+    var corrLabel = a.status === 'correct' ? 'Correct' : 'Correct:';
+
+    html += '<div class="ans-row ' + cls + '">'
+          + '<span class="ans-qnum">' + a.q + '</span>'
+          + '<div class="ans-icon ' + icoCls + '">' + icoChar + '</div>'
+          + '<div class="ans-yours">'
+          +   '<span class="label">Your answer</span>'
+          +   '<span class="val' + (yourVal ? '' : ' blank') + '">' + (yourVal || 'left blank') + '</span>'
+          + '</div>'
+          + (showCorrect
+              ? '<div class="ans-correct ' + corrColCls + '">'
+              +   '<span class="label">' + corrLabel + '</span>'
+              +   '<span class="val">' + (corrVal || '—') + '</span>'
+              + '</div>'
+              : '')
+          + '</div>';
+  });
+  document.getElementById('answer-sheet').innerHTML = html;
+}
+
+// Load from localStorage
 var raw = localStorage.getItem('bnd_last_result');
 var d = null;
-if (raw) { try { d = JSON.parse(raw); } catch(e){} }
+if (raw) { try { d = JSON.parse(raw); } catch(e) {} }
 
-// Demo data if nothing stored
 if (!d) {
+  // fallback demo
   d = {
     skill: 'Reading Practice',
     testName: 'The Psychology of Urban Green Spaces',
     reviewUrl: 'bandio-practice.html',
-    total: 13,
-    correct: 9,
-    wrong: 3,
-    blank: 1,
+    total: 13, correct: 9, wrong: 3, blank: 1, band: '6.5',
     answers: [
-      {q:1,  yours:'FALSE',     correct:'FALSE',     status:'correct'},
-      {q:2,  yours:'TRUE',      correct:'FALSE',     status:'wrong'},
-      {q:3,  yours:'TRUE',      correct:'TRUE',      status:'correct'},
-      {q:4,  yours:'',          correct:'TRUE',      status:'blank'},
-      {q:5,  yours:'FALSE',     correct:'FALSE',     status:'correct'},
-      {q:6,  yours:'NOT GIVEN', correct:'NOT GIVEN', status:'correct'},
-      {q:7,  yours:'B',         correct:'B',         status:'correct'},
-      {q:8,  yours:'A',         correct:'C',         status:'wrong'},
-      {q:9,  yours:'B',         correct:'B',         status:'correct'},
-      {q:10, yours:'Exeter',    correct:'Exeter',    status:'correct'},
-      {q:11, yours:'directed',  correct:'directed',  status:'correct'},
-      {q:12, yours:'heart',     correct:'cortisol',  status:'wrong'},
+      {q:1,  yours:'FALSE',      correct:'FALSE',      status:'correct'},
+      {q:2,  yours:'TRUE',       correct:'FALSE',      status:'wrong'},
+      {q:3,  yours:'TRUE',       correct:'TRUE',       status:'correct'},
+      {q:4,  yours:'',           correct:'TRUE',       status:'blank'},
+      {q:5,  yours:'FALSE',      correct:'FALSE',      status:'correct'},
+      {q:6,  yours:'NOT GIVEN',  correct:'NOT GIVEN',  status:'correct'},
+      {q:7,  yours:'B',          correct:'B',          status:'correct'},
+      {q:8,  yours:'A',          correct:'C',          status:'wrong'},
+      {q:9,  yours:'B',          correct:'B',          status:'correct'},
+      {q:10, yours:'Exeter',     correct:'Exeter',     status:'correct'},
+      {q:11, yours:'directed',   correct:'directed',   status:'correct'},
+      {q:12, yours:'heart',      correct:'cortisol',   status:'wrong'},
       {q:13, yours:'tree canopy',correct:'tree canopy',status:'correct'},
     ]
   };
 }
 
-var total   = d.total   || 40;
-var correct = d.correct || 0;
-var wrong   = d.wrong   || 0;
-var blank   = d.blank   || 0;
-var band    = d.band    || bandFromCorrect(correct, total);
-var answers = d.answers || [];
+window._data = d;
 
-// Nav
-document.getElementById('nav-label').textContent = d.skill || 'Results';
+// Populate nav + hero
+document.getElementById('nav-lbl').textContent = (d.skill || 'Results');
+if (d.testName) document.getElementById('hero-sub').textContent = d.testName;
 
-// Hero
-document.getElementById('r-skill').textContent   = d.testName ? (d.skill+' — '+d.testName) : (d.skill||'Test');
-document.getElementById('r-band').textContent     = band;
-document.getElementById('r-correct').textContent  = correct;
-document.getElementById('r-wrong').textContent    = wrong;
-document.getElementById('r-blank').textContent    = blank;
-document.getElementById('r-fraction').textContent = correct+'/'+total;
+// Score card
+var band = d.band || '—';
+document.getElementById('sc-band').textContent = band;
+document.getElementById('sc-desc').textContent = DESCS[band] || 'Keep practising!';
+document.getElementById('sc-fraction').textContent = (d.correct || 0) + ' / ' + (d.total || 0);
+
+// Stats
+document.getElementById('st-correct').textContent = d.correct || 0;
+document.getElementById('st-wrong').textContent   = d.wrong   || 0;
+document.getElementById('st-blank').textContent   = d.blank   || 0;
 
 // Review button
-var revBtn = document.getElementById('btn-review');
-if (d.reviewUrl) revBtn.href = d.reviewUrl;
-else revBtn.href = 'bandio-dashboard.html';
+var reviewBtn = document.getElementById('btn-review');
+reviewBtn.href = d.reviewUrl || 'bandio-dashboard.html';
 
-// Band guide
-var gh = '';
-BANDS.forEach(function(row) {
-  var isYou = row.band === band;
-  var pct = Math.max(Math.round((row.max/40)*100), 10);
-  gh += '<div class="bg-row">'
-    + '<span class="bg-range">'+row.min+(row.max!==row.min?'–'+row.max:'')+'</span>'
-    + '<div class="bg-track"><div class="bg-fill" style="width:'+pct+'%;background:'+row.color+'"></div></div>'
-    + '<span class="bg-band" style="color:'+(isYou?'#d4541a':'#1a1a1a')+'">'+row.band+'</span>'
-    + (isYou ? '<span class="bg-you">You</span>' : '<span style="min-width:28px;display:inline-block"></span>')
-    + '</div>';
-});
-document.getElementById('band-guide').innerHTML = gh;
-
-// Answer grid
-var gridH = '';
-for (var i=0; i<total; i++) {
-  var a = answers[i] || {q:i+1, yours:'', status:'blank'};
-  var cls = a.status==='correct'?'ok': a.status==='wrong'?'no':'bl';
-  var val = a.yours||'—';
-  if (val.length > 5) val = val.slice(0,4)+'…';
-  gridH += '<div class="a-item '+cls+'"><span class="a-num">Q'+(a.q||i+1)+'</span><span class="a-val">'+val+'</span></div>';
-}
-document.getElementById('ans-grid').innerHTML = gridH;
-
-// Wrong list
-var wrongs = answers.filter(function(a){ return a.status !== 'correct'; });
-if (!wrongs.length) {
-  document.getElementById('wrong-card').innerHTML = '<div style="text-align:center;padding:1rem;font-size:.92rem;color:#2a9d68;font-weight:600;">🎉 Perfect score — no mistakes at all!</div>';
-} else {
-  document.getElementById('wrong-list').innerHTML = wrongs.map(function(a) {
-    return '<div class="wrong-item">'
-      + '<div class="wi-q">Question '+a.q+'</div>'
-      + '<div class="wi-yours">Your answer: '+(a.yours||'left blank')+'</div>'
-      + '<div class="wi-correct">Correct answer: '+a.correct+'</div>'
-      + '</div>';
-  }).join('');
-}
+// Answer sheet
+renderSheet();
 </script>
 </body>
 </html>
