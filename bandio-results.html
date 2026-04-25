@@ -232,28 +232,8 @@ var d = null;
 if (raw) { try { d = JSON.parse(raw); } catch(e) {} }
 
 if (!d) {
-  // fallback demo
-  d = {
-    skill: 'Reading Practice',
-    testName: 'The Psychology of Urban Green Spaces',
-    reviewUrl: 'bandio-practice.html',
-    total: 13, correct: 9, wrong: 3, blank: 1, band: '6.5',
-    answers: [
-      {q:1,  yours:'FALSE',      correct:'FALSE',      status:'correct'},
-      {q:2,  yours:'TRUE',       correct:'FALSE',      status:'wrong'},
-      {q:3,  yours:'TRUE',       correct:'TRUE',       status:'correct'},
-      {q:4,  yours:'',           correct:'TRUE',       status:'blank'},
-      {q:5,  yours:'FALSE',      correct:'FALSE',      status:'correct'},
-      {q:6,  yours:'NOT GIVEN',  correct:'NOT GIVEN',  status:'correct'},
-      {q:7,  yours:'B',          correct:'B',          status:'correct'},
-      {q:8,  yours:'A',          correct:'C',          status:'wrong'},
-      {q:9,  yours:'B',          correct:'B',          status:'correct'},
-      {q:10, yours:'Exeter',     correct:'Exeter',     status:'correct'},
-      {q:11, yours:'directed',   correct:'directed',   status:'correct'},
-      {q:12, yours:'heart',      correct:'cortisol',   status:'wrong'},
-      {q:13, yours:'tree canopy',correct:'tree canopy',status:'correct'},
-    ]
-  };
+  document.body.innerHTML = '<div style="font-family:DM Sans,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:1rem;color:#1a1a1a;"><div style="font-size:2rem;">\u{1F4CB}</div><div style="font-size:1.1rem;font-weight:600;">No results yet</div><div style="font-size:.88rem;color:#888;">Complete a test first, then come back here.</div><a href="bandio-dashboard.html" style="margin-top:.5rem;padding:.6rem 1.4rem;background:#1a1a1a;color:#fff;border-radius:100px;text-decoration:none;font-size:.85rem;font-weight:600;">← Go to Dashboard</a></div>';
+  throw new Error('no data');
 }
 
 window._data = d;

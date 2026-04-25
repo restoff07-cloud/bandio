@@ -233,7 +233,16 @@ function resetAudio(){
 </script>
 </head>
 <body>
-<div style="background:#1a1a1a;border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+<div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
+  <div class="scard" style="max-width:540px;width:100%;margin:auto;padding:2rem;">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;">
+      <div style="font-size:1.75rem;">🎧</div>
+      <div>
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;">Listening — Results</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:#1a1a1a;">Your test is complete</div>
+      </div>
+    </div>
+    <div style="background:#1a1a1a;border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
       <div>
         <div class="sband" id="sband" style="font-size:3.5rem;">—</div>
         <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:.15rem;">Band score</div>
@@ -514,7 +523,16 @@ function chk(){
   });
   var w=T-c-b;
   var band=c>=39?'9.0':c>=37?'8.5':c>=35?'8.0':c>=32?'7.5':c>=30?'7.0':c>=26?'6.5':c>=23?'6.0':c>=18?'5.5':c>=16?'5.0':c>=13?'4.5':c>=10?'4.0':'3.5';
+  document.getElementById('sband').textContent=band;
+  document.getElementById('sc').textContent=c;
+  document.getElementById('sw').textContent=w;
+  document.getElementById('sb').textContent=b;
+  document.getElementById('stotal').textContent=c+'/'+T;
   // Save result to localStorage for results page
+  try { sessionStorage.setItem('bnd_last_result', JSON.stringify({skill:'listening',correct:c,wrong:w,blank:b,total:T,band:band})); } catch(e){}
+  var descs2 = {'9.0':'Expert user. Outstanding!','8.5':'Very good user. Excellent!','8.0':'Very good user. Strong performance.','7.5':'Good user. Above average.','7.0':'Good user. Solid performance.','6.5':'Competent user. Good result.','6.0':'Competent user. Keep practising.','5.5':'Modest user. More practice needed.','5.0':'Modest user. Focus on weak areas.','4.5':'Limited user. Keep going.','4.0':'Limited user. Keep studying.','3.5':'Keep studying hard!'};
+  var bdEl = document.getElementById('band-desc');
+  if (bdEl) bdEl.textContent = descs2[band] || 'Keep practising!';
   // Build answers array from A (user answers) and K (correct answers)
   var answersArr = [];
   for (var qi=1; qi<=T; qi++) {
@@ -523,18 +541,8 @@ function chk(){
     var status  = !yours ? 'blank' : (yours.toLowerCase().trim()===correct.toLowerCase().trim() ? 'correct' : 'wrong');
     answersArr.push({q:qi, yours:yours, correct:correct, status:status});
   }
-    localStorage.setItem('bnd_last_result', JSON.stringify({
-    skill:     'Listening Mock',
-    testName:  window._currentTestName||'',
-    reviewUrl: 'bandio-listening-mock.html',
-    total:     T,
-    correct:   c,
-    wrong:     w,
-    blank:     b,
-    band:      band,
-    answers:   answersArr
-  }));
-  window.location.href = 'bandio-results.html';
+  localStorage.setItem('bnd_last_result', JSON.stringify({skill:'Listening Mock',testName:window._currentTestName||'',reviewUrl:'bandio-listening-mock.html',total:T,correct:c,wrong:w,blank:b,band:band,answers:answersArr}));
+  window.location.href='bandio-results.html';
 }
 var ts=40*60,tr=false,ti=null;
 function resetTimer(){clearInterval(ti);tr=false;ts=40*60;document.getElementById('tv').textContent='40:00';document.getElementById('tv').classList.remove('warn');document.getElementById('bt').textContent='Start';document.getElementById('bt').className='tbtn';}
@@ -1028,59 +1036,6 @@ function renderListeningContent(passages){
   A={};
 }
 
-
-// ── REVIEW MODE ──────────────────────────────────────────────────────
-(function(){
-  var raw = localStorage.getItem('bnd_last_result');
-  if(!raw) return;
-  var d; try{ d=JSON.parse(raw); }catch(e){ return; }
-  if(!d || !d.answers || !d.reviewUrl) return;
-  // Only activate review mode if this page is the review target
-  var myPage = location.pathname.split('/').pop() || 'bandio-listening.html';
-  if(d.reviewUrl.split('/').pop() !== myPage) return;
-  // Wait for test to be started — set a flag so _startTestNow activates review
-  window._reviewData = d;
-  // Override _startTestNow to auto-start and apply highlights
-  var _origStart = window._startTestNow;
-  // Patch after DOM ready
-  function applyReview(){
-    var data = window._reviewData;
-    if(!data || !data.answers) return;
-    K = {}; // rebuild from saved answers
-    data.answers.forEach(function(a){ K[a.q] = a.correct; A[a.q] = a.yours; });
-    T = data.total || data.answers.length;
-    // Re-apply highlights to inputs
-    for(var q=1;q<=T;q++){
-      var i=document.getElementById('q'+q); if(!i) continue;
-      i.classList.remove('ok','bad');
-      var val = data.answers[q-1] ? data.answers[q-1].yours : '';
-      var cor = data.answers[q-1] ? data.answers[q-1].correct : '';
-      if(val){ i.value=val; i.classList.add(val.toLowerCase().trim()===cor.toLowerCase().trim()?'ok':'bad'); }
-    }
-    // Disable all inputs
-    document.querySelectorAll('.content input').forEach(function(i){ i.readOnly=true; });
-    // Show review banner
-    var bar = document.createElement('div');
-    bar.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#1e3a5f;color:#fff;padding:.6rem 1.2rem;font-size:.84rem;font-weight:600;display:flex;align-items:center;gap:1rem;z-index:999;';
-    bar.innerHTML='<span>📋 Review mode — answers highlighted</span><a href="bandio-results.html" style="margin-left:auto;background:#d4541a;color:#fff;padding:.35rem .9rem;border-radius:100px;text-decoration:none;font-size:.8rem;">← Back to results</a>';
-    document.body.appendChild(bar);
-  }
-  // Hook into exam show
-  var _orig = document.getElementById;
-  window.addEventListener('load', function(){
-    // If exam div exists and there's review data, auto-launch first test
-    setTimeout(function(){
-      if(window._reviewData && window._reviewData.testName){
-        // Try to auto-start via _startTestNow
-        if(typeof _startTestNow === 'function'){
-          _startTestNow(window._reviewData.testName);
-          setTimeout(applyReview, 400);
-        }
-      }
-    }, 300);
-  });
-})();
-
 </script>
 
 <div id="popup" class="popup-tools">
@@ -1090,5 +1045,4 @@ function renderListeningContent(passages){
 </div>
 
 </body>
-
-</html>
+</html><div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">

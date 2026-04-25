@@ -211,7 +211,18 @@ body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex
 </script>
 </head>
 <body>
-<!-- Band score -->
+<div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
+  <div class="scard" style="max-width:540px;width:100%;margin:auto;padding:2rem;">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;">
+      <div style="font-size:1.75rem;">📖</div>
+      <div>
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;">Reading — Results</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:#1a1a1a;">Your test is complete</div>
+      </div>
+    </div>
+
+    <!-- Band score -->
     <div style="background:#1a1a1a;border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
       <div>
         <div class="sband" id="sband" style="font-size:3.5rem;">—</div>
@@ -532,6 +543,11 @@ function chk(){
   }
   var w=T-c-b;
   var band=c>=39?'9.0':c>=37?'8.5':c>=35?'8.0':c>=33?'7.5':c>=30?'7.0':c>=27?'6.5':c>=23?'6.0':c>=19?'5.5':c>=15?'5.0':c>=13?'4.5':c>=10?'4.0':'3.5';
+  document.getElementById('sband').textContent=band;
+  document.getElementById('sc').textContent=c;
+  document.getElementById('sw').textContent=w;
+  document.getElementById('sb').textContent=b;
+  try{document.getElementById('stotal').textContent=c+'/'+T;}catch(e){}
   // Build answers for overlay
   var answersArr=[];
   for(var qi2=1;qi2<=T;qi2++){
@@ -559,18 +575,8 @@ function chk(){
   if(qlist) qlist.innerHTML=qHtml;
   var ovlName=document.getElementById('ovl-test-name');
   if(ovlName&&window._currentTestName) ovlName.textContent=window._currentTestName;
-    localStorage.setItem('bnd_last_result', JSON.stringify({
-    skill:     'Reading Mock',
-    testName:  window._currentTestName||'',
-    reviewUrl: 'bandio-reading-mock.html',
-    total:     T,
-    correct:   c,
-    wrong:     w,
-    blank:     b,
-    band:      band,
-    answers:   answersArr
-  }));
-  window.location.href = 'bandio-results.html';
+  localStorage.setItem('bnd_last_result', JSON.stringify({skill:'Reading Mock',testName:window._currentTestName||'',reviewUrl:'bandio-reading-mock.html',total:T,correct:c,wrong:w,blank:b,band:band,answers:answersArr}));
+  window.location.href='bandio-results.html';
 }
 
 var dv=document.getElementById('dv'),pp=document.getElementById('pp');
@@ -1047,51 +1053,6 @@ function renderReadingContent(passages){
   if(ph2&&passages[0]) ph2.innerHTML=_renderBold(passages[0].instruction||('Read the text and answer questions 1\u2013'+newT+'.')).replace(/\n/g,'<br>');
 }
 
-
-// ── REVIEW MODE ──────────────────────────────────────────────────────
-(function(){
-  var raw = localStorage.getItem('bnd_last_result');
-  if(!raw) return;
-  var d; try{ d=JSON.parse(raw); }catch(e){ return; }
-  if(!d || !d.answers || !d.reviewUrl) return;
-  var myPage = location.pathname.split('/').pop() || 'bandio-reading-mock.html';
-  if(d.reviewUrl.split('/').pop() !== myPage) return;
-  window._reviewData = d;
-  function applyReview(){
-    var data = window._reviewData;
-    if(!data || !data.answers) return;
-    data.answers.forEach(function(a){
-      K[a.q] = a.correct; A[a.q] = a.yours;
-      // gap/text inputs use id 'g{n}'
-      var gi = document.getElementById('g'+a.q);
-      if(gi){ gi.value=a.yours||''; gi.classList.remove('ok','bad'); if(a.yours) gi.classList.add(a.status==='correct'?'ok':'bad'); gi.readOnly=true; }
-      // radio options (T/F/NG, MCQ)
-      document.querySelectorAll('.qi#qi'+a.q+' .ropt, .qi#qi'+a.q+' .mopt').forEach(function(o){
-        var lbl = o.querySelector('.rl,.ml'); if(!lbl) return;
-        var l = lbl.textContent.trim();
-        o.classList.remove('ok','bad');
-        if(a.yours===l) o.classList.add(a.status==='correct'?'ok':'bad');
-        else if(l===a.correct) o.classList.add('ok');
-      });
-    });
-    document.querySelectorAll('.qs input, .qs select').forEach(function(i){ i.readOnly=true; i.style.pointerEvents='none'; });
-    var bar = document.createElement('div');
-    bar.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#1e3a5f;color:#fff;padding:.6rem 1.2rem;font-size:.84rem;font-weight:600;display:flex;align-items:center;gap:1rem;z-index:999;';
-    bar.innerHTML='<span>📋 Review mode — answers highlighted</span><a href="bandio-results.html" style="margin-left:auto;background:#d4541a;color:#fff;padding:.35rem .9rem;border-radius:100px;text-decoration:none;font-size:.8rem;">← Back to results</a>';
-    document.body.appendChild(bar);
-  }
-  window.addEventListener('load', function(){
-    setTimeout(function(){
-      if(window._reviewData && window._reviewData.testName){
-        if(typeof _startTestNow === 'function'){
-          _startTestNow(window._reviewData.testName);
-          setTimeout(applyReview, 400);
-        }
-      }
-    }, 300);
-  });
-})();
-
 </script>
 
 
@@ -1103,5 +1064,4 @@ function renderReadingContent(passages){
 
 
 </body>
-
-</html>
+</html><div class="ovl" id="ovl" style="overflow-y:auto;align-items:flex-start;padding:1.5rem 1rem;">
