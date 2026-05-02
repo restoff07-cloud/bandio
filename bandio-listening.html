@@ -165,6 +165,8 @@ input[type=range].ap-vs{width:55px;accent-color:#fff;height:3px;}
 .ropt.ok .rc{border-color:#2a9d68;}.ropt.ok .rc::after{background:#2a9d68;}
 .ropt.bad .rc{border-color:#e24b4a;}.ropt.bad .rc::after{background:#e24b4a;}
 .rl{font-size:.88rem;}
+
+.ielt-tbl{border-collapse:collapse;width:100%;margin:.5rem 0 1.2rem;font-size:.88rem;}.ielt-th{border:1px solid #ccc;padding:.45rem .6rem;background:#f0eeea;font-weight:700;text-align:left;vertical-align:middle;}.ielt-td{border:1px solid #ccc;padding:.4rem .6rem;vertical-align:middle;}.ielt-gap-td{background:#fdf8f5;}
 </style>
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -655,6 +657,43 @@ function _renderGapSentences(sentences, answers, startNum, qNumOffset) {
   });
   return html;
 }
+
+function renderTableQ(q, qNumStart, newK, secQ_ref) {
+  // Render a visual table from tableData JSON
+  // Returns {html, nextQNum}
+  var html = '';
+  try {
+    var td = JSON.parse(q.extra.tableData);
+    var gapIdx = 0;
+    var answers = (q.answer||'').split('\n').map(function(s){return s.trim();});
+    html += '<div style="overflow-x:auto;margin-bottom:1.2rem;">';
+    html += '<table class="ielt-tbl">';
+    td.rows.forEach(function(row) {
+      html += '<tr>';
+      row.forEach(function(cell) {
+        if (cell.type === 'header') {
+          html += '<th class="ielt-th">' + _escL(cell.content) + '</th>';
+        } else if (cell.type === 'gap') {
+          var gn = qNumStart + gapIdx;
+          newK[gn] = cell.answer || answers[gapIdx] || '';
+          var labelHtml = cell.content ? '<span style="font-size:.8rem;display:block;color:#555;margin-bottom:2px;">'+_escL(cell.content)+'</span>' : '';
+          html += '<td class="ielt-td ielt-gap-td">' + labelHtml
+                + '<span class="qbox"><input id="q'+gn+'" oninput="ma('+gn+',this.value)" autocomplete="off" style="min-width:75px;"/>'
+                + '<span class="qn">'+gn+'</span></span></td>';
+          gapIdx++;
+        } else {
+          html += '<td class="ielt-td">' + _escL(cell.content) + '</td>';
+        }
+      });
+      html += '</tr>';
+    });
+    html += '</table></div>';
+    return { html: html, gapCount: gapIdx };
+  } catch(e) {
+    return { html: '<div style="color:red;font-size:.8rem;">Table render error</div>', gapCount: 1 };
+  }
+}
+
 function renderListeningContent(passages){
   var newK={};
   var qNum=1;
@@ -723,7 +762,15 @@ function renderListeningContent(passages){
       } else if(type==='Sentence endings'||type==='sent-end'){
         // Sentence endings — text input for the matching letter
         secQ+='<div style="padding-left:1.9rem;margin-bottom:.85rem;"><span class="qbox"><input id="q'+num+'" oninput="ma('+num+',this.value)" autocomplete="off" style="min-width:60px" placeholder="e.g. A"/><span class="qn">'+labelNum+'</span></span></div>';
-      } else if(type==='Summary fill'||type==='summary'||type==='Table/Note fill'||type==='table'||type==='Short answer'||type==='short'){
+            } else if((type==='Table/Note fill'||type==='table')&&q.extra&&q.extra.tableData){
+        // Visual table with gap cells
+        var tblRes = renderTableQ(q, num, newK, null);
+        // Adjust qNum for extra gaps (already counted num above)
+        var extraGaps = tblRes.gapCount - 1;
+        for(var gi=1; gi<=extraGaps; gi++){ qNum++; }
+        secQ += tblRes.html;
+      } else if(type==='Summary fill'||type==='summary'||type==='Short answer'||type==='short'){
+
         // Summary/Table/Short answer — treat same as gap fill with gapSentence
         var gapSentS=(q.extra&&q.extra.gapSentence)||'';
         var ansLinesS=(q.answer||'').split('\n').map(function(s){return s.trim();});
