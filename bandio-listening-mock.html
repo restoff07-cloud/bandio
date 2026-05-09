@@ -730,42 +730,64 @@ function goToSection(n){
 }
 
 
-function renderTableQ(q, qNumStart, newK, secQ_ref) {
-  // Render a visual table from tableData JSON
-  // Returns {html, nextQNum}
+function renderTableQ(q, qNumStart, newK) {
+  // New format: cell = { header: bool, content: string }
+  // ___ in content = answer blank
   var html = '';
+  var gapCount = 0;
   try {
     var td = JSON.parse(q.extra.tableData);
-    var gapIdx = 0;
-    var answers = (q.answer||'').split('\n').map(function(s){return s.trim();});
+    var answers = (q.answer||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
     html += '<div style="overflow-x:auto;margin-bottom:1.2rem;">';
-    html += '<table class="ielt-tbl">';
+    html += '<table style="border-collapse:collapse;width:100%;font-size:.88rem;line-height:1.5;">';
     td.rows.forEach(function(row) {
       html += '<tr>';
       row.forEach(function(cell) {
-        if (cell.type === 'header') {
-          html += '<th class="ielt-th">' + _escL(cell.content) + '</th>';
-        } else if (cell.type === 'gap') {
-          var gn = qNumStart + gapIdx;
-          newK[gn] = cell.answer || answers[gapIdx] || '';
-          var labelHtml = cell.content ? '<span style="font-size:.8rem;display:block;color:#555;margin-bottom:2px;">'+_escL(cell.content)+'</span>' : '';
-          html += '<td class="ielt-td ielt-gap-td">' + labelHtml
-                + '<span class="qbox"><input id="q'+gn+'" oninput="ma('+gn+',this.value)" autocomplete="off" style="min-width:75px;"/>'
-                + '<span class="qn">'+gn+'</span></span></td>';
-          gapIdx++;
+        var isH = cell.header || (cell.type === 'header');
+        var txt  = cell.content || '';
+        if (isH) {
+          html += '<th style="border:1px solid #ccc;padding:.45rem .65rem;background:#f0eeea;font-weight:700;text-align:left;vertical-align:middle;">' + _escL(txt) + '</th>';
         } else {
-          html += '<td class="ielt-td">' + _escL(cell.content) + '</td>';
+          // Check for ___ blanks OR old gap type
+          var isGapType = (cell.type === 'gap');
+          var hasBlanks = txt.indexOf('___') !== -1;
+          if (hasBlanks) {
+            var parts = txt.split('___');
+            var tdInner = '';
+            parts.forEach(function(part, pi) {
+              tdInner += _escL(part);
+              if (pi < parts.length - 1) {
+                var gn = qNumStart + gapCount;
+                newK[gn] = answers[gapCount] || '';
+                tdInner += '<span class="qbox" style="white-space:nowrap;">'
+                  + '<input class="input-q" id="q'+gn+'" oninput="ma('+gn+',this.value)" autocomplete="off" style="min-width:75px;"/>'
+                  + '<span class="qn">'+gn+'</span></span>';
+                gapCount++;
+              }
+            });
+            html += '<td style="border:1px solid #ccc;padding:.4rem .6rem;background:#fff;vertical-align:middle;">' + tdInner + '</td>';
+          } else if (isGapType) {
+            // Old format gap cell
+            var gn2 = qNumStart + gapCount;
+            newK[gn2] = cell.answer || answers[gapCount] || '';
+            html += '<td style="border:1px solid #ccc;padding:.4rem .6rem;background:#fdf8f5;vertical-align:middle;">'
+              + (txt ? '<span style="font-size:.8rem;display:block;color:#555;margin-bottom:2px;">'+_escL(txt)+'</span>' : '')
+              + '<span class="qbox"><input class="input-q" id="q'+gn2+'" oninput="ma('+gn2+',this.value)" autocomplete="off" style="min-width:75px;"/>'
+              + '<span class="qn">'+gn2+'</span></span></td>';
+            gapCount++;
+          } else {
+            html += '<td style="border:1px solid #ccc;padding:.4rem .6rem;background:#fff;vertical-align:middle;">' + _escL(txt) + '</td>';
+          }
         }
       });
       html += '</tr>';
     });
     html += '</table></div>';
-    return { html: html, gapCount: gapIdx };
   } catch(e) {
-    return { html: '<div style="color:red;font-size:.8rem;">Table render error</div>', gapCount: 1 };
+    html = '<div style="color:#e24b4a;font-size:.8rem;">Table error: ' + e.message + '</div>';
   }
+  return { html: html, gapCount: gapCount || 1 };
 }
-
 function renderListeningContent(passages){
   _allPassages = passages; // store for goToSection
   var newK={};
