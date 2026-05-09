@@ -413,38 +413,25 @@ function startTest(name){
     return;
   }
 
-  // Use Firebase SDK via the already-loaded module scope token
-  // Get fresh ID token from the current Firebase user
-  if (window._firebaseAuth && window._firebaseAuth.currentUser) {
-    window._firebaseAuth.currentUser.getIdToken(true)
-      .then(function(token) {
-        var url = 'https://firestore.googleapis.com/v1/projects/bandio-53433/databases/(default)/documents/users/' + uid;
-        return fetch(url, {
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(data) {
-        var plan = 'free';
-        if (data && data.fields && data.fields.plan && data.fields.plan.stringValue) {
-          plan = data.fields.plan.stringValue;
-        }
-        localStorage.setItem('bnd_plan', plan);
-        if (plan === 'premium' || plan === 'intensive') {
-          _startTestNow(name);
-        } else {
-          alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
-        }
-      })
-      .catch(function(e) {
-        console.log('Plan check error:', e);
-        var plan = localStorage.getItem('bnd_plan') || 'free';
-        if (plan === 'premium' || plan === 'intensive') {
-          _startTestNow(name);
-        } else {
-          alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
-        }
-      });
+  // Use _checkPlanLive which reads Firestore directly (no token refresh needed)
+  if (typeof window._checkPlanLive === 'function') {
+    window._checkPlanLive(uid).then(function(plan){
+      localStorage.setItem('bnd_plan', plan);
+      if (plan === 'premium' || plan === 'intensive') {
+        _startTestNow(name);
+      } else {
+        alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
+      }
+    }).catch(function(e){
+      console.log('Plan check error:', e);
+      // Fallback: trust localStorage plan
+      var plan = localStorage.getItem('bnd_plan') || 'free';
+      if (plan === 'premium' || plan === 'intensive') {
+        _startTestNow(name);
+      } else {
+        alert('This test requires Premium or Intensive. Contact @abduganiev9009 on Telegram after payment.');
+      }
+    });
   } else {
     // Firebase not ready — fallback to localStorage
     var plan = localStorage.getItem('bnd_plan') || 'free';
@@ -731,8 +718,6 @@ function goToSection(n){
 
 
 function renderTableQ(q, qNumStart, newK) {
-  // New format: cell = { header: bool, content: string }
-  // ___ in content = answer blank
   var html = '';
   var gapCount = 0;
   try {
@@ -748,26 +733,24 @@ function renderTableQ(q, qNumStart, newK) {
         if (isH) {
           html += '<th style="border:1px solid #ccc;padding:.45rem .65rem;background:#f0eeea;font-weight:700;text-align:left;vertical-align:middle;">' + _escL(txt) + '</th>';
         } else {
-          // Check for ___ blanks OR old gap type
-          var isGapType = (cell.type === 'gap');
-          var hasBlanks = txt.indexOf('___') !== -1;
+          var hasBlanks  = txt.indexOf('___') !== -1;
+          var isGapType  = (cell.type === 'gap');
           if (hasBlanks) {
             var parts = txt.split('___');
-            var tdInner = '';
+            var inner = '';
             parts.forEach(function(part, pi) {
-              tdInner += _escL(part);
+              inner += _escL(part);
               if (pi < parts.length - 1) {
                 var gn = qNumStart + gapCount;
                 newK[gn] = answers[gapCount] || '';
-                tdInner += '<span class="qbox" style="white-space:nowrap;">'
+                inner += '<span class="qbox" style="white-space:nowrap;">'
                   + '<input class="input-q" id="q'+gn+'" oninput="ma('+gn+',this.value)" autocomplete="off" style="min-width:75px;"/>'
                   + '<span class="qn">'+gn+'</span></span>';
                 gapCount++;
               }
             });
-            html += '<td style="border:1px solid #ccc;padding:.4rem .6rem;background:#fff;vertical-align:middle;">' + tdInner + '</td>';
+            html += '<td style="border:1px solid #ccc;padding:.4rem .6rem;background:#fff;vertical-align:middle;">' + inner + '</td>';
           } else if (isGapType) {
-            // Old format gap cell
             var gn2 = qNumStart + gapCount;
             newK[gn2] = cell.answer || answers[gapCount] || '';
             html += '<td style="border:1px solid #ccc;padding:.4rem .6rem;background:#fdf8f5;vertical-align:middle;">'
@@ -788,6 +771,7 @@ function renderTableQ(q, qNumStart, newK) {
   }
   return { html: html, gapCount: gapCount || 1 };
 }
+
 function renderListeningContent(passages){
   _allPassages = passages; // store for goToSection
   var newK={};
