@@ -2092,32 +2092,36 @@ document.addEventListener('DOMContentLoaded', function() {
             const checked = qitem.querySelector('input[type=radio]:checked');
             if (checked) answer = checked.value;
           } else {
-            // Gap fill / short answer / Table fill — check for dedicated gap-ans textarea first
-            const gapTA = qitem.querySelector('textarea[id^="gap-ans-"], input[id^="gap-ans-"]');
-            const gapSentTA2 = qitem.querySelector('textarea[id^="gap-sentence-"]');
-            const matchListTA = qitem.querySelector('textarea[id^="match-list-"]');
-            // Table/Note fill — read the hidden tbl-data JSON input
+            // Table/Note fill: tbl-data- hidden input takes priority
             const tblDataEl = qitem.querySelector('input[id^="tbl-data-"]');
-            if (tblDataEl && tblDataEl.value.trim()) {
-              extraData = Object.assign(extraData||{}, { tableData: tblDataEl.value.trim() });
-            }
-            if (gapTA) {
-              answer = gapTA.value.trim();
-              if (gapSentTA2 && gapSentTA2.value.trim()) {
-                extraData = Object.assign(extraData||{}, { gapSentence: gapSentTA2.value.trim() });
-              }
-              if (matchListTA && matchListTA.value.trim()) {
-                extraData = Object.assign(extraData||{}, { matchList: matchListTA.value.trim() });
-              }
-              const stmtListTA = qitem.querySelector('textarea[id^="stmt-list-"]');
-              if (stmtListTA && stmtListTA.value.trim()) {
-                extraData = Object.assign(extraData||{}, { stmtList: stmtListTA.value.trim() });
-              }
+            if (qtype === 'Table/Note fill' && tblDataEl && tblDataEl.value.trim()) {
+              // Table question: save tableData + answer key, skip all other extra fields
+              extraData = { tableData: tblDataEl.value.trim() };
+              const gapAnsTA = qitem.querySelector('textarea[id^="gap-ans-"]');
+              if (gapAnsTA) answer = gapAnsTA.value.trim();
             } else {
-              const inp = qitem.querySelector('input[type=text]');
-              if (inp) answer = inp.value.trim();
-              const textareas = qitem.querySelectorAll('textarea');
-              if (textareas.length > 1) answer = textareas[textareas.length-1].value.trim();
+              // Gap fill / short answer / other types
+              const gapTA = qitem.querySelector('textarea[id^="gap-ans-"], input[id^="gap-ans-"]');
+              const gapSentTA2 = qitem.querySelector('textarea[id^="gap-sentence-"]');
+              const matchListTA = qitem.querySelector('textarea[id^="match-list-"]');
+              if (gapTA) {
+                answer = gapTA.value.trim();
+                if (gapSentTA2 && gapSentTA2.value.trim()) {
+                  extraData = Object.assign(extraData||{}, { gapSentence: gapSentTA2.value.trim() });
+                }
+                if (matchListTA && matchListTA.value.trim()) {
+                  extraData = Object.assign(extraData||{}, { matchList: matchListTA.value.trim() });
+                }
+                const stmtListTA = qitem.querySelector('textarea[id^="stmt-list-"]');
+                if (stmtListTA && stmtListTA.value.trim()) {
+                  extraData = Object.assign(extraData||{}, { stmtList: stmtListTA.value.trim() });
+                }
+              } else {
+                const inp = qitem.querySelector('input[type=text]');
+                if (inp) answer = inp.value.trim();
+                const textareas = qitem.querySelectorAll('textarea');
+                if (textareas.length > 1) answer = textareas[textareas.length-1].value.trim();
+              }
             }
           }
 
