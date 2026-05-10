@@ -721,7 +721,8 @@ function renderTableQ(q, qNumStart, newK) {
   var html = '';
   var gapCount = 0;
   try {
-    var td = JSON.parse(q.extra.tableData);
+    var rawTd = q.extra.tableData;
+    var td = (typeof rawTd === 'string') ? JSON.parse(rawTd) : rawTd;
     var answers = (q.answer||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
     html += '<div style="overflow-x:auto;margin-bottom:1.2rem;">';
     html += '<table style="border-collapse:collapse;width:100%;font-size:.88rem;line-height:1.5;">';
@@ -790,8 +791,9 @@ function renderListeningContent(passages){
     var matchListShown=false;
     (p.questions||[]).forEach(function(q){
       var num=qNum++;
-      newK[num]=q.answer||'';
       var type=q.type||'Gap fill';
+      // Table questions set newK per-gap inside renderTableQ; skip blanket assignment
+      if(type!=='Table/Note fill'&&type!=='table'){newK[num]=q.answer||'';}
       var labelNum=String(q.num||num);
       var qText=(q.text||'').trim();
 
