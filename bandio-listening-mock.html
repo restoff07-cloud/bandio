@@ -721,8 +721,7 @@ function renderTableQ(q, qNumStart, newK) {
   var html = '';
   var gapCount = 0;
   try {
-    var rawTd = q.extra.tableData;
-    var td = (typeof rawTd === 'string') ? JSON.parse(rawTd) : rawTd;
+    var td = JSON.parse(q.extra.tableData);
     var answers = (q.answer||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
     html += '<div style="overflow-x:auto;margin-bottom:1.2rem;">';
     html += '<table style="border-collapse:collapse;width:100%;font-size:.88rem;line-height:1.5;">';
@@ -732,7 +731,7 @@ function renderTableQ(q, qNumStart, newK) {
         var isH = cell.header || (cell.type === 'header');
         var txt  = cell.content || '';
         if (isH) {
-          html += '<th style="border:1px solid #ccc;padding:.45rem .65rem;background:#f0eeea;font-weight:700;text-align:left;vertical-align:middle;">' + _escL(txt) + '</th>';
+          html += '<th style="border:1px solid #ccc;padding:.45rem .65rem;background:#f0eeea;font-weight:700;text-align:left;vertical-align:middle;">' + _escL(txt).replace(/\n/g,'<br>') + '</th>';
         } else {
           var hasBlanks  = txt.indexOf('___') !== -1;
           var isGapType  = (cell.type === 'gap');
@@ -760,7 +759,7 @@ function renderTableQ(q, qNumStart, newK) {
               + '<span class="qn">'+gn2+'</span></span></td>';
             gapCount++;
           } else {
-            html += '<td style="border:1px solid #ccc;padding:.4rem .6rem;background:#fff;vertical-align:middle;">' + _escL(txt) + '</td>';
+            html += '<td style="border:1px solid #ccc;padding:.4rem .6rem;background:#fff;vertical-align:middle;">' + _escL(txt).replace(/\n/g,'<br>') + '</td>';
           }
         }
       });
@@ -791,9 +790,8 @@ function renderListeningContent(passages){
     var matchListShown=false;
     (p.questions||[]).forEach(function(q){
       var num=qNum++;
+      newK[num]=q.answer||'';
       var type=q.type||'Gap fill';
-      // Table questions set newK per-gap inside renderTableQ; skip blanket assignment
-      if(type!=='Table/Note fill'&&type!=='table'){newK[num]=q.answer||'';}
       var labelNum=String(q.num||num);
       var qText=(q.text||'').trim();
 
