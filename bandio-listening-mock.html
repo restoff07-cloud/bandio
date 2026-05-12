@@ -608,6 +608,7 @@ function removeHighlight() {
 
 // ── DYNAMIC LISTENING CONTENT RENDERER (Firestore tests) ──────────
 function _escL(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
+function _escLnl(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML.replace(/&#10;/g,'<br>').replace(/\n/g,'<br>');}
 
 
 function _renderBold(s){
@@ -731,7 +732,7 @@ function renderTableQ(q, qNumStart, newK) {
         var isH = cell.header || (cell.type === 'header');
         var txt  = cell.content || '';
         if (isH) {
-          html += '<th style="border:1px solid #ccc;padding:.45rem .65rem;background:#f0eeea;font-weight:700;text-align:left;vertical-align:middle;">' + _escL(txt).replace(/\n/g,'<br>') + '</th>';
+          html += '<th style="border:1px solid #ccc;padding:.45rem .65rem;background:#f0eeea;font-weight:700;text-align:left;vertical-align:middle;">' + _escLnl(txt) + '</th>';
         } else {
           var hasBlanks  = txt.indexOf('___') !== -1;
           var isGapType  = (cell.type === 'gap');
@@ -759,7 +760,7 @@ function renderTableQ(q, qNumStart, newK) {
               + '<span class="qn">'+gn2+'</span></span></td>';
             gapCount++;
           } else {
-            html += '<td style="border:1px solid #ccc;padding:.4rem .6rem;background:#fff;vertical-align:middle;">' + _escL(txt).replace(/\n/g,'<br>') + '</td>';
+            html += '<td style="border:1px solid #ccc;padding:.4rem .6rem;background:#fff;vertical-align:middle;">' + _escLnl(txt) + '</td>';
           }
         }
       });
