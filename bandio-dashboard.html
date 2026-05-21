@@ -206,7 +206,7 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;}
   margin-bottom:3px;
 }
 .hamburger{
-  display:flex;flex-direction:column;justify-content:center;gap:5px;
+  display:none;flex-direction:column;justify-content:center;gap:5px;
   padding:.45rem;border-radius:8px;
   transition:background var(--transition);
 }
@@ -801,7 +801,8 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;}
   .hero-progress-card{min-width:unset;}
   .skills-scroll{grid-template-columns:1fr 1fr;}
 }
-@media(max-width:680px){
+/* Sidebar hidden ONLY on true mobile — 520px and below */
+@media(max-width:520px){
   .sidebar{transform:translateX(-100%);}
   .sidebar.open{transform:translateX(0);z-index:100;}
   .main{margin-left:0!important;padding:1rem 1rem 2rem;}
@@ -813,6 +814,14 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;}
   .stats-row{grid-template-columns:repeat(2,1fr);}
   .hero-greeting{font-size:1.65rem;}
   .upgrade-banner{padding:1.25rem;}
+}
+/* Between 521px–800px: sidebar visible, main offset, compact layout */
+@media(min-width:521px) and (max-width:800px){
+  .main{padding:1.5rem 1.25rem;}
+  .jump-grid{grid-template-columns:repeat(2,1fr);}
+  .jump-card.primary-card{grid-column:span 2;}
+  .skills-scroll{grid-template-columns:1fr 1fr;}
+  .hero-greeting{font-size:1.75rem;}
 }
 @media(max-width:420px){
   .stats-row{grid-template-columns:repeat(2,1fr);}
@@ -1228,7 +1237,7 @@ function startSessionTimer(uid){
 function renderHero(data, firstName){
   $('dash-firstname').textContent = firstName;
 
-  const plan = data.plan || 'free';
+  const plan = data.planType || data.plan || 'free';
   const planLabels = { premium:'✦ Premium', intensive:'🔥🔥 Intensive', free:'Free plan' };
   $('hero-plan-badge').textContent = planLabels[plan] || 'Free plan';
   if(plan !== 'free') $('hero-plan-badge').style.cssText = 'background:rgba(232,93,47,.12);color:#e85d2f;';
@@ -1372,7 +1381,7 @@ function renderSidebar(data, firstName){
   ['sidebar-avatar','mobile-avatar'].forEach(id=>{
     const e=$(id); if(e) e.textContent=firstName.charAt(0).toUpperCase();
   });
-  const plan = data.plan||'free';
+  const plan = data.planType || data.plan || 'free';
   const planStr = plan==='premium'?'Premium ✦': plan==='intensive'?'Intensive ✦✦':'Free plan';
   const sp = $('sidebar-plan');
   if(sp) sp.textContent = planStr;
@@ -1468,7 +1477,12 @@ onAuthStateChanged(auth, async user => {
     const snap = await getDoc(ref);
     const data = snap.exists() ? snap.data() : {};
 
-    const firstName = (data.name||user.displayName||user.email||'Student').split(' ')[0];
+    // Try every possible name field your registration may have saved
+    const rawName = data.name || data.displayName || data.username || data.firstName
+                 || user.displayName || user.email || 'Student';
+    const firstName = rawName.includes('@')
+      ? rawName.split('@')[0]           // email fallback → use part before @
+      : rawName.split(' ')[0];          // full name → first word
 
     // Check if onboarding needed
     const needsOnboarding = !snap.exists() || (!data.targetBand && !data.currentBand);
@@ -1579,7 +1593,7 @@ function closeSidebar(){
   document.body.style.overflow='';
 }
 document.querySelectorAll('.nav-item').forEach(el=>{
-  el.addEventListener('click',()=>{ if(window.innerWidth<=680) closeSidebar(); });
+  el.addEventListener('click',()=>{ if(window.innerWidth<=520) closeSidebar(); });
 });
 </script>
 </body>
