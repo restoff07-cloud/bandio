@@ -277,12 +277,29 @@ button{font-family:var(--font);cursor:pointer;border:none;background:none;}
         </span>
         Dashboard
       </a>
-      <a class="nav-item" href="bandio-practice.html">
-        <span class="nav-icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M6 5.5l4 2.5-4 2.5V5.5z" fill="currentColor"/></svg>
-        </span>
-        Practice
-      </a>
+      <div class="nav-group" id="practice-nav-group">
+        <div class="nav-item nav-dropdown-toggle" onclick="togglePracticeMenu()" id="practice-toggle" style="cursor:pointer;">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M6 5.5l4 2.5-4 2.5V5.5z" fill="currentColor"/></svg>
+          </span>
+          Practice
+          <span id="practice-chevron" style="margin-left:auto;font-size:.65rem;color:var(--ink4);transition:transform .2s;">▾</span>
+        </div>
+        <div id="practice-submenu" style="display:none;padding-left:.75rem;margin-top:1px;">
+          <a class="nav-item" href="bandio-practice.html" style="font-size:.8rem;">
+            <span class="nav-icon" style="width:26px;height:26px;">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 4h7a3 3 0 013 3v6a2 2 0 00-2-2H4V4zM12 13H4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </span>
+            Reading practice
+          </a>
+          <a class="nav-item" href="bandio-listening.html" style="font-size:.8rem;">
+            <span class="nav-icon" style="width:26px;height:26px;">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 7C3 4.24 5.24 2 8 2s5 2.24 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 10.5C5 9.67 5.67 9 6.5 9H7v4h-.5C5.67 13 5 12.33 5 11.5v-1zM11 10.5C11 9.67 10.33 9 9.5 9H9v4h.5c.83 0 1.5-.67 1.5-1.5v-1z" fill="currentColor"/></svg>
+            </span>
+            Listening practice
+          </a>
+        </div>
+      </div>
       <a class="nav-item" href="bandio-books.html">
         <span class="nav-icon">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 2h6a2 2 0 012 2v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 4h1.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5H11" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h4M5 8.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
@@ -400,7 +417,7 @@ button{font-family:var(--font);cursor:pointer;border:none;background:none;}
           </div>
           <div class="pcard-name">Listening</div>
           <div class="pcard-desc">Practice listening passages by section.</div>
-          <a class="pcard-link" href="bandio-listening.html">
+          <a class="pcard-link" href="bandio-listening-mock.html">
             Start practice
             <svg viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="#4f7ef8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
@@ -413,7 +430,7 @@ button{font-family:var(--font);cursor:pointer;border:none;background:none;}
           </div>
           <div class="pcard-name">Reading</div>
           <div class="pcard-desc">Practice reading passages by section.</div>
-          <a class="pcard-link" href="bandio-practice.html">
+          <a class="pcard-link" href="bandio-reading-mock.html">
             Start practice
             <svg viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="#4f7ef8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
@@ -674,6 +691,19 @@ function closeSidebar(){
   document.getElementById('sbOverlay').classList.remove('show');
   document.body.style.overflow='';
 }
+
+let practiceOpen = false;
+function togglePracticeMenu(){
+  practiceOpen = !practiceOpen;
+  const menu = document.getElementById('practice-submenu');
+  const chevron = document.getElementById('practice-chevron');
+  const toggle = document.getElementById('practice-toggle');
+  menu.style.display = practiceOpen ? 'block' : 'none';
+  chevron.style.transform = practiceOpen ? 'rotate(180deg)' : 'rotate(0)';
+  toggle.style.color = practiceOpen ? 'var(--ink)' : '';
+  toggle.style.background = practiceOpen ? 'var(--bg)' : '';
+}
+
 document.querySelectorAll('.nav-item').forEach(el=>{
   el.addEventListener('click',()=>{if(window.innerWidth<=640)closeSidebar();});
 });
