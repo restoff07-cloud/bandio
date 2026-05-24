@@ -4,624 +4,516 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Bandio — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --sw:220px;
-  --ink:#0d0c0a;--ink2:#2a2825;--ink3:#6b6760;--ink4:#a09d98;
-  --accent:#6c63ff;--accent2:#8b85ff;--aglow:rgba(108,99,255,.18);
-  --or:#ff6b35;--or-bg:#fff3ee;
-  --gr:#22c55e;--gr-bg:#f0fdf4;
-  --bl:#3b82f6;--bl-bg:#eff6ff;
-  --pk:#ec4899;--pk-bg:#fdf2f8;
-  --cream:#f5f3ef;--cream2:#edeae3;
-  --card:#fff;
-  --bdr:rgba(13,12,10,.07);--bdr2:rgba(13,12,10,.13);
-  --sh:0 1px 3px rgba(13,12,10,.05),0 4px 14px rgba(13,12,10,.05);
-  --shm:0 4px 16px rgba(13,12,10,.08),0 16px 40px rgba(13,12,10,.06);
-  --r:10px;--rm:16px;--rl:20px;--rxl:26px;
-  --fd:'Plus Jakarta Sans',sans-serif;--fb:'Inter',sans-serif;
-  --t:.2s cubic-bezier(.4,0,.2,1);
+  --sw:224px;
+  --white:#ffffff;
+  --bg:#f7f7f8;
+  --ink:#111111;
+  --ink2:#444444;
+  --ink3:#888888;
+  --ink4:#bbbbbb;
+  --bdr:#e8e8ea;
+  --blue:#4f7ef8;
+  --blue-bg:#eef2ff;
+  --blue-light:#dce6ff;
+  --sh:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);
+  --shm:0 2px 8px rgba(0,0,0,.06),0 12px 32px rgba(0,0,0,.06);
+  --r:14px;--rm:18px;--rl:22px;
+  --font:'Geist',system-ui,sans-serif;
 }
-html{scroll-behavior:smooth;}
-body{font-family:var(--fb);background:var(--cream);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+html,body{height:100%;}
+body{font-family:var(--font);background:var(--white);color:var(--ink);display:flex;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 a{text-decoration:none;color:inherit;}
-button{font-family:var(--fb);cursor:pointer;border:none;background:none;}
+button{font-family:var(--font);cursor:pointer;border:none;background:none;}
 
-/* ═══ SIDEBAR ═══════════════════════════════════════════ */
+/* ══ SIDEBAR ══════════════════════════════════════════ */
 .sidebar{
-  width:var(--sw);background:var(--ink);
-  position:fixed;top:0;left:0;bottom:0;z-index:80;
+  width:var(--sw);min-width:var(--sw);
+  background:var(--white);
+  border-right:1px solid var(--bdr);
+  min-height:100vh;height:100%;
   display:flex;flex-direction:column;
-  padding:1.4rem .875rem 1.2rem;
+  padding:0;
+  position:fixed;top:0;left:0;bottom:0;z-index:60;
   overflow-y:auto;scrollbar-width:none;
-  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  transition:transform .26s cubic-bezier(.4,0,.2,1);
 }
 .sidebar::-webkit-scrollbar{display:none;}
 
+.s-top{padding:1.25rem 1.1rem 0;}
+
 .s-logo{
-  font-family:var(--fd);font-weight:800;font-size:1.25rem;
-  color:#f5f2eb;display:flex;align-items:center;gap:.4rem;
-  margin-bottom:1.75rem;padding:.2rem .5rem;letter-spacing:-.02em;
+  display:flex;align-items:center;gap:.45rem;
+  padding:.5rem .5rem .5rem;
+  margin-bottom:1.5rem;
 }
-.s-logo-dot{width:7px;height:7px;border-radius:50%;background:var(--or);flex-shrink:0;}
+.s-logo-txt{
+  font-size:1.15rem;font-weight:700;
+  color:var(--ink);letter-spacing:-.025em;
+}
+.s-logo-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--blue);flex-shrink:0;
+}
 
-.nav-lbl{
-  font-size:.57rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
-  color:rgba(245,242,235,.18);padding:.15rem .6rem;
-  margin-top:1rem;margin-bottom:.25rem;
-}
+.nav-group{margin-bottom:.25rem;}
 .nav-item{
-  display:flex;align-items:center;gap:.6rem;
-  padding:.55rem .6rem;border-radius:var(--r);
-  font-size:.81rem;font-weight:500;
-  color:rgba(245,242,235,.4);
-  transition:all var(--t);margin-bottom:1px;position:relative;
+  display:flex;align-items:center;gap:.65rem;
+  padding:.52rem .75rem;border-radius:10px;
+  font-size:.84rem;font-weight:500;
+  color:var(--ink2);
+  transition:all .15s;margin-bottom:2px;
+  position:relative;
 }
-.nav-item:hover{background:rgba(255,255,255,.07);color:rgba(245,242,235,.8);}
-.nav-item.active{background:rgba(255,107,53,.13);color:#f5f2eb;}
-.nav-item.active::before{
-  content:'';position:absolute;left:0;top:20%;bottom:20%;
-  width:2.5px;background:var(--or);border-radius:0 3px 3px 0;
-}
-.nav-icon{font-size:.85rem;width:17px;text-align:center;flex-shrink:0;}
-.nav-badge{
-  margin-left:auto;background:var(--or);color:#fff;
-  font-size:.57rem;font-weight:700;padding:.07rem .38rem;border-radius:100px;
-}
-.sb-upgrade{
-  background:linear-gradient(135deg,rgba(108,99,255,.22),rgba(108,99,255,.08));
-  border:1px solid rgba(108,99,255,.22);border-radius:var(--rm);
-  padding:.9rem;margin-top:.65rem;
-}
-.sb-upgrade-title{font-family:var(--fd);font-weight:700;font-size:.8rem;color:#f5f2eb;margin-bottom:.2rem;}
-.sb-upgrade-desc{font-size:.68rem;color:rgba(245,242,235,.38);line-height:1.55;margin-bottom:.6rem;}
-.sb-upgrade-btn{
-  display:block;width:100%;padding:.42rem;text-align:center;
-  background:var(--accent);color:#fff;border-radius:var(--r);
-  font-size:.76rem;font-weight:700;transition:all var(--t);
-}
-.sb-upgrade-btn:hover{background:var(--accent2);}
-.s-bottom{margin-top:auto;padding-top:.9rem;border-top:.5px solid rgba(255,255,255,.07);}
-.user-chip{display:flex;align-items:center;gap:.6rem;padding:.55rem .6rem;border-radius:var(--r);cursor:pointer;transition:background var(--t);}
-.user-chip:hover{background:rgba(255,255,255,.06);}
-.u-av{
-  width:30px;height:30px;border-radius:50%;
-  background:linear-gradient(135deg,var(--or),#ff8c55);
+.nav-item:hover{background:var(--bg);color:var(--ink);}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:600;}
+.nav-icon{
+  width:30px;height:30px;border-radius:8px;
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--fd);font-weight:700;font-size:.76rem;color:#fff;flex-shrink:0;
+  flex-shrink:0;font-size:.95rem;
+  background:transparent;transition:background .15s;
 }
-.u-name{font-size:.79rem;font-weight:600;color:rgba(245,242,235,.88);}
-.u-plan{font-size:.63rem;color:rgba(245,242,235,.3);margin-top:1px;}
-.signout-btn{
-  display:flex;align-items:center;gap:.6rem;
-  padding:.48rem .6rem;border-radius:var(--r);
-  font-size:.77rem;font-weight:500;color:rgba(245,242,235,.27);
-  transition:all var(--t);width:100%;margin-top:.15rem;
-}
-.signout-btn:hover{color:rgba(245,242,235,.62);background:rgba(255,255,255,.05);}
-
-/* ═══ MOBILE TOPBAR ═════════════════════════════════════ */
-.mob-bar{
-  display:none;background:var(--ink);
-  padding:.62rem 1rem;align-items:center;gap:.7rem;
-  position:sticky;top:0;z-index:70;
-  border-bottom:.5px solid rgba(255,255,255,.06);
-}
-.mob-logo{font-family:var(--fd);font-weight:800;font-size:1.08rem;color:#f5f2eb;flex:1;letter-spacing:-.02em;}
-.hamburger{
-  display:none;flex-direction:column;gap:4px;
-  padding:.4rem;border-radius:8px;transition:background var(--t);
-  cursor:pointer;
-}
-.hamburger:hover{background:rgba(255,255,255,.08);}
-.hamburger span{display:block;width:18px;height:2px;background:#f5f2eb;border-radius:2px;}
-.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:79;backdrop-filter:blur(2px);}
-.sb-overlay.show{display:block;}
-
-/* ═══ MAIN ══════════════════════════════════════════════ */
-.main{
-  margin-left:var(--sw);
-  padding:1.75rem 2rem 3rem;
-  min-height:100vh;
+.nav-item.active .nav-icon{background:var(--blue-light);}
+.nav-sep{height:1px;background:var(--bdr);margin:1rem .5rem;}
+.nav-badge{
+  margin-left:auto;background:#7c3aed;color:#fff;
+  font-size:.6rem;font-weight:700;
+  padding:.1rem .42rem;border-radius:100px;letter-spacing:.03em;
 }
 
-/* ═══ ONBOARDING MODAL ══════════════════════════════════ */
-.modal-bd{
-  position:fixed;inset:0;background:rgba(8,7,6,.62);backdrop-filter:blur(8px);
-  z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;
-  opacity:0;transition:opacity .28s;
-}
-.modal-bd.show{display:flex;opacity:1;}
-.modal{
-  background:var(--card);border-radius:var(--rxl);padding:2.1rem;
-  max-width:390px;width:100%;
-  box-shadow:0 20px 60px rgba(13,12,10,.2);
-  transform:translateY(20px) scale(.97);transition:all .28s cubic-bezier(.4,0,.2,1);
-  position:relative;overflow:hidden;
-}
-.modal-bd.show .modal{transform:none;}
-.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--or),var(--accent));}
-.modal-icon{font-size:2rem;margin-bottom:.75rem;display:block;}
-.modal h2{font-family:var(--fd);font-weight:800;font-size:1.4rem;letter-spacing:-.03em;margin-bottom:.35rem;}
-.modal p{font-size:.84rem;color:var(--ink3);line-height:1.65;margin-bottom:1.4rem;}
-.modal-field{margin-bottom:1rem;}
-.modal-field label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:.4rem;}
-.band-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.3rem;}
-.band-btn{
-  padding:.42rem .2rem;border-radius:var(--r);
-  border:1.5px solid var(--bdr2);background:var(--cream);
-  font-family:var(--fd);font-size:.73rem;font-weight:700;
-  color:var(--ink3);transition:all var(--t);text-align:center;
-}
-.band-btn:hover{border-color:var(--or);color:var(--or);background:var(--or-bg);}
-.band-btn.sel{background:var(--or);border-color:var(--or);color:#fff;box-shadow:0 3px 10px rgba(255,107,53,.28);}
-.modal-submit{
-  width:100%;padding:.78rem;background:var(--ink);color:#fff;
-  border-radius:var(--rm);font-family:var(--fd);
-  font-size:.88rem;font-weight:700;
-  transition:all var(--t);margin-top:.45rem;
-}
-.modal-submit:hover{background:var(--or);transform:translateY(-1px);}
+.s-bottom{margin-top:auto;padding:0 1.1rem 1.25rem;}
 
-/* ═══ TOPBAR ════════════════════════════════════════════ */
+/* ══ TOPBAR ══════════════════════════════════════════ */
 .topbar{
   display:flex;align-items:center;justify-content:flex-end;
-  gap:.65rem;margin-bottom:1.75rem;
+  gap:.75rem;padding:.9rem 2rem;
+  border-bottom:1px solid var(--bdr);
+  background:var(--white);
+  position:sticky;top:0;z-index:40;
 }
-.tb-btn{
-  width:34px;height:34px;border-radius:50%;
-  background:var(--card);border:1px solid var(--bdr2);
+.topbar-user{
+  display:flex;align-items:center;gap:.55rem;
+  padding:.35rem .6rem .35rem .35rem;
+  border-radius:100px;border:1px solid var(--bdr);
+  cursor:pointer;transition:all .15s;background:var(--white);
+}
+.topbar-user:hover{background:var(--bg);border-color:var(--ink4);}
+.topbar-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--blue);
   display:flex;align-items:center;justify-content:center;
-  font-size:.88rem;transition:all var(--t);cursor:pointer;position:relative;
+  font-size:.78rem;font-weight:700;color:#fff;flex-shrink:0;
 }
-.tb-btn:hover{border-color:var(--accent);box-shadow:0 0 0 3px var(--aglow);}
-.notif-dot{
-  position:absolute;top:5px;right:5px;width:6px;height:6px;
-  border-radius:50%;background:var(--or);border:1.5px solid #fff;
-}
+.topbar-name{font-size:.82rem;font-weight:600;color:var(--ink);}
+.topbar-chevron{font-size:.7rem;color:var(--ink3);}
 
-/* ═══ HERO ══════════════════════════════════════════════ */
-.hero{
-  display:grid;
-  grid-template-columns:1fr 262px 208px;
-  gap:1.2rem;margin-bottom:1.6rem;align-items:start;
+/* Mobile topbar */
+.mob-bar{
+  display:none;background:var(--white);
+  padding:.75rem 1rem;align-items:center;gap:.75rem;
+  position:sticky;top:0;z-index:70;
+  border-bottom:1px solid var(--bdr);
 }
-.plan-badge{
-  display:inline-flex;align-items:center;gap:.3rem;
-  padding:.2rem .65rem;border-radius:100px;
-  font-size:.67rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-  background:var(--or-bg);color:var(--or);
-  border:1px solid rgba(255,107,53,.18);margin-bottom:.5rem;
+.mob-logo{font-size:1.1rem;font-weight:700;color:var(--ink);letter-spacing:-.025em;flex:1;}
+.hamburger{
+  display:none;flex-direction:column;gap:4px;
+  padding:.4rem;border-radius:8px;cursor:pointer;
+  transition:background .15s;
 }
-.hero-greeting{
-  font-family:var(--fd);font-weight:800;
-  font-size:1.95rem;letter-spacing:-.04em;line-height:1.15;
-  color:var(--ink);margin-bottom:.35rem;
-}
-.wave{display:inline-block;animation:wave 2.5s ease-in-out infinite;transform-origin:70% 70%;}
-@keyframes wave{0%,100%{transform:rotate(0);}10%{transform:rotate(14deg);}20%{transform:rotate(-8deg);}30%{transform:rotate(14deg);}40%{transform:rotate(-4deg);}50%{transform:rotate(10deg);}60%{transform:rotate(0);}}
-.hero-sub{font-size:.87rem;color:var(--ink3);line-height:1.62;max-width:360px;margin-bottom:1rem;}
-.hero-stats{display:flex;gap:1.4rem;flex-wrap:wrap;margin-bottom:1.1rem;}
-.hs{display:flex;align-items:center;gap:.4rem;}
-.hs-ico{font-size:.9rem;}
-.hs-val{font-family:var(--fd);font-weight:700;font-size:.9rem;color:var(--ink);}
-.hs-lbl{font-size:.72rem;color:var(--ink4);}
-.hero-btns{display:flex;gap:.65rem;flex-wrap:wrap;}
-.btn-prim{
-  display:inline-flex;align-items:center;gap:.45rem;
-  padding:.62rem 1.3rem;background:var(--ink);color:#fff;
-  border-radius:var(--rm);font-family:var(--fd);
-  font-size:.845rem;font-weight:700;transition:all var(--t);
-}
-.btn-prim:hover{background:var(--or);transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,107,53,.28);}
-.btn-sec{
-  display:inline-flex;align-items:center;gap:.45rem;
-  padding:.62rem 1.3rem;background:var(--card);
-  border:1.5px solid var(--bdr2);color:var(--ink2);
-  border-radius:var(--rm);font-family:var(--fd);
-  font-size:.845rem;font-weight:600;transition:all var(--t);
-}
-.btn-sec:hover{border-color:var(--ink);transform:translateY(-1px);box-shadow:var(--sh);}
+.hamburger:hover{background:var(--bg);}
+.hamburger span{display:block;width:18px;height:1.8px;background:var(--ink);border-radius:2px;}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:59;backdrop-filter:blur(2px);}
+.sb-overlay.show{display:block;}
 
-/* Progress card */
-.prog-card{
-  background:var(--card);border:1px solid var(--bdr);
-  border-radius:var(--rl);padding:1.3rem 1.4rem;box-shadow:var(--sh);
-}
-.pc-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-bottom:.9rem;}
-.donut-wrap{position:relative;width:124px;height:124px;margin:0 auto .8rem;}
-.donut-wrap svg{transform:rotate(-90deg);}
-.dt{fill:none;stroke:var(--cream2);stroke-width:10;}
-.df{fill:none;stroke:url(#pg);stroke-width:10;stroke-linecap:round;stroke-dasharray:339.3;stroke-dashoffset:339.3;transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1);}
-.dc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.dc-band{font-family:var(--fd);font-weight:800;font-size:1.7rem;letter-spacing:-.04em;color:var(--ink);line-height:1;}
-.dc-lbl{font-size:.62rem;color:var(--ink4);margin-top:1px;}
-.pc-row{display:flex;justify-content:space-between;margin-bottom:.28rem;}
-.pc-rl{font-size:.73rem;color:var(--ink3);}
-.pc-rv{font-family:var(--fd);font-weight:700;font-size:.82rem;color:var(--ink);}
-.pc-insight{
-  display:flex;align-items:center;gap:.32rem;
-  font-size:.7rem;color:var(--or);font-weight:600;
-  padding:.42rem .6rem;background:var(--or-bg);
-  border-radius:var(--r);margin-top:.7rem;
-}
+/* ══ MAIN ════════════════════════════════════════════ */
+.main-wrap{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.main{padding:2rem 2.25rem 3rem;max-width:1040px;}
 
-/* Week card */
-.week-card{
-  background:var(--card);border:1px solid var(--bdr);
-  border-radius:var(--rl);padding:1.3rem 1.4rem;box-shadow:var(--sh);
+/* ══ HERO ════════════════════════════════════════════ */
+.hero{margin-bottom:2.25rem;}
+.plan-pill{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.28rem .7rem;border-radius:100px;
+  font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:#4f7ef8;background:var(--blue-bg);
+  border:1px solid var(--blue-light);
+  margin-bottom:.85rem;
 }
-.wc-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-bottom:.18rem;}
-.wc-mins{font-family:var(--fd);font-weight:800;font-size:1.6rem;letter-spacing:-.04em;color:var(--ink);margin-bottom:.15rem;}
-.wc-diff{font-size:.7rem;color:var(--gr);font-weight:600;margin-bottom:.9rem;}
-.wc-bars{display:flex;gap:.3rem;align-items:flex-end;height:60px;}
-.wc-bw{flex:1;display:flex;flex-direction:column;align-items:center;gap:.28rem;height:100%;}
-.wc-b{
-  width:100%;border-radius:4px 4px 0 0;
-  background:var(--accent);opacity:.2;min-height:3px;
-  transition:height .8s cubic-bezier(.4,0,.2,1);
+.hero-title{
+  font-size:2rem;font-weight:700;
+  letter-spacing:-.04em;color:var(--ink);
+  line-height:1.2;margin-bottom:.45rem;
 }
-.wc-b.today{opacity:1;background:linear-gradient(180deg,var(--accent2),var(--accent));}
-.wc-b.has{opacity:.6;}
-.wc-dl{font-size:.56rem;color:var(--ink4);font-weight:500;text-transform:uppercase;}
+.hero-sub{font-size:.92rem;color:var(--ink3);margin-bottom:1.35rem;line-height:1.6;}
+.hero-btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.72rem 1.5rem;
+  background:var(--blue);color:#fff;
+  border-radius:var(--r);font-size:.88rem;font-weight:600;
+  transition:all .15s;box-shadow:0 2px 8px rgba(79,126,248,.28);
+}
+.hero-btn:hover{background:#3d6cf7;transform:translateY(-1px);box-shadow:0 4px 16px rgba(79,126,248,.35);}
+.hero-btn svg{width:16px;height:16px;opacity:.85;}
 
-/* ═══ SECTION HEADER ════════════════════════════════════ */
-.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;}
-.sec-hd h2{font-family:var(--fd);font-weight:700;font-size:.97rem;letter-spacing:-.02em;color:var(--ink);}
-.view-all{font-size:.76rem;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:.18rem;transition:gap var(--t);}
-.view-all:hover{gap:.3rem;}
+/* ══ SECTION TITLE ═══════════════════════════════════ */
+.sec-title{font-size:.82rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin-bottom:1rem;}
 
-/* ═══ CONTINUE GRID ═════════════════════════════════════ */
-.cont-grid{
+/* ══ PRACTICE GRID ═══════════════════════════════════ */
+.practice-grid{
   display:grid;grid-template-columns:repeat(4,1fr);
-  gap:.9rem;margin-bottom:1.6rem;
+  gap:.85rem;margin-bottom:2rem;
 }
-.cc{
-  background:var(--card);border:1px solid var(--bdr);
-  border-radius:var(--rl);padding:1rem;
-  box-shadow:var(--sh);transition:all var(--t);
-  display:flex;flex-direction:column;gap:.55rem;
+.pcard{
+  background:var(--white);border:1px solid var(--bdr);
+  border-radius:var(--rl);padding:1.5rem 1.3rem 1.2rem;
+  transition:all .18s;
+  display:flex;flex-direction:column;
+  box-shadow:var(--sh);
 }
-.cc:hover{box-shadow:var(--shm);transform:translateY(-2px);border-color:var(--bdr2);}
-.cc-top{display:flex;align-items:flex-start;justify-content:space-between;}
-.cc-ico{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0;}
-.cc-pct{font-size:.68rem;font-weight:700;color:var(--ink4);}
-.cc-title{font-size:.83rem;font-weight:600;color:var(--ink);line-height:1.35;}
-.cc-sub{font-size:.7rem;color:var(--ink4);}
-.cc-bar{height:3px;background:var(--cream2);border-radius:100px;overflow:hidden;}
-.cc-bar-fill{height:100%;border-radius:100px;transition:width 1s ease;}
-.cc-btn{
+.pcard:hover{
+  box-shadow:var(--shm);
+  transform:translateY(-2px);
+  border-color:#d4d4d8;
+}
+.pcard-icon-wrap{
+  width:52px;height:52px;border-radius:14px;
   display:flex;align-items:center;justify-content:center;
-  padding:.4rem;background:var(--cream);border-radius:var(--r);
-  font-size:.73rem;font-weight:600;color:var(--ink2);
-  transition:all var(--t);border:1px solid var(--bdr2);
+  margin-bottom:1rem;font-size:1.4rem;
 }
-.cc-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
-.cont-empty{
-  grid-column:span 4;text-align:center;padding:1.6rem;
-  color:var(--ink4);font-size:.83rem;
-  background:var(--card);border:1.5px dashed var(--bdr2);
-  border-radius:var(--rl);
+.pcard-name{font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:.35rem;letter-spacing:-.01em;}
+.pcard-desc{font-size:.76rem;color:var(--ink3);line-height:1.6;flex:1;margin-bottom:1.1rem;}
+.pcard-link{
+  display:inline-flex;align-items:center;gap:.3rem;
+  font-size:.76rem;font-weight:600;color:var(--blue);
+  transition:gap .15s;
 }
+.pcard-link:hover{gap:.45rem;}
+.pcard-link svg{width:13px;height:13px;flex-shrink:0;}
 
-/* ═══ SKILL CARDS ═══════════════════════════════════════ */
-.skills-row{
-  display:grid;grid-template-columns:repeat(5,1fr);
-  gap:.8rem;margin-bottom:1.6rem;
+/* ══ RECENT ACTIVITY ═════════════════════════════════ */
+.activity-section{margin-bottom:2rem;}
+.activity-empty{
+  background:var(--white);border:1px solid var(--bdr);
+  border-radius:var(--rl);padding:1.75rem 1.5rem;
+  display:flex;align-items:center;gap:1.1rem;
+  box-shadow:var(--sh);
 }
-.sk{
-  background:var(--card);border:1px solid var(--bdr);
-  border-radius:var(--rl);padding:1rem .95rem;
-  box-shadow:var(--sh);transition:all var(--t);
+.ae-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:var(--bg);border:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.15rem;flex-shrink:0;
 }
-.sk:hover{box-shadow:var(--shm);transform:translateY(-2px);border-color:var(--bdr2);}
-.sk-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;margin-bottom:.65rem;}
-.sk-name{font-family:var(--fd);font-weight:700;font-size:.88rem;margin-bottom:.5rem;color:var(--ink);}
-.sk-row{display:flex;justify-content:space-between;margin-bottom:.22rem;}
-.sk-lbl{font-size:.67rem;color:var(--ink4);}
-.sk-val{font-family:var(--fd);font-weight:700;font-size:.75rem;color:var(--ink);}
-.sk-weak{
-  display:inline-flex;align-items:center;
-  font-size:.62rem;font-weight:600;
-  padding:.13rem .48rem;border-radius:100px;
-  background:var(--or-bg);color:var(--or);
-  border:1px solid rgba(255,107,53,.14);
-  margin:.38rem 0 .6rem;
-}
-.sk-btn{
-  display:block;width:100%;padding:.4rem;text-align:center;
-  border-radius:var(--r);font-size:.73rem;font-weight:700;
-  transition:all var(--t);cursor:pointer;font-family:var(--fd);
-  border:none;
-}
+.ae-title{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.2rem;}
+.ae-sub{font-size:.78rem;color:var(--ink3);}
 
-/* ═══ BOTTOM GRID ═══════════════════════════════════════ */
-.bot-grid{display:grid;grid-template-columns:1fr 300px;gap:1.2rem;margin-bottom:1.6rem;}
-
-/* Writing card */
-.writing-card{
-  background:var(--card);border:1px solid var(--bdr);
-  border-radius:var(--rl);padding:1.3rem 1.4rem;box-shadow:var(--sh);
-}
-.wi{
-  display:flex;align-items:center;gap:.8rem;
-  padding:.7rem 0;border-bottom:1px solid var(--bdr);
-}
-.wi:last-child{border-bottom:none;padding-bottom:0;}
-.wi-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
-.wi-info{flex:1;min-width:0;}
-.wi-title{font-size:.82rem;font-weight:600;color:var(--ink);margin-bottom:.12rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.wi-sub{font-size:.7rem;color:var(--ink4);}
-.wi-right{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem;flex-shrink:0;}
-.wi-band{font-family:var(--fd);font-weight:800;font-size:.92rem;color:var(--ink);}
-.wi-st{font-size:.63rem;font-weight:600;padding:.13rem .46rem;border-radius:100px;}
-.wi-st.ok{background:var(--gr-bg);color:var(--gr);}
-.wi-st.pend{background:var(--or-bg);color:var(--or);}
-.wi-empty{text-align:center;padding:1.4rem;color:var(--ink4);font-size:.81rem;}
-
-/* Insight card */
-.insight{
-  background:linear-gradient(135deg,var(--ink) 0%,#1a1918 100%);
-  border-radius:var(--rl);padding:1.3rem 1.4rem;
-  box-shadow:var(--shm);position:relative;overflow:hidden;
-}
-.insight::before{content:'';position:absolute;top:-40px;right:-20px;width:130px;height:130px;background:radial-gradient(circle,rgba(108,99,255,.22) 0%,transparent 70%);border-radius:50%;}
-.insight::after{content:'';position:absolute;bottom:-30px;left:20%;width:90px;height:90px;background:radial-gradient(circle,rgba(255,107,53,.14) 0%,transparent 70%);border-radius:50%;}
-.ins-eye{display:flex;align-items:center;gap:.35rem;font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:.55rem;position:relative;z-index:1;}
-.ins-title{font-family:var(--fd);font-weight:700;font-size:.93rem;color:#f5f2eb;margin-bottom:.45rem;line-height:1.45;position:relative;z-index:1;}
-.ins-body{font-size:.76rem;color:rgba(245,242,235,.42);line-height:1.65;margin-bottom:.9rem;position:relative;z-index:1;}
-.ins-btn{
-  display:inline-flex;align-items:center;gap:.35rem;
-  padding:.5rem .95rem;background:rgba(108,99,255,.18);
-  border:1px solid rgba(108,99,255,.28);color:#c8c4ff;
-  border-radius:var(--r);font-size:.76rem;font-weight:600;
-  transition:all var(--t);position:relative;z-index:1;
-}
-.ins-btn:hover{background:rgba(108,99,255,.32);color:#fff;}
-.ins-robot{position:absolute;bottom:-8px;right:8px;font-size:2.8rem;opacity:.3;z-index:0;}
-
-/* ═══ TOAST ═════════════════════════════════════════════ */
+/* ══ TOAST ═══════════════════════════════════════════ */
 .toast{
   position:fixed;bottom:1.4rem;left:50%;
   transform:translateX(-50%) translateY(80px);
   background:var(--ink);color:#fff;
   padding:.58rem 1.15rem;border-radius:100px;
   font-size:.78rem;font-weight:500;
-  box-shadow:0 8px 32px rgba(13,12,10,.18);
+  box-shadow:0 8px 32px rgba(0,0,0,.15);
   z-index:300;transition:transform .3s cubic-bezier(.4,0,.2,1);
   white-space:nowrap;pointer-events:none;
 }
 .toast.show{transform:translateX(-50%) translateY(0);}
 
-/* ═══ RESPONSIVE ════════════════════════════════════════ */
-@media(max-width:1200px){
-  .hero{grid-template-columns:1fr 248px 196px;}
-  .skills-row{grid-template-columns:repeat(3,1fr);}
-  .cont-grid{grid-template-columns:repeat(2,1fr);}
-  .cont-empty{grid-column:span 2;}
-}
-@media(max-width:1000px){
-  .hero{grid-template-columns:1fr 230px;}
-  .bot-grid{grid-template-columns:1fr;}
-  .skills-row{grid-template-columns:repeat(3,1fr);}
-}
-@media(max-width:800px){
-  .hero{grid-template-columns:1fr;}
-  .skills-row{grid-template-columns:repeat(2,1fr);}
-  .main{padding:1.2rem 1.25rem 2.5rem;}
+/* ══ RESPONSIVE ══════════════════════════════════════ */
+@media(max-width:1100px){.practice-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:820px){
+  .practice-grid{grid-template-columns:repeat(2,1fr);}
+  .main{padding:1.5rem 1.25rem 2.5rem;}
 }
 @media(max-width:640px){
-  /* sidebar slides in on mobile */
   .sidebar{transform:translateX(-100%);}
-  .sidebar.open{transform:translateX(0);}
-  .main{margin-left:0!important;padding:1rem 1rem 2.5rem;}
+  .sidebar.open{transform:translateX(0);box-shadow:var(--shm);}
+  .main-wrap{margin-left:0!important;}
   .mob-bar{display:flex!important;}
   .hamburger{display:flex!important;}
-  .skills-row{grid-template-columns:1fr 1fr;}
-  .cont-grid{grid-template-columns:1fr;}
-  .cont-empty{grid-column:span 1;}
-  .bot-grid{grid-template-columns:1fr;}
-  .hero-greeting{font-size:1.6rem;}
   .topbar{display:none;}
+  .practice-grid{grid-template-columns:1fr 1fr;}
+  .hero-title{font-size:1.55rem;}
 }
+@media(max-width:400px){.practice-grid{grid-template-columns:1fr;}}
 
-/* ═══ ANIMATIONS ════════════════════════════════════════ */
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-.a{animation:fadeUp .42s cubic-bezier(.4,0,.2,1) both;}
-.a1{animation-delay:.04s;}.a2{animation-delay:.08s;}.a3{animation-delay:.12s;}
-.a4{animation-delay:.16s;}.a5{animation-delay:.20s;}.a6{animation-delay:.24s;}
+/* ══ ANIMATIONS ══════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.a{animation:fadeUp .38s cubic-bezier(.4,0,.2,1) both;}
+.a1{animation-delay:.03s;}.a2{animation-delay:.06s;}.a3{animation-delay:.09s;}
+.a4{animation-delay:.12s;}.a5{animation-delay:.15s;}.a6{animation-delay:.18s;}
+.a7{animation-delay:.21s;}.a8{animation-delay:.24s;}
 </style>
 </head>
 <body>
-
-<!-- ONBOARDING MODAL -->
-<div class="modal-bd" id="modalBd">
-  <div class="modal">
-    <span class="modal-icon">🎯</span>
-    <h2>Set your IELTS goal</h2>
-    <p>Tell us where you are now and where you want to go. We'll personalise your dashboard.</p>
-    <div class="modal-field">
-      <label>Your current IELTS band</label>
-      <div class="band-grid" id="curGrid"></div>
-    </div>
-    <div class="modal-field">
-      <label>Your target band</label>
-      <div class="band-grid" id="tgtGrid"></div>
-    </div>
-    <button class="modal-submit" id="obSubmit" onclick="submitOnboarding()">Start tracking →</button>
-  </div>
-</div>
 
 <!-- SIDEBAR OVERLAY -->
 <div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
 
 <!-- MOBILE TOPBAR -->
 <div class="mob-bar" id="mobBar">
-  <button class="hamburger" id="hamburger" onclick="openSidebar()">
+  <button class="hamburger" onclick="openSidebar()">
     <span></span><span></span><span></span>
   </button>
-  <span class="mob-logo">Bandio<span style="display:inline-block;width:6px;height:6px;background:var(--or);border-radius:50%;margin-left:2px;vertical-align:middle;margin-bottom:2px;"></span></span>
-  <div class="u-av" id="mob-av" style="width:28px;height:28px;font-size:.72rem;flex-shrink:0;">?</div>
+  <span class="mob-logo">Bandio<span style="display:inline-block;width:6px;height:6px;background:var(--blue);border-radius:50%;margin-left:2px;vertical-align:middle;margin-bottom:2px;"></span></span>
 </div>
 
 <!-- SIDEBAR -->
 <nav class="sidebar" id="sidebar">
-  <a class="s-logo" href="bandio-dashboard.html">
-    Bandio<span class="s-logo-dot"></span>
-  </a>
-
-  <div class="nav-lbl">Practice</div>
-  <a class="nav-item active" href="bandio-dashboard.html"><span class="nav-icon">⊞</span> Dashboard</a>
-  <a class="nav-item" href="bandio-mocktest.html"><span class="nav-icon">📝</span> Mock Tests</a>
-  <a class="nav-item" href="bandio-practice.html"><span class="nav-icon">📖</span> Reading</a>
-  <a class="nav-item" href="bandio-listening.html"><span class="nav-icon">🎧</span> Listening</a>
-  <a class="nav-item" href="bandio-writing.html"><span class="nav-icon">✍️</span> Writing</a>
-  <a class="nav-item" href="bandio-speaking.html"><span class="nav-icon">🎤</span> Speaking</a>
-  <a class="nav-item" href="bandio-vocab.html"><span class="nav-icon">📚</span> Vocabulary</a>
-  <a class="nav-item" href="bandio-articles.html"><span class="nav-icon">📰</span> Articles</a>
-  <a class="nav-item" href="bandio-books.html"><span class="nav-icon">📖</span> Books</a>
-
-  <div class="nav-lbl">Account</div>
-  <a class="nav-item" href="bandio-pricing.html"><span class="nav-icon">✦</span> Upgrade <span class="nav-badge">PRO</span></a>
-  <a class="nav-item" href="bandio-feedback.html"><span class="nav-icon">💬</span> Feedback</a>
-  <a class="nav-item" href="bandio-gift.html"><span class="nav-icon">🎁</span> Give a gift</a>
-  <a class="nav-item" href="bandio-profile.html"><span class="nav-icon">👤</span> Profile</a>
-  <a class="nav-item" href="bandio-settings.html"><span class="nav-icon">⚙️</span> Settings</a>
-
-  <div class="sb-upgrade" id="sb-up">
-    <div class="sb-upgrade-title">Upgrade to Premium</div>
-    <div class="sb-upgrade-desc">Unlimited AI writing checks, mock tests &amp; full speaking practice.</div>
-    <a class="sb-upgrade-btn" href="bandio-pricing.html">Upgrade now →</a>
-  </div>
-
-  <div class="s-bottom">
-    <div class="user-chip">
-      <div class="u-av" id="sb-av">?</div>
-      <div>
-        <div class="u-name" id="sb-name">Student</div>
-        <div class="u-plan" id="sb-plan">Free plan</div>
-      </div>
+  <div class="s-top">
+    <div class="s-logo">
+      <span class="s-logo-txt">Bandio</span>
+      <span class="s-logo-dot"></span>
     </div>
-    <button class="signout-btn" onclick="doSignOut()">
-      <span style="font-size:.82rem">→</span> Sign out
-    </button>
+
+    <div class="nav-group">
+      <a class="nav-item active" href="bandio-dashboard.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/></svg>
+        </span>
+        Dashboard
+      </a>
+      <a class="nav-item" href="bandio-practice.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M6 5.5l4 2.5-4 2.5V5.5z" fill="currentColor"/></svg>
+        </span>
+        Practice
+      </a>
+      <a class="nav-item" href="bandio-books.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 2h6a2 2 0 012 2v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 4h1.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5H11" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h4M5 8.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </span>
+        Books
+      </a>
+      <a class="nav-item" href="bandio-articles.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 5.5h6M5 8h4M5 10.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </span>
+        Articles
+      </a>
+      <a class="nav-item" href="bandio-vocab.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L9.5 6.5H14L10.25 9.25l1.5 4.5L8 11l-3.75 2.75 1.5-4.5L2 6.5h4.5L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        </span>
+        Vocabulary
+      </a>
+      <a class="nav-item" href="bandio-speaking.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="1.5" width="6" height="8" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 8.5A5.5 5.5 0 008 14a5.5 5.5 0 005.5-5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 14v1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </span>
+        Speaking
+      </a>
+      <a class="nav-item" href="bandio-writing.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M3 13.5h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </span>
+        Writing
+      </a>
+    </div>
+
+    <div class="nav-sep"></div>
+
+    <div class="nav-group">
+      <a class="nav-item" href="bandio-pricing.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 4H14l-3.4 2.5 1.3 4L8 9 4.1 11.5l1.3-4L2 5h4.2L8 1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        </span>
+        Upgrade
+        <span class="nav-badge">PRO</span>
+      </a>
+      <a class="nav-item" href="bandio-feedback.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h10a1 1 0 011 1v7a1 1 0 01-1 1H5.5L2 14V3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        </span>
+        Feedback
+      </a>
+      <a class="nav-item" href="bandio-gift.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="6" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 6h13v2.5h-13z" stroke="currentColor" stroke-width="1.2"/><path d="M8 6V14M8 6c0-1.5-1.5-3-3-2s-1 3 3 2zM8 6c0-1.5 1.5-3 3-2s1 3-3 2z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </span>
+        Give a gift
+      </a>
+      <a class="nav-item" href="bandio-profile.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 13.5c0-2.5 2.7-4.5 6-4.5s6 2 6 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </span>
+        Profile
+      </a>
+      <a class="nav-item" href="bandio-settings.html">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5v1.2M8 13.3v1.2M1.5 8h1.2M13.3 8h1.2M3.4 3.4l.85.85M11.75 11.75l.85.85M3.4 12.6l.85-.85M11.75 4.25l.85-.85" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </span>
+        Settings
+      </a>
+      <button class="nav-item" onclick="doSignOut()" style="width:100%;text-align:left;">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M10.5 11l3-3-3-3M13.5 8H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        Log out
+      </button>
+    </div>
   </div>
 </nav>
 
-<!-- MAIN -->
-<main class="main">
+<!-- MAIN WRAP -->
+<div class="main-wrap">
 
-  <!-- TOPBAR -->
+  <!-- DESKTOP TOPBAR -->
   <div class="topbar">
-    <div class="tb-btn" title="Notifications">🔔<span class="notif-dot"></span></div>
-    <div class="tb-btn" title="Theme">☀️</div>
+    <div class="topbar-user" id="topbar-user">
+      <div class="topbar-avatar" id="topbar-av">A</div>
+      <span class="topbar-name" id="topbar-name">Aslbek</span>
+      <span class="topbar-chevron">▾</span>
+    </div>
   </div>
 
-  <!-- HERO -->
-  <section class="hero a a1">
-    <div>
-      <div class="plan-badge" id="plan-badge">Free Plan</div>
-      <h1 class="hero-greeting">
-        Good <span id="tod">day</span>, <span id="hero-name">there</span>
-        <span class="wave">👋</span>
-      </h1>
-      <p class="hero-sub" id="hero-sub">Consistent practice today, higher band score tomorrow.</p>
-      <div class="hero-stats">
-        <div class="hs"><span class="hs-ico">🔥</span><div><div class="hs-val" id="st-streak">—</div><div class="hs-lbl">Day streak</div></div></div>
-        <div class="hs"><span class="hs-ico">🕐</span><div><div class="hs-val" id="st-mins">—</div><div class="hs-lbl">Min this week</div></div></div>
-        <div class="hs"><span class="hs-ico">🎯</span><div><div class="hs-val" id="st-target">—</div><div class="hs-lbl">Target band</div></div></div>
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero a a1">
+      <div class="plan-pill" id="plan-pill">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1L6.8 4H10L7.4 5.9l1 3.1L5.5 7.3 3 9l1-3.1L1.5 4h3.2L5.5 1z" fill="#4f7ef8"/></svg>
+        <span id="plan-pill-txt">FREE PLAN</span>
       </div>
-      <div class="hero-btns">
-        <a class="btn-prim" href="bandio-practice.html">Continue practice →</a>
-        <a class="btn-sec" href="bandio-mocktest.html">📝 Mock test</a>
+      <h1 class="hero-title">Good <span id="tod">day</span>, <span id="hero-name">Aslbek</span>! <span style="display:inline-block;animation:wave 2.5s ease-in-out infinite;transform-origin:70% 70%;">👋</span></h1>
+      <p class="hero-sub">Let's keep your IELTS preparation on track.</p>
+      <a class="hero-btn" href="bandio-mocktest.html">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="12" height="12" rx="2" stroke="white" stroke-width="1.4"/><path d="M5 8l2 2 4-4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Take a Mock Test
+      </a>
+    </div>
+
+    <!-- PRACTICE SECTION -->
+    <div class="a a2">
+      <div class="sec-title">Practice</div>
+      <div class="practice-grid">
+
+        <!-- Listening -->
+        <div class="pcard a a2">
+          <div class="pcard-icon-wrap" style="background:#e8f0ff;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 12C3 7.03 7.03 3 12 3s9 4.03 9 9" stroke="#4f7ef8" stroke-width="2" stroke-linecap="round"/><path d="M5 17.5C5 15.57 6.57 14 8.5 14H9v7H8.5C6.57 21 5 19.43 5 17.5zM19 17.5C19 15.57 17.43 14 15.5 14H15v7h.5C17.43 21 19 19.43 19 17.5z" fill="#4f7ef8" opacity=".9"/></svg>
+          </div>
+          <div class="pcard-name">Listening</div>
+          <div class="pcard-desc">Practice listening passages by section.</div>
+          <a class="pcard-link" href="bandio-listening.html">
+            Start practice
+            <svg viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="#4f7ef8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <!-- Reading -->
+        <div class="pcard a a3">
+          <div class="pcard-icon-wrap" style="background:#e6f9f0;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 4h7a3 3 0 013 3v13a2 2 0 00-2-2H4V4zM20 4h-7a3 3 0 00-3 3v13a2 2 0 012-2h8V4z" stroke="#22c55e" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="pcard-name">Reading</div>
+          <div class="pcard-desc">Practice reading passages by section.</div>
+          <a class="pcard-link" href="bandio-practice.html">
+            Start practice
+            <svg viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="#4f7ef8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <!-- Writing -->
+        <div class="pcard a a4">
+          <div class="pcard-icon-wrap" style="background:#fff4e6;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17 3a2.83 2.83 0 014 4L7.5 20.5 3 21l.5-4.5L17 3z" stroke="#f97316" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="pcard-name">Writing</div>
+          <div class="pcard-desc">Practice writing tasks and get feedback.</div>
+          <a class="pcard-link" href="bandio-writing.html">
+            Start practice
+            <svg viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="#4f7ef8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <!-- Speaking -->
+        <div class="pcard a a5">
+          <div class="pcard-icon-wrap" style="background:#f3eeff;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="11" rx="3" stroke="#9333ea" stroke-width="1.8"/><path d="M5 11a7 7 0 0014 0M12 19v3" stroke="#9333ea" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="pcard-name">Speaking</div>
+          <div class="pcard-desc">Practice speaking questions and record.</div>
+          <a class="pcard-link" href="bandio-speaking.html">
+            Start practice
+            <svg viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="#4f7ef8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <!-- Vocabulary -->
+        <div class="pcard a a6">
+          <div class="pcard-icon-wrap" style="background:#ffeef6;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z" stroke="#ec4899" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="pcard-name">Vocabulary</div>
+          <div class="pcard-desc">Learn and practice useful vocabulary.</div>
+          <a class="pcard-link" href="bandio-vocab.html">
+            Start practice
+            <svg viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="#4f7ef8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <!-- Articles -->
+        <div class="pcard a a7">
+          <div class="pcard-icon-wrap" style="background:#e0fafa;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="#06b6d4" stroke-width="1.8"/><path d="M7 8h10M7 12h7M7 16h5" stroke="#06b6d4" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <div class="pcard-name">Articles</div>
+          <div class="pcard-desc">Read helpful articles and improve skills.</div>
+          <a class="pcard-link" href="bandio-articles.html">
+            Start practice
+            <svg viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="#4f7ef8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <!-- Books -->
+        <div class="pcard a a8">
+          <div class="pcard-icon-wrap" style="background:#fff3e0;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 6a4 4 0 014-4h12a2 2 0 012 2v14a2 2 0 01-2 2H6a4 4 0 01-4-4V6z" stroke="#f97316" stroke-width="1.8"/><path d="M6 2v18M10 7h6M10 11h4" stroke="#f97316" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="pcard-name">Books</div>
+          <div class="pcard-desc">Explore and read useful books.</div>
+          <a class="pcard-link" href="bandio-books.html">
+            Start practice
+            <svg viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="#4f7ef8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
       </div>
     </div>
 
-    <!-- Progress donut -->
-    <div class="prog-card a a2">
-      <div class="pc-title">Your progress</div>
-      <div class="donut-wrap">
-        <svg width="124" height="124" viewBox="0 0 124 124">
-          <defs>
-            <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ff6b35"/>
-              <stop offset="100%" stop-color="#6c63ff"/>
-            </linearGradient>
-          </defs>
-          <circle class="dt" cx="62" cy="62" r="54"/>
-          <circle class="df" id="donutFill" cx="62" cy="62" r="54"/>
-        </svg>
-        <div class="dc">
-          <div class="dc-band" id="dc-band">—</div>
-          <div class="dc-lbl">Current band</div>
+    <!-- RECENT ACTIVITY -->
+    <div class="activity-section a a8">
+      <div class="sec-title">Your recent activity</div>
+      <div class="activity-empty" id="activity-area">
+        <div class="ae-icon">📋</div>
+        <div>
+          <div class="ae-title">No recent activity yet.</div>
+          <div class="ae-sub">Start a practice or test to see your progress here.</div>
         </div>
       </div>
-      <div class="pc-row"><span class="pc-rl">Target band</span><span class="pc-rv" id="pc-target">—</span></div>
-      <div class="pc-row"><span class="pc-rl">Estimated band</span><span class="pc-rv" id="pc-est">—</span></div>
-      <div class="pc-insight"><span>🔥</span><span id="pc-ins">Loading…</span></div>
     </div>
 
-    <!-- Weekly study bars -->
-    <div class="week-card a a3">
-      <div class="wc-title">Study this week</div>
-      <div class="wc-mins" id="wc-mins">— min</div>
-      <div class="wc-diff" id="wc-diff"></div>
-      <div class="wc-bars" id="wc-bars"></div>
-    </div>
-  </section>
-
-  <!-- CONTINUE WHERE LEFT OFF -->
-  <div class="a a3">
-    <div class="sec-hd">
-      <h2>Continue where you left off</h2>
-      <a class="view-all" href="bandio-practice.html">View all →</a>
-    </div>
-    <div class="cont-grid" id="cont-grid">
-      <div class="cont-empty">No activity yet — start a test to track your progress here.</div>
-    </div>
-  </div>
-
-  <!-- PRACTICE BY SKILL -->
-  <div class="a a4">
-    <div class="sec-hd">
-      <h2>Practice by skill</h2>
-      <a class="view-all" href="bandio-practice.html">View all skills →</a>
-    </div>
-    <div class="skills-row" id="skills-row"></div>
-  </div>
-
-  <!-- BOTTOM -->
-  <div class="bot-grid a a5">
-    <!-- Writing submissions -->
-    <div class="writing-card">
-      <div class="sec-hd" style="margin-bottom:.7rem;">
-        <h2>Recent writing submissions</h2>
-        <a class="view-all" href="bandio-writing.html">View all →</a>
-      </div>
-      <div id="writing-list"><div class="wi-empty">No submissions yet. <a href="bandio-writing.html" style="color:var(--accent)">Check your writing →</a></div></div>
-    </div>
-    <!-- AI Insight -->
-    <div class="insight">
-      <div class="ins-eye">⭐ AI Study Insight</div>
-      <div class="ins-title" id="ins-title">Keep up the great work!</div>
-      <div class="ins-body" id="ins-body">Complete more practice sessions to unlock personalised insights about your performance.</div>
-      <a class="ins-btn" href="bandio-practice.html">View detailed analysis →</a>
-      <div class="ins-robot">🤖</div>
-    </div>
-  </div>
-
-</main>
+  </main>
+</div>
 
 <div class="toast" id="toast"></div>
 
+<style>
+@keyframes wave{0%,100%{transform:rotate(0);}10%{transform:rotate(14deg);}20%{transform:rotate(-8deg);}30%{transform:rotate(14deg);}40%{transform:rotate(-4deg);}50%{transform:rotate(10deg);}60%{transform:rotate(0);}}
+</style>
+
 <!-- FIREBASE -->
 <script type="module">
-import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, arrayUnion, collection, query, where, orderBy, limit }
+import { getFirestore, doc, getDoc, getDocs, collection, query, where, orderBy, limit }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const cfg={
@@ -637,7 +529,6 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 
 const $=id=>document.getElementById(id);
-const td=()=>new Date().toISOString().slice(0,10);
 
 function toast(msg,ms=2800){
   const t=$('toast');t.textContent=msg;t.classList.add('show');
@@ -659,388 +550,113 @@ function resolvePlan(data){
   return (data.planType||data.plan||'free').toLowerCase();
 }
 
-function bandPct(cur,tgt){
-  if(!cur||!tgt||tgt<=cur)return 100;
-  const base=4,range=tgt-base,ach=cur-base;
-  return Math.min(100,Math.max(0,Math.round((ach/range)*100)));
-}
+/* Fetch recent activity from writings + recentTests */
+async function fetchActivity(uid, data){
+  const items=[];
 
-/* ── STREAK ── */
-async function handleStreak(uid,data){
-  const today=td();
-  const last=data.lastActivityDate||'';
-  const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);
-  let s=data.streakDays||0;
-  if(last===today)return s;
-  s=last===yest?s+1:1;
-  try{await updateDoc(doc(db,'users',uid),{streakDays:s,lastActivityDate:today});}
-  catch(e){console.warn('streak:',e.message);}
-  return s;
-}
-
-/* ── SESSION TIMER ── */
-function startSession(uid){
-  const key='bnd_s';
-  if(!sessionStorage.getItem(key))sessionStorage.setItem(key,Date.now());
-  const flush=async()=>{
-    const s=+sessionStorage.getItem(key)||0;if(!s)return;
-    const m=Math.round((Date.now()-s)/60000);if(m<1)return;
-    sessionStorage.removeItem(key);
-    try{
-      const snap=await getDoc(doc(db,'users',uid));
-      const cur=(snap.data()||{}).totalStudyMinutes||0;
-      await updateDoc(doc(db,'users',uid),{totalStudyMinutes:cur+m});
-    }catch(e){console.warn('session:',e.message);}
-  };
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush();});
-  window.addEventListener('beforeunload',flush);
-}
-
-/* ── WEEK DATA ── */
-function getWeekData(data){
-  const log=data.weeklyMinutes||{};
-  const today=new Date();
-  const DAYS=['M','T','W','T','F','S','S'];
-  return Array.from({length:7},(_,i)=>{
-    const d=new Date(today);d.setDate(d.getDate()-(6-i));
-    const key=d.toISOString().slice(0,10);
-    return{key,day:DAYS[(d.getDay()+6)%7],mins:log[key]||0,isToday:i===6};
-  });
-}
-
-/* ── FETCH WRITING FROM MULTIPLE POSSIBLE LOCATIONS ── */
-async function fetchWritingSubmissions(uid){
-  const results=[];
-
-  /* 1. Try top-level 'writings' collection filtered by uid */
+  /* writings collection */
   try{
-    const q=query(collection(db,'writings'),where('userId','==',uid),orderBy('createdAt','desc'),limit(5));
+    const q=query(collection(db,'writings'),where('userId','==',uid),orderBy('createdAt','desc'),limit(3));
     const snap=await getDocs(q);
     snap.forEach(d=>{
       const w=d.data();
-      results.push({
-        id:d.id,
+      items.push({
+        type:'writing',icon:'✍️',iconBg:'#fff4e6',
         title:w.title||w.taskType||'Writing Task',
-        subtitle:w.taskType||w.type||'Essay',
-        band:w.estimatedBand||w.band||w.score||null,
-        status:w.status||'reviewed',
-        daysAgo:w.createdAt?Math.round((Date.now()-w.createdAt.toMillis())/86400000):null,
-        type:w.taskType==='Task 1'?'task1':'task2'
+        sub:'Writing · '+(w.estimatedBand?'Band '+w.estimatedBand:'Submitted'),
+        time:w.createdAt?timeSince(w.createdAt.toMillis()):''
       });
     });
-  }catch(e){console.warn('writings collection:',e.message);}
+  }catch(e){}
 
-  /* 2. Try 'users/{uid}/writings' subcollection */
-  if(results.length===0){
+  /* user subcollection writings */
+  if(!items.length){
     try{
-      const q=query(collection(db,'users',uid,'writings'),orderBy('createdAt','desc'),limit(5));
+      const q=query(collection(db,'users',uid,'writings'),orderBy('createdAt','desc'),limit(3));
       const snap=await getDocs(q);
       snap.forEach(d=>{
         const w=d.data();
-        results.push({
-          id:d.id,
+        items.push({
+          type:'writing',icon:'✍️',iconBg:'#fff4e6',
           title:w.title||w.taskType||'Writing Task',
-          subtitle:w.taskType||w.type||'Essay',
-          band:w.estimatedBand||w.band||w.score||null,
-          status:w.status||'reviewed',
-          daysAgo:w.createdAt?Math.round((Date.now()-w.createdAt.toMillis())/86400000):null,
-          type:w.taskType==='Task 1'?'task1':'task2'
+          sub:'Writing · '+(w.estimatedBand?'Band '+w.estimatedBand:'Submitted'),
+          time:w.createdAt?timeSince(w.createdAt.toMillis()):''
         });
       });
-    }catch(e){console.warn('user writings subcol:',e.message);}
+    }catch(e){}
   }
 
-  /* 3. Fall back to recentWriting array on user doc */
-  if(results.length===0){
-    return null; // signal to use user doc array
-  }
-
-  return results;
-}
-
-/* ── FETCH WRITING SKILL STATS ── */
-async function fetchWritingStats(uid){
-  let lastScore=null,count=0;
-
-  /* Try writings collection */
-  try{
-    const q=query(collection(db,'writings'),where('userId','==',uid),orderBy('createdAt','desc'),limit(10));
-    const snap=await getDocs(q);
-    snap.forEach((d,i)=>{
-      const w=d.data();
-      count++;
-      if(i===0&&(w.estimatedBand||w.band||w.score)){
-        lastScore=w.estimatedBand||w.band||w.score;
-      }
+  /* recentTests on user doc */
+  (data.recentTests||[]).slice(0,3).forEach(t=>{
+    const icons={reading:'📖',listening:'🎧',speaking:'🎤',mock:'📝'};
+    const bgs={reading:'#e6f9f0',listening:'#e8f0ff',speaking:'#f3eeff',mock:'#f0f0f0'};
+    items.push({
+      type:t.type,icon:icons[t.type]||'📝',iconBg:bgs[t.type]||'#f0f0f0',
+      title:t.title||t.type+' practice',
+      sub:t.type.charAt(0).toUpperCase()+t.type.slice(1)+(t.progress?' · '+t.progress+'% complete':''),
+      time:''
     });
-    if(count>0)return{lastScore,count};
-  }catch(e){}
-
-  /* Try subcollection */
-  try{
-    const q=query(collection(db,'users',uid,'writings'),orderBy('createdAt','desc'),limit(10));
-    const snap=await getDocs(q);
-    snap.forEach((d,i)=>{
-      const w=d.data();
-      count++;
-      if(i===0&&(w.estimatedBand||w.band||w.score)){
-        lastScore=w.estimatedBand||w.band||w.score;
-      }
-    });
-  }catch(e){}
-
-  return{lastScore,count};
-}
-
-/* ── RENDERS ── */
-function renderSidebar(data,name,plan){
-  ['sb-av','mob-av'].forEach(id=>{const e=$(id);if(e)e.textContent=name.charAt(0).toUpperCase();});
-  $('sb-name').textContent=name;
-  const planStr={premium:'Premium ✦',intensive:'Intensive ✦✦',free:'Free plan'};
-  $('sb-plan').textContent=planStr[plan]||'Free plan';
-  if(plan!=='free'){const u=$('sb-up');if(u)u.style.display='none';}
-}
-
-function renderHero(data,name,streak,plan){
-  $('hero-name').textContent=name;
-  $('tod').textContent=timeOfDay();
-  const planLabels={premium:'✦ Premium Plan',intensive:'🔥🔥 Intensive Plan',free:'Free Plan'};
-  $('plan-badge').textContent=planLabels[plan]||'Free Plan';
-  if(plan!=='free')$('plan-badge').style.cssText='background:rgba(108,99,255,.1);color:var(--accent);border-color:rgba(108,99,255,.2);';
-  $('st-streak').textContent=streak;
-  $('st-target').textContent=data.targetBand?data.targetBand.toFixed(1):'—';
-  const wd=getWeekData(data);
-  const wt=wd.reduce((a,b)=>a+b.mins,0);
-  $('st-mins').textContent=wt?wt+' min':'0 min';
-  const cur=data.currentBand,tgt=data.targetBand;
-  if(cur&&tgt){
-    const p=bandPct(cur,tgt);
-    $('hero-sub').textContent=p>=80?`Almost there! You're ${p}% of the way to Band ${tgt}. 🚀`
-      :p>=50?`Great progress — you're over halfway to Band ${tgt}. Keep going!`
-      :`Every session counts. Building toward Band ${tgt}.`;
-  }
-}
-
-function renderProgress(data){
-  const cur=data.currentBand,tgt=data.targetBand;
-  $('dc-band').textContent=cur?cur.toFixed(1):'—';
-  $('pc-target').textContent=tgt?tgt.toFixed(1):'—';
-  $('pc-est').textContent=cur?cur.toFixed(1):'—';
-  if(cur&&tgt){
-    const p=bandPct(cur,tgt);
-    const C=339.3;
-    setTimeout(()=>{$('donutFill').style.strokeDashoffset=C-(p/100)*C;},300);
-    $('pc-ins').textContent=`You're ${p}% closer to Band ${tgt}`;
-  }else{
-    $('pc-ins').textContent='Set your target band above to track progress';
-  }
-}
-
-function renderWeek(data){
-  const wd=getWeekData(data);
-  const max=Math.max(...wd.map(d=>d.mins),1);
-  const total=wd.reduce((a,b)=>a+b.mins,0);
-  $('wc-mins').textContent=total?`${total} min`:'0 min';
-  const prev=data.prevWeekMinutes||0;
-  const diff=prev>0&&total>0?Math.round(((total-prev)/prev)*100):null;
-  $('wc-diff').textContent=diff!=null?(diff>=0?`+${diff}% from last week`:`${diff}% from last week`):'Start studying to build your history';
-  $('wc-diff').style.color=diff==null?'var(--ink4)':diff>=0?'var(--gr)':'var(--or)';
-  $('wc-bars').innerHTML=wd.map(d=>{
-    const h=Math.max(4,Math.round((d.mins/max)*52));
-    const cls=['wc-b',d.isToday?'today':'',d.mins>0?'has':''].filter(Boolean).join(' ');
-    return`<div class="wc-bw"><div class="${cls}" style="height:${h}px"></div><div class="wc-dl">${d.day}</div></div>`;
-  }).join('');
-}
-
-function renderContinue(data){
-  const grid=$('cont-grid');
-  const items=[];
-  const colors=[
-    {bg:'#f0effe',bar:'#6c63ff',ico:'📖'},
-    {bg:'#fff3ee',bar:'#ff6b35',ico:'🎧'},
-    {bg:'#f0fdf4',bar:'#22c55e',ico:'✍️'},
-    {bg:'#eff6ff',bar:'#3b82f6',ico:'📝'},
-  ];
-  (data.recentTests||[]).filter(t=>t.progress<100).slice(0,4).forEach((t,i)=>{
-    const c=colors[['reading','listening','writing','mock'].indexOf(t.type)]||colors[0];
-    items.push({...t,...c});
   });
-  if(!items.length){
-    grid.innerHTML='<div class="cont-empty">No activity yet — start a test to see your progress here.</div>';
-    return;
-  }
-  grid.innerHTML=items.slice(0,4).map(it=>`
-    <a class="cc" href="${it.link||'bandio-practice.html'}">
-      <div class="cc-top">
-        <div class="cc-ico" style="background:${it.bg}">${it.ico}</div>
-        <span class="cc-pct">${it.progress||0}%</span>
-      </div>
-      <div><div class="cc-title">${it.title||'Practice'}</div><div class="cc-sub">${it.subtitle||''}</div></div>
-      <div class="cc-bar"><div class="cc-bar-fill" style="width:${it.progress||0}%;background:${it.bar}"></div></div>
-      <div class="cc-btn">Continue →</div>
-    </a>`).join('');
+
+  return items.slice(0,5);
 }
 
-function renderSkills(data,writingStats){
-  const ss=data.skillStats||{};
-  const defs=[
-    {k:'reading', n:'Reading',   ico:'📖',ibg:'#f0effe',btn:'#6c63ff',btxt:'#fff',
-     sl:'Last score',cl:'Completed',link:'bandio-practice.html'},
-    {k:'listening',n:'Listening',ico:'🎧',ibg:'#fff3ee',btn:'#ff6b35',btxt:'#fff',
-     sl:'Last score',cl:'Completed',link:'bandio-listening.html'},
-    {k:'writing',  n:'Writing',  ico:'✍️',ibg:'#f0fdf4',btn:'#22c55e',btxt:'#fff',
-     sl:'Last score',cl:'Essays checked',link:'bandio-writing.html'},
-    {k:'speaking', n:'Speaking', ico:'🎤',ibg:'#eff6ff',btn:'#3b82f6',btxt:'#fff',
-     sl:'Last score',cl:'Practiced',link:'bandio-speaking.html'},
-    {k:'vocab',    n:'Vocab',    ico:'📚',ibg:'#fdf2f8',btn:'#ec4899',btxt:'#fff',
-     sl:'Words learned',cl:'To review',link:'bandio-vocab.html'},
-  ];
-  $('skills-row').innerHTML=defs.map(d=>{
-    const s=ss[d.k]||{};
-    // For writing: use live writing stats if available
-    let score='—',comp='—',weak='—';
-    if(d.k==='writing'&&writingStats){
-      score=writingStats.lastScore!=null?writingStats.lastScore.toFixed(1):'—';
-      comp=writingStats.count>0?writingStats.count:'—';
-      weak=s.weakArea||'—';
-    } else {
-      score=s.lastScore!=null?s.lastScore.toFixed(1):'—';
-      comp=s.completed!=null?(d.k==='vocab'?s.completed:s.total?`${s.completed}/${s.total}`:s.completed):'—';
-      weak=s.weakArea||'—';
-    }
-    return`<a class="sk" href="${d.link}">
-      <div class="sk-ico" style="background:${d.ibg}">${d.ico}</div>
-      <div class="sk-name">${d.n}</div>
-      <div class="sk-row"><span class="sk-lbl">${d.sl}</span><span class="sk-val">${score}</span></div>
-      <div class="sk-row"><span class="sk-lbl">${d.cl}</span><span class="sk-val">${comp}</span></div>
-      <div>${weak!=='—'?`<span class="sk-weak">⚠ ${weak}</span>`:'<span style="font-size:.62rem;color:var(--ink4)">No weak area yet</span>'}</div>
-      <button class="sk-btn" style="background:${d.btn};color:${d.btxt}">Practice now</button>
-    </a>`;
-  }).join('');
+function timeSince(ms){
+  const s=Math.floor((Date.now()-ms)/1000);
+  if(s<60)return 'just now';
+  const m=Math.floor(s/60);if(m<60)return m+'m ago';
+  const h=Math.floor(m/60);if(h<24)return h+'h ago';
+  const d=Math.floor(h/24);return d+'d ago';
 }
 
-function renderWriting(submissions,data){
-  const list=$('writing-list');
-  // Use live submissions if fetched, else fall back to user doc array
-  const items=submissions||(data.recentWriting||[]);
-  if(!items.length){
-    list.innerHTML='<div class="wi-empty">No submissions yet. <a href="bandio-writing.html" style="color:var(--accent)">Check your writing →</a></div>';
-    return;
-  }
-  list.innerHTML=items.slice(0,3).map(w=>`
-    <div class="wi">
-      <div class="wi-ico" style="background:${w.type==='task1'?'#fff3ee':'#f0effe'}">${w.type==='task1'?'📊':'📝'}</div>
-      <div class="wi-info">
-        <div class="wi-title">${w.title||'Writing Task'}</div>
-        <div class="wi-sub">${w.subtitle||'Essay'}${w.daysAgo!=null?' · '+w.daysAgo+' days ago':''}</div>
+function renderActivity(items){
+  const area=$('activity-area');
+  if(!items.length)return;
+  area.style.display='block';
+  area.style.padding='0';
+  area.style.flexDirection='column';
+  area.innerHTML=items.map((it,i)=>`
+    <div style="display:flex;align-items:center;gap:.9rem;padding:.85rem 1.2rem;${i<items.length-1?'border-bottom:1px solid var(--bdr)':''}">
+      <div style="width:38px;height:38px;border-radius:10px;background:${it.iconBg};display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">${it.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:.12rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${it.title}</div>
+        <div style="font-size:.74rem;color:var(--ink3);">${it.sub}</div>
       </div>
-      <div class="wi-right">
-        ${w.band!=null?`<div class="wi-band">${typeof w.band==='number'?w.band.toFixed(1):w.band}</div><div style="font-size:.61rem;color:var(--ink4)">Est. band</div>`:''}
-        <span class="wi-st ${w.status==='reviewed'?'ok':'pend'}">${w.status==='reviewed'?'Reviewed':'Pending'}</span>
-      </div>
+      ${it.time?`<div style="font-size:.72rem;color:var(--ink4);flex-shrink:0;">${it.time}</div>`:''}
     </div>`).join('');
 }
 
-function renderInsight(data,streak){
-  const weak=data.weakSkills||[];
-  const ss=data.skillStats||{};
-  let title='Keep up the great work!';
-  let body='Complete more practice sessions to unlock personalised insights about your performance.';
-  if(weak.length>0){
-    const top=weak[0];const s=ss[top]||{};
-    title=`Focus on your ${top} score`;
-    body=`Your ${top} is currently your weakest area${s.weakArea?' — specifically '+s.weakArea+' questions':''}.  Targeted practice will raise your overall band significantly.`;
-  } else if(streak>=5){
-    title=`${streak}-day streak — you're on fire 🔥`;
-    body=`Consistency is the #1 predictor of IELTS success. Keep showing up daily and your band will climb steadily.`;
-  } else if(streak>=2){
-    title=`${streak} days in a row — great start!`;
-    body=`Building a study habit is the hardest part — and you're already doing it. Aim for 7 days straight for best results.`;
-  }
-  $('ins-title').textContent=title;
-  $('ins-body').textContent=body;
-}
-
-/* ── ONBOARDING ── */
-const BANDS=[4.0,4.5,5.0,5.5,6.0,6.5,7.0,7.5,8.0,8.5,9.0];
-let selC=null,selT=null;
-
-function buildGrids(){
-  ['curGrid','tgtGrid'].forEach(id=>{
-    $(id).innerHTML=BANDS.map(b=>`
-      <button class="band-btn" data-b="${b}" onclick="selectBand('${id}',${b})">${b}</button>`).join('');
-  });
-}
-
-window.selectBand=function(id,v){
-  document.querySelectorAll(`#${id} .band-btn`).forEach(b=>b.classList.toggle('sel',+b.dataset.b===v));
-  id==='curGrid'?selC=v:selT=v;
-};
-
-window.submitOnboarding=async function(){
-  if(!selC){toast('Please select your current band');return;}
-  if(!selT){toast('Please select your target band');return;}
-  if(selT<=selC){toast('Target band must be higher than your current band 😊');return;}
-  const user=auth.currentUser;if(!user)return;
-  const btn=$('obSubmit');btn.textContent='Saving…';btn.disabled=true;
-  try{
-    await setDoc(doc(db,'users',user.uid),{
-      targetBand:selT,currentBand:selC,
-      streakDays:0,totalStudyMinutes:0,completedTests:0,
-      lastActivityDate:'',activityLog:[],
-      recentTests:[],recentWriting:[],
-      skillStats:{},skillProgress:{reading:0,listening:0,writing:0,speaking:0},
-      progressPercentage:0,weakSkills:[],weeklyMinutes:{}
-    },{merge:true});
-    hideModal();
-    toast('🎯 Goal saved! Let\'s build your score.');
-    setTimeout(()=>location.reload(),700);
-  }catch(e){
-    console.error(e);toast('Save failed — check console');
-    btn.textContent='Start tracking →';btn.disabled=false;
-  }
-};
-
-function showModal(){buildGrids();const m=$('modalBd');m.style.display='flex';requestAnimationFrame(()=>m.classList.add('show'));}
-function hideModal(){const m=$('modalBd');m.classList.remove('show');setTimeout(()=>m.style.display='none',280);}
-
-/* ── AUTH ── */
 onAuthStateChanged(auth,async user=>{
   if(!user){location.href='bandio-login.html';return;}
-  startSession(user.uid);
   try{
-    const ref=doc(db,'users',user.uid);
-    const snap=await getDoc(ref);
+    const snap=await getDoc(doc(db,'users',user.uid));
     const data=snap.exists()?snap.data():{};
     const name=resolveName(data,user);
     const plan=resolvePlan(data);
-    const needsOnboard=!snap.exists()||(!data.targetBand&&!data.currentBand);
-    if(needsOnboard)showModal();
-    const streak=await handleStreak(user.uid,data);
 
-    // Fetch writing from Firestore collections (not just user doc array)
-    const [writingSubs,writingStats]=await Promise.all([
-      fetchWritingSubmissions(user.uid),
-      fetchWritingStats(user.uid)
-    ]);
+    // Hero
+    $('hero-name').textContent=name;
+    $('tod').textContent=timeOfDay();
 
-    renderSidebar(data,name,plan);
-    renderHero(data,name,streak,plan);
-    renderProgress(data);
-    renderWeek(data);
-    renderContinue(data);
-    renderSkills(data,writingStats);
-    renderWriting(writingSubs,data);
-    renderInsight(data,streak);
-
-    // activity log
-    const today=td();
-    if(!(data.activityLog||[]).includes(today)){
-      updateDoc(ref,{activityLog:arrayUnion(today)}).catch(e=>console.warn('activityLog:',e.message));
+    // Plan pill
+    const planLabels={premium:'PREMIUM PLAN',intensive:'INTENSIVE PLAN',free:'FREE PLAN'};
+    $('plan-pill-txt').textContent=planLabels[plan]||'FREE PLAN';
+    if(plan==='intensive'||plan==='premium'){
+      $('plan-pill').style.cssText='background:#f3eeff;color:#7c3aed;border-color:#e0d0ff;';
+      $('plan-pill').querySelector('svg path').setAttribute('fill','#7c3aed');
     }
+
+    // Topbar + sidebar user
+    $('topbar-av').textContent=name.charAt(0).toUpperCase();
+    $('topbar-name').textContent=name;
+
+    // Activity
+    const acts=await fetchActivity(user.uid,data);
+    renderActivity(acts);
+
   }catch(err){
-    console.error('Dashboard error:',err);
-    toast('Could not load data — '+err.message);
+    console.error('Dashboard:',err);
+    toast('Could not load data');
   }
 });
 
@@ -1048,7 +664,6 @@ window.doSignOut=async()=>{await signOut(auth);location.href='bandio-login.html'
 </script>
 
 <script>
-/* ═══ SIDEBAR TOGGLE — works on both mobile and desktop ═══ */
 function openSidebar(){
   document.getElementById('sidebar').classList.add('open');
   document.getElementById('sbOverlay').classList.add('show');
@@ -1059,11 +674,8 @@ function closeSidebar(){
   document.getElementById('sbOverlay').classList.remove('show');
   document.body.style.overflow='';
 }
-// Close sidebar when any nav link is clicked (mobile only)
 document.querySelectorAll('.nav-item').forEach(el=>{
-  el.addEventListener('click',()=>{
-    if(window.innerWidth<=640)closeSidebar();
-  });
+  el.addEventListener('click',()=>{if(window.innerWidth<=640)closeSidebar();});
 });
 </script>
 </body>
