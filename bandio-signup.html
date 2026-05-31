@@ -4,98 +4,243 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Bandio — Create account</title>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--white:#ffffff;--bg:#f7f7f8;--ink:#111111;--ink2:#444444;--ink3:#777777;--ink4:#bbbbbb;--bdr:#e8e8ea;--bdr2:#d4d4d8;--blue:#4f7ef8;--blue-bg:#eef2ff;--sh:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);--r:10px;--rm:14px;--rl:18px;}
+:root{
+  --white:#fff;--bg:#f7f7f8;--ink:#111;--ink2:#444;--ink3:#777;--ink4:#bbb;
+  --bdr:#e8e8ea;--bdr2:#d4d4d8;--blue:#4f7ef8;--blue-bg:#eef2ff;
+  --r:10px;--rm:14px;
+}
 html,body{height:100%;font-family:"Geist",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
 body{background:var(--bg);color:var(--ink);min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
 a{text-decoration:none;color:inherit;}
-.left{background:var(--ink);padding:3rem;display:flex;flex-direction:column;justify-content:space-between;min-height:100vh;position:relative;overflow:hidden;}
-.left::before{content:"";position:absolute;top:-80px;right:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(79,126,248,.2) 0%,transparent 70%);border-radius:50%;}
-.l-content{position:relative;z-index:1;}
-.l-logo{font-size:1.4rem;font-weight:700;color:#fff;letter-spacing:-.025em;display:flex;align-items:center;gap:.4rem;margin-bottom:3rem;}
-.l-logo-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
-.l-headline{font-size:clamp(1.7rem,2.8vw,2.4rem);font-weight:700;letter-spacing:-.04em;line-height:1.1;color:#fff;margin-bottom:.9rem;}
-.l-headline em{font-style:normal;color:var(--blue);}
-.l-sub{font-size:.88rem;font-weight:300;line-height:1.7;color:rgba(255,255,255,.45);max-width:320px;margin-bottom:2rem;}
-.proof-item{background:rgba(255,255,255,.06);border:.5px solid rgba(255,255,255,.1);border-radius:var(--rm);padding:.85rem 1rem;display:flex;gap:.7rem;align-items:flex-start;margin-bottom:.6rem;}
-.proof-score{font-size:1.1rem;font-weight:700;color:var(--blue);flex-shrink:0;}
-.proof-text{font-size:.73rem;line-height:1.55;color:rgba(255,255,255,.5);}
-.proof-text strong{display:block;color:rgba(255,255,255,.85);margin-bottom:.15rem;}
-.l-footer{position:relative;z-index:1;font-size:.7rem;color:rgba(255,255,255,.2);}
-.right{display:flex;align-items:flex-start;justify-content:center;padding:2.5rem 2rem;overflow-y:auto;}
-.form-wrap{width:100%;max-width:400px;padding-top:1rem;}
-.form-eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:.4rem;}
-.form-title{font-size:1.55rem;font-weight:700;letter-spacing:-.03em;color:var(--ink);margin-bottom:.3rem;}
-.form-sub{font-size:.82rem;color:var(--ink3);margin-bottom:1.5rem;}
-.field{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.85rem;}
-.field label{font-size:.74rem;font-weight:600;color:var(--ink2);}
-.field input,.field select{width:100%;padding:.63rem .88rem;border:1px solid var(--bdr);border-radius:var(--r);background:var(--white);font-family:inherit;font-size:.87rem;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s;appearance:none;}
-.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,126,248,.1);}
-.field input::placeholder{color:var(--ink4);}
-.field input.error{border-color:#dc2626;}
-.pw-wrap{position:relative;}
-.pw-wrap input{padding-right:2.8rem;}
-.pw-eye{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink3);font-size:.8rem;}
-.band-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
-.band-btn{aspect-ratio:1;border:1px solid var(--bdr);border-radius:8px;background:var(--white);font-size:.78rem;font-weight:700;color:var(--ink3);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+
+/* LEFT PANEL */
+.left-panel{background:var(--ink);padding:3rem;display:flex;flex-direction:column;justify-content:space-between;min-height:100vh;position:relative;overflow:hidden;}
+.left-panel::before{content:"";position:absolute;top:-80px;right:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(79,126,248,.2) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+.lp-content{position:relative;z-index:1;}
+.lp-logo{font-size:1.35rem;font-weight:700;color:#fff;letter-spacing:-.025em;display:flex;align-items:center;gap:.4rem;margin-bottom:3rem;}
+.lp-logo-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
+.lp-headline{font-size:clamp(1.6rem,2.6vw,2.3rem);font-weight:700;letter-spacing:-.04em;line-height:1.1;color:#fff;margin-bottom:.85rem;}
+.lp-headline em{font-style:normal;color:var(--blue);}
+.lp-sub{font-size:.87rem;font-weight:300;line-height:1.7;color:rgba(255,255,255,.45);max-width:300px;margin-bottom:1.75rem;}
+.proof-item{background:rgba(255,255,255,.06);border:.5px solid rgba(255,255,255,.1);border-radius:var(--rm);padding:.82rem 1rem;display:flex;gap:.65rem;align-items:flex-start;margin-bottom:.55rem;}
+.proof-score{font-size:1.05rem;font-weight:700;color:var(--blue);flex-shrink:0;}
+.proof-text{font-size:.72rem;line-height:1.55;color:rgba(255,255,255,.48);}
+.proof-text strong{display:block;color:rgba(255,255,255,.82);margin-bottom:.12rem;}
+.lp-footer{position:relative;z-index:1;font-size:.68rem;color:rgba(255,255,255,.2);}
+
+/* RIGHT PANEL */
+.right-panel{display:flex;align-items:flex-start;justify-content:center;padding:2.5rem 2rem;overflow-y:auto;background:var(--bg);}
+
+/* Override original form styles */
+.auth-box{width:100%;max-width:400px;padding-top:.75rem;}
+.auth-logo{display:none;}
+/* Step indicators */
+.step-indicator{display:flex;gap:.4rem;margin-bottom:1.5rem;}
+.si-dot{width:6px;height:6px;border-radius:50%;background:var(--bdr2);transition:background .2s;}
+.si-dot.active{background:var(--blue);}
+.si-dot.done{background:var(--blue);opacity:.4;}
+.step-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:.38rem;}
+.step-title{font-size:1.45rem;font-weight:700;letter-spacing:-.03em;color:var(--ink);margin-bottom:.28rem;}
+.step-sub{font-size:.82rem;color:var(--ink3);margin-bottom:1.35rem;}
+.step-sub a{color:var(--blue);font-weight:600;}
+/* Fields */
+.field-group{display:flex;flex-direction:column;gap:.33rem;margin-bottom:.8rem;}
+.field-group label{font-size:.73rem;font-weight:600;color:var(--ink2);}
+.field-group input,.field-group select,.field-group textarea{width:100%;padding:.62rem .87rem;border:1px solid var(--bdr);border-radius:var(--r);background:var(--white);font-family:inherit;font-size:.86rem;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s;appearance:none;}
+.field-group input:focus,.field-group select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,126,248,.1);background:var(--white);}
+.field-group input::placeholder{color:var(--ink4);}
+.field-group input.error,.field-group input.shake{border-color:#dc2626;}
+.pw-field{position:relative;}
+.pw-field input{padding-right:2.8rem;}
+.pw-toggle{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink3);font-size:.8rem;padding:0;font-family:inherit;}
+/* Band selector */
+.band-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:.1rem;}
+.band-btn{aspect-ratio:1;border:1px solid var(--bdr);border-radius:8px;background:var(--white);font-size:.76rem;font-weight:700;color:var(--ink3);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-family:inherit;}
 .band-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg);}
 .band-btn.selected{background:var(--blue);border-color:var(--blue);color:#fff;}
-.strength-bar{height:3px;background:var(--bdr);border-radius:2px;overflow:hidden;margin-top:.35rem;}
-.strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s;}
-.strength-label{font-size:.7rem;margin-top:.2rem;}
-.terms-row{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.85rem;}
-.terms-row input[type=checkbox]{margin-top:2px;flex-shrink:0;accent-color:var(--blue);}
-.terms-row label{font-size:.76rem;color:var(--ink3);line-height:1.55;}
+/* Password strength */
+.pw-strength{height:3px;background:var(--bdr);border-radius:2px;overflow:hidden;margin-top:.32rem;}
+.pw-strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s;}
+.pw-strength-label{font-size:.68rem;margin-top:.18rem;}
+/* Buttons */
+.auth-btn{width:100%;padding:.67rem;background:var(--ink);color:#fff;border:none;border-radius:var(--rm);font-family:inherit;font-size:.86rem;font-weight:600;cursor:pointer;transition:background .15s;margin-top:.2rem;}
+.auth-btn:hover{background:var(--blue);}
+.auth-btn.loading{background:var(--blue);opacity:.7;cursor:not-allowed;}
+.auth-btn:disabled{background:var(--ink4);cursor:not-allowed;}
+.auth-divider{display:flex;align-items:center;gap:.7rem;margin:.75rem 0;color:var(--ink4);font-size:.75rem;}
+.auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--bdr);}
+.google-btn{width:100%;padding:.6rem;background:var(--white);border:1.5px solid var(--bdr);border-radius:var(--rm);font-family:inherit;font-size:.82rem;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .15s;color:var(--ink);}
+.google-btn:hover{border-color:var(--bdr2);box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);}
+/* Error / success */
+.error-banner{display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--r);padding:.58rem .82rem;font-size:.79rem;color:#dc2626;margin-bottom:.7rem;}
+.error-banner.show{display:block;}
+.success-screen{display:none;text-align:center;padding:1rem 0;}
+.success-screen.show{display:block;}
+.success-icon{font-size:2.5rem;margin-bottom:.75rem;}
+.success-title{font-size:1.25rem;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:.3rem;}
+.success-sub{font-size:.84rem;color:var(--ink3);line-height:1.6;}
+/* OTP */
+.otp-input{letter-spacing:.25em;text-align:center;font-size:1.3rem;font-weight:700;}
+.terms-row{display:flex;align-items:flex-start;gap:.55rem;margin-bottom:.8rem;}
+.terms-row input[type=checkbox]{margin-top:3px;accent-color:var(--blue);flex-shrink:0;}
+.terms-row label{font-size:.75rem;color:var(--ink3);line-height:1.55;}
 .terms-row a{color:var(--blue);}
-.form-submit{width:100%;padding:.68rem;background:var(--ink);color:#fff;border:none;border-radius:var(--rm);font-family:inherit;font-size:.87rem;font-weight:600;cursor:pointer;transition:background .15s;margin-top:.2rem;}
-.form-submit:hover{background:var(--blue);}
-.form-submit:disabled{background:var(--ink4);cursor:not-allowed;}
-.form-divider{display:flex;align-items:center;gap:.7rem;margin:.8rem 0;color:var(--ink4);font-size:.76rem;}
-.form-divider::before,.form-divider::after{content:"";flex:1;height:1px;background:var(--bdr);}
-.google-btn{width:100%;padding:.62rem;background:var(--white);border:1.5px solid var(--bdr);border-radius:var(--rm);font-family:inherit;font-size:.83rem;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .15s;color:var(--ink);}
-.google-btn:hover{border-color:var(--bdr2);box-shadow:var(--sh);}
-.form-footer{margin-top:1rem;font-size:.78rem;color:var(--ink3);text-align:center;}
-.form-footer a{color:var(--blue);font-weight:600;}
-.err-msg{font-size:.76rem;color:#dc2626;margin-top:.3rem;display:none;}
-.err-msg.show{display:block;}
-@media(max-width:720px){body{grid-template-columns:1fr;}.left{display:none;}}
+/* Shake */
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+.shake{animation:shake .3s ease;}
+@media(max-width:720px){
+  body{grid-template-columns:1fr;}
+  .left-panel{display:none;}
+  .auth-logo{display:flex!important;align-items:center;gap:.35rem;font-size:1.05rem;font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-bottom:1.4rem;}
+  .auth-logo-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+}
 </style>
 </head>
 <body>
-<div class="left">
-  <div class="l-content">
-    <div class="l-logo">Bandio<span class="l-logo-dot"></span></div>
-    <div class="l-headline">Your <em>IELTS journey</em> starts here.</div>
-    <div class="l-sub">Join thousands of students who are preparing smarter with Bandio — completely free to start.</div>
-    <div class="proof-item"><div class="proof-score">7.5</div><div class="proof-text"><strong>Dilnoza improved from 6.0</strong>"The AI writing checker showed exactly where I was losing marks."</div></div>
+
+<div class="left-panel">
+  <div class="lp-content">
+    <div class="lp-logo">Bandio<span class="lp-logo-dot"></span></div>
+    <div class="lp-headline">Your <em>IELTS journey</em> starts here.</div>
+    <div class="lp-sub">Join thousands of students preparing smarter with Bandio — free to start.</div>
+    <div class="proof-item"><div class="proof-score">7.5</div><div class="proof-text"><strong>Dilnoza improved from 6.0</strong>"The AI checker showed exactly where I was losing marks."</div></div>
     <div class="proof-item"><div class="proof-score">8.0</div><div class="proof-text"><strong>Jasur hit his target band</strong>"Mock tests every day. Bandio kept me consistent."</div></div>
-    <div class="proof-item"><div class="proof-score">7.0</div><div class="proof-text"><strong>Malika passed first try</strong>"Speaking practice built my confidence before the real exam."</div></div>
+    <div class="proof-item"><div class="proof-score">7.0</div><div class="proof-text"><strong>Malika passed first try</strong>"Speaking practice built my confidence."</div></div>
   </div>
-  <div class="l-footer">© 2025 Bandio. Made for IELTS learners in Uzbekistan.</div>
+  <div class="lp-footer">© 2025 Bandio. Made for IELTS learners in Uzbekistan.</div>
 </div>
-<div class="right">
+
+<div class="right-panel">
+  <div class="auth-box">
+    <div class="auth-logo">Bandio<span class="auth-logo-dot"></span></div>
+<div class="left-panel">
+  <div class="left-bg"></div>
+  <div class="left-content">
+    <a class="logo" href="bandio-home.html">Band<span>io</span></a>
+    <h1 class="left-headline">Your band score<br>goal starts <em>here.</em></h1>
+    <p class="left-sub">Join thousands of students using Bandio to sharpen every IELTS skill with AI feedback that actually pushes your score forward.</p>
+    <div>
+      <div class="proof-item">
+        <div class="proof-score">8.0</div>
+        <div class="proof-text"><strong>Aisha K. &mdash; Kazakhstan</strong>"The AI writing feedback spotted patterns I never noticed. Went from 6.5 to 8.0 in 6 weeks."</div>
+      </div>
+      <div class="proof-item">
+        <div class="proof-score">7.5</div>
+        <div class="proof-text"><strong>Ravi M. &mdash; India</strong>"Speaking practice with AI changed everything. I stopped freezing on Part 3."</div>
+      </div>
+    </div>
+  </div>
+  <div class="left-footer">&copy; 2025 Bandio. All rights reserved.</div>
+</div>
+
+<div class="right-panel">
   <div class="form-wrap">
-    <div class="form-eyebrow">Get started free</div>
-    <div class="form-title">Create your account</div>
-    <div class="form-sub">Already have one? <a href="bandio-login.html">Sign in →</a></div>
-    <div class="field"><label>Full name</label><input type="text" id="name" placeholder="Aslbek Yusupov" autocomplete="name"/></div>
-    <div class="field"><label>Email</label><input type="email" id="email" placeholder="your@email.com" autocomplete="email"/></div>
-    <div class="field"><label>Password</label><div class="pw-wrap"><input type="password" id="password" placeholder="At least 8 characters" autocomplete="new-password"/><button class="pw-eye" onclick="togglePw('password')">👁</button></div><div class="strength-bar"><div class="strength-fill" id="s-fill" style="width:0"></div></div><div class="strength-label" id="s-label" style="color:var(--ink4)"></div></div>
-    <div class="field"><label>Current IELTS band (or estimated)</label><div class="band-grid" id="cur-grid"></div></div>
-    <div class="field"><label>Target band</label><div class="band-grid" id="tgt-grid"></div></div>
-    <div class="terms-row"><input type="checkbox" id="terms"/><label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label></div>
-    <div class="err-msg" id="err-msg"></div>
-    <button class="form-submit" id="submitBtn" onclick="doSignup()">Create account →</button>
-    <div class="form-divider">or</div>
-    <button class="google-btn" onclick="doGoogle()">
-      <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="#FBBC05" d="M10.53 28.59c-.5-1.45-.78-2.99-.78-4.59s.27-3.14.78-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/></svg>
-      Continue with Google
-    </button>
-    <div class="form-footer">Already have an account? <a href="bandio-login.html">Sign in</a></div>
+    <div class="form-steps">
+      <div class="step-dot active" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+      <div class="step-dot" id="dot3"></div>
+      <div class="step-dot" id="dot4"></div>
+    </div>
+    <div id="main-form">
+      <div class="form-top">
+        <div class="form-eyebrow" id="step-label">Step 1 of 3 &mdash; Your details</div>
+        <h2 class="form-title" id="step-title">Create your account</h2>
+        <p class="form-subtitle" id="step-sub">Free to join. No credit card needed.</p>
+      </div>
+      <div id="step1">
+        <div class="field-group">
+          <div class="field"><label for="fullname">Full name</label><input type="text" id="fullname" placeholder="e.g. Aisha Karimova" autocomplete="name"/></div>
+          <div class="field"><label for="email">Email address</label><input type="email" id="email" placeholder="you@example.com" autocomplete="email"/></div>
+        </div>
+        <button class="btn-submit" onclick="goStep(2)"><span class="btn-text">Continue &rarr;</span><div class="spinner"></div></button>
+      </div>
+      <div id="step2" style="display:none">
+        <div class="field-group">
+          <div class="field">
+            <label for="password">Create a password</label>
+            <div class="pw-wrap"><input type="password" id="password" placeholder="At least 8 characters" oninput="checkStrength(this.value)"/><button class="pw-toggle" type="button" onclick="togglePw('password',this)">Show</button></div>
+            <div class="strength-wrap"><div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div><div class="strength-label" id="strength-label">Enter a password</div></div>
+          </div>
+          <div class="field">
+            <label for="confirm">Confirm password</label>
+            <div class="pw-wrap"><input type="password" id="confirm" placeholder="Same password again"/><button class="pw-toggle" type="button" onclick="togglePw('confirm',this)">Show</button></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;margin-bottom:1rem;">
+          <button class="btn-submit" style="background:var(--cream);color:var(--ink);flex:0 0 auto;width:auto;padding:.9rem 1.25rem;" onclick="goStep(1)">&larr; Back</button>
+          <button class="btn-submit" style="flex:1" onclick="goStep(3)"><span class="btn-text">Continue &rarr;</span><div class="spinner"></div></button>
+        </div>
+      </div>
+      <div id="step3" style="display:none">
+        <div class="field-group">
+          <div class="field">
+            <label>What's your target band score?</label>
+            <div class="band-selector" id="band-selector">
+              <button class="band-btn" onclick="selectBand(this,'5.0')">5.0</button>
+              <button class="band-btn" onclick="selectBand(this,'5.5')">5.5</button>
+              <button class="band-btn" onclick="selectBand(this,'6.0')">6.0</button>
+              <button class="band-btn" onclick="selectBand(this,'6.5')">6.5</button>
+              <button class="band-btn" onclick="selectBand(this,'7.0')">7.0</button>
+              <button class="band-btn" onclick="selectBand(this,'7.5')">7.5</button>
+              <button class="band-btn" onclick="selectBand(this,'8.0')">8.0</button>
+            </div>
+            <div class="field-hint" id="band-hint" style="margin-top:.5rem">This helps us personalise your learning path.</div>
+          </div>
+        </div>
+        <div class="terms-row">
+          <input type="checkbox" id="terms"/>
+          <label for="terms">I agree to Bandio's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+        <div style="display:flex;gap:.75rem;">
+          <button class="btn-submit" style="background:var(--cream);color:var(--ink);flex:0 0 auto;width:auto;padding:.9rem 1.25rem;" onclick="goStep(2)">&larr; Back</button>
+          <button class="btn-submit" style="flex:1" id="submit-btn" onclick="submitForm()"><span class="btn-text">Create my account &rarr;</span><div class="spinner"></div></button>
+        </div>
+      </div>
+    </div>
+
+      <!-- Step 4: OTP verification -->
+      <div id="step4" style="display:none">
+        <div style="text-align:center;margin-bottom:1.5rem;">
+          <div style="font-size:2.5rem;margin-bottom:.5rem;">📬</div>
+          <p style="font-size:.85rem;color:var(--muted);line-height:1.6;">We sent a 6-digit code to<br/><strong id="otp-email-display" style="color:var(--ink)"></strong></p>
+        </div>
+        <div class="field" style="margin-bottom:.75rem;">
+          <label for="otp-input">Verification code</label>
+          <input type="text" id="otp-input" placeholder="123456" maxlength="6"
+            style="text-align:center;font-size:1.6rem;letter-spacing:.3em;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;padding:.85rem;"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'');document.getElementById('otp-error').style.display='none';"/>
+        </div>
+        <div id="otp-error" style="display:none;color:#e24b4a;font-size:.82rem;margin-bottom:.75rem;text-align:center;padding:.5rem;background:#fef2f2;border-radius:7px;"></div>
+        <button class="btn-submit" id="verify-btn" onclick="verifyOTP()">
+          <span class="btn-text">Verify &amp; create account &rarr;</span>
+          <div class="spinner"></div>
+        </button>
+        <div style="text-align:center;margin-top:1rem;">
+          <button id="resend-btn" onclick="resendOTP()" style="background:none;border:none;color:var(--muted);font-size:.82rem;cursor:pointer;font-family:'Inter',sans-serif;">
+            Didn't get it? <span style="text-decoration:underline;color:var(--accent)">Resend code</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="success-screen" id="success-screen">
+      <div class="success-icon">&#127919;</div>
+      <div class="success-title" id="success-name">Welcome to Bandio!</div>
+      <p class="success-sub">Your account is ready. Target set at <strong id="success-band">Band 7.0</strong> &mdash; let's get you there.</p>
+      <button class="btn-dashboard" onclick="window.location.href='bandio-dashboard.html'">Go to my dashboard &rarr;</button>
+    </div>
+
+    <div class="signin-link" id="signin-link">
+      Already have an account? <a href="bandio-login.html">Sign in</a>
+    </div>
   </div>
 </div>
+  </div>
+</div>
+
 <script type="module">
 
 import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -273,28 +418,83 @@ window.verifyOTP = async function() {
 
 </script>
 <script>
-var selCur=null,selTgt=null;
-var BANDS=[4.0,4.5,5.0,5.5,6.0,6.5,7.0,7.5,8.0,8.5,9.0];
-function buildGrid(id,which){
-  var g=document.getElementById(id);
-  g.innerHTML=BANDS.map(b=>'<button class="band-btn" data-b="'+b+'" onclick="pickBand(\''+which+'\',"+(b)+')">'+b+'</button>').join("");
+
+var selectedBand = '';
+var currentStep  = 1;
+var stepLabels = ['','Step 1 of 3 \u2014 Your details','Step 2 of 3 \u2014 Set your password','Step 3 of 3 \u2014 Your goals'];
+var stepTitles = ['','Create your account','Secure your account','What are you aiming for?','Check your inbox'];
+var stepSubs   = ['','Free to join. No credit card needed.','Pick something you\'ll remember.','We\'ll tailor everything to your goal.','Enter the 6-digit code we sent to your email.'];
+
+function goStep(n) {
+  if (n===2) {
+    var nm=document.getElementById('fullname').value.trim();
+    var em=document.getElementById('email').value.trim();
+    if (!nm){document.getElementById('fullname').style.borderColor='#e24b4a';return;}
+    if (!em||!em.includes('@')){document.getElementById('email').style.borderColor='#e24b4a';return;}
+  }
+  if (n===3) {
+    var pw=document.getElementById('password').value;
+    var cf=document.getElementById('confirm').value;
+    if (pw.length<8){document.getElementById('password').style.borderColor='#e24b4a';return;}
+    if (pw!==cf){document.getElementById('confirm').style.borderColor='#e24b4a';return;}
+  }
+  document.getElementById('step'+currentStep).style.display='none';
+  currentStep=n;
+  document.getElementById('step'+currentStep).style.display='block';
+  document.getElementById('step-label').textContent=stepLabels[n];
+  document.getElementById('step-title').textContent=stepTitles[n];
+  document.getElementById('step-sub').textContent=stepSubs[n];
+  updateDots(n);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-function pickBand(which,v){
-  if(which==="cur")selCur=v;else selTgt=v;
-  var id=which==="cur"?"cur-grid":"tgt-grid";
-  document.querySelectorAll("#"+id+" .band-btn").forEach(b=>b.classList.toggle("selected",parseFloat(b.dataset.b)===v));
+function updateDots(n) {
+  for (var i=1;i<=4;i++){
+    var d=document.getElementById('dot'+i);
+    d.className='step-dot';
+    if (i<n) d.classList.add('done');
+    else if (i===n) d.classList.add('active');
+  }
 }
-buildGrid("cur-grid","cur");buildGrid("tgt-grid","tgt");
-function togglePw(id){var i=document.getElementById(id);i.type=i.type==="password"?"text":"password";}
-var pwi=document.getElementById("password");
-if(pwi)pwi.addEventListener("input",function(){
-  var v=this.value,s=0;
-  if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
-  var colors=["","#ef4444","#f97316","#eab308","#22c55e"];
-  var labels=["","Too short","Weak","Good","Strong"];
-  var f=document.getElementById("s-fill");var l=document.getElementById("s-label");
-  if(f){f.style.width=(s*25)+"%";f.style.background=colors[s]||"";}
-  if(l){l.textContent=labels[s]||"";l.style.color=colors[s]||"";}
+function selectBand(btn,val) {
+  document.querySelectorAll('.band-btn').forEach(function(b){b.classList.remove('selected');});
+  btn.classList.add('selected');
+  selectedBand=val;
+  document.getElementById('band-hint').style.color='';
+  document.getElementById('band-hint').textContent='Great goal! We\'ll build your path to Band '+val+'.';
+}
+function checkStrength(pw) {
+  var fill=document.getElementById('strength-fill'),label=document.getElementById('strength-label');
+  var score=0;
+  if (pw.length>=8) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  var levels=[{pct:'0%',color:'#e24b4a',text:'Too short'},{pct:'25%',color:'#e24b4a',text:'Weak'},{pct:'50%',color:'#EF9F27',text:'Fair'},{pct:'75%',color:'#639922',text:'Good'},{pct:'100%',color:'#1D9E75',text:'Strong'}];
+  var l=levels[Math.min(score,4)];
+  fill.style.width=l.pct;fill.style.background=l.color;
+  label.textContent=pw.length===0?'Enter a password':l.text;
+}
+function togglePw(id,btn) {
+  var input=document.getElementById(id);
+  if (input.type==='password'){input.type='text';btn.textContent='Hide';}
+  else{input.type='password';btn.textContent='Show';}
+}
+function submitForm() {
+  if (!selectedBand){
+    document.getElementById('band-hint').style.color='#e24b4a';
+    document.getElementById('band-hint').textContent='Please select your target band score.';
+    return;
+  }
+  if (!document.getElementById('terms').checked){alert('Please agree to the Terms of Service.');return;}
+  var btn=document.getElementById('submit-btn');
+  btn.classList.add('loading');
+  window.selectedBand=selectedBand;
+  sendOTP();
+}
+document.querySelectorAll('input').forEach(function(inp){
+  inp.addEventListener('input',function(){inp.style.borderColor='';});
 });
+
 </script>
-</body></html>
+</body>
+</html>
