@@ -3,184 +3,226 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Bandio — Send Feedback</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<title>Bandio — Feedback</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:#f0eeea;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;}
-nav{background:#0e0e0e;padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#f5f2eb;text-decoration:none;}
-.logo span{color:#d4541a;}
-.nav-back{margin-left:auto;padding:.38rem .85rem;border:.5px solid rgba(255,255,255,.2);border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.78rem;color:rgba(255,255,255,.6);text-decoration:none;}
-.nav-back:hover{background:rgba(255,255,255,.08);color:#fff;}
-.page{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;}
-.card{background:#fff;border-radius:20px;max-width:520px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.1);padding:2.25rem 2rem;}
-.card-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-.02em;margin-bottom:.35rem;}
-.card-sub{font-size:.88rem;color:#888;line-height:1.6;margin-bottom:1.75rem;}
-.field{margin-bottom:1.1rem;}
-label{font-size:.82rem;font-weight:600;color:#555;display:block;margin-bottom:.4rem;}
-.field input,.field select,.field textarea{width:100%;border:1px solid #d8d5d0;border-radius:8px;padding:.6rem .85rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:#1a1a1a;outline:none;background:#fafaf9;transition:border-color .12s;}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:#999;background:#fff;}
-.field input::placeholder,.field textarea::placeholder{color:#bbb;}
-.field textarea{resize:vertical;min-height:130px;line-height:1.7;}
-.rating-row{display:flex;gap:.5rem;flex-wrap:wrap;}
-.star{width:38px;height:38px;border:1.5px solid #d8d5d0;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;transition:all .12s;user-select:none;}
-.star:hover,.star.on{background:#fef9c3;border-color:#fde68a;}
-.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
-.cat-item{padding:.55rem .75rem;border:1.5px solid #d8d5d0;border-radius:8px;font-size:.82rem;cursor:pointer;transition:all .12s;text-align:center;user-select:none;}
-.cat-item:hover,.cat-item.on{background:#dbeafe;border-color:#93c5fd;color:#1e40af;}
-.submit-btn{width:100%;padding:.75rem;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:background .15s;margin-top:.5rem;}
-.submit-btn:hover{background:#d4541a;}
-.submit-btn:disabled{background:#ccc;cursor:not-allowed;}
+:root{
+  --sw:224px;
+  --white:#ffffff;--bg:#f7f7f8;--ink:#111111;--ink2:#444444;--ink3:#777777;--ink4:#bbbbbb;
+  --bdr:#e8e8ea;--bdr2:#d4d4d8;
+  --blue:#4f7ef8;--blue-bg:#eef2ff;--blue-light:#dce6ff;
+  --sh:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);
+  --shm:0 2px 8px rgba(0,0,0,.06),0 12px 32px rgba(0,0,0,.06);
+  --r:10px;--rm:14px;--rl:18px;
+  --fd:'Geist',system-ui,sans-serif;--fb:'Geist',system-ui,sans-serif;
+}
+html,body{height:100%;}
+body{font-family:var(--fb);background:var(--bg);color:var(--ink);display:flex;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+button{font-family:var(--fb);cursor:pointer;border:none;background:none;}
+/* SIDEBAR */
+.sidebar{width:var(--sw);min-width:var(--sw);background:var(--white);border-right:1px solid var(--bdr);min-height:100vh;display:flex;flex-direction:column;padding:0;position:fixed;top:0;left:0;bottom:0;z-index:60;overflow-y:auto;scrollbar-width:none;transition:transform .26s cubic-bezier(.4,0,.2,1);}
+.sidebar::-webkit-scrollbar{display:none;}
+.s-top{padding:1.25rem 1.1rem 0;}
+.s-logo{display:flex;align-items:center;gap:.45rem;padding:.5rem;margin-bottom:1.5rem;}
+.s-logo-txt{font-size:1.15rem;font-weight:700;color:var(--ink);letter-spacing:-.025em;}
+.s-logo-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+.nav-item{display:flex;align-items:center;gap:.65rem;padding:.52rem .75rem;border-radius:var(--r);font-size:.84rem;font-weight:500;color:var(--ink2);transition:all .15s;margin-bottom:2px;position:relative;}
+.nav-item:hover{background:var(--bg);color:var(--ink);}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:600;}
+.nav-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.95rem;background:transparent;transition:background .15s;}
+.nav-item.active .nav-icon{background:var(--blue-light);}
+.nav-sep{height:1px;background:var(--bdr);margin:1rem .5rem;}
+.nav-badge{margin-left:auto;background:#7c3aed;color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .42rem;border-radius:100px;letter-spacing:.03em;}
+.s-bottom{margin-top:auto;padding:0 1.1rem 1.25rem;}
+.user-chip{display:flex;align-items:center;gap:.6rem;padding:.55rem .6rem;border-radius:var(--r);}
+.u-av{width:30px;height:30px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.76rem;color:#fff;flex-shrink:0;}
+.u-name{font-size:.8rem;font-weight:600;color:var(--ink);}
+.u-plan{font-size:.63rem;color:var(--ink3);margin-top:1px;}
+/* MOBILE */
+.mob-bar{display:none;background:var(--white);padding:.75rem 1rem;align-items:center;gap:.75rem;position:sticky;top:0;z-index:70;border-bottom:1px solid var(--bdr);}
+.mob-logo{font-size:1.1rem;font-weight:700;color:var(--ink);letter-spacing:-.025em;flex:1;}
+.hamburger{display:none;flex-direction:column;gap:4px;padding:.4rem;border-radius:8px;cursor:pointer;}
+.hamburger span{display:block;width:18px;height:1.8px;background:var(--ink);border-radius:2px;}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:59;backdrop-filter:blur(2px);}
+.sb-overlay.show{display:block;}
+/* MAIN WRAP */
+.main-wrap{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.main{padding:2rem 2.25rem 3rem;}
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:flex-end;gap:.65rem;padding:.9rem 2rem;border-bottom:1px solid var(--bdr);background:var(--white);position:sticky;top:0;z-index:40;}
+.tb-user{display:flex;align-items:center;gap:.55rem;padding:.35rem .6rem .35rem .35rem;border-radius:100px;border:1px solid var(--bdr);cursor:pointer;background:var(--white);transition:all .15s;}
+.tb-user:hover{background:var(--bg);}
+.tb-av{width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#fff;flex-shrink:0;}
+.tb-name{font-size:.82rem;font-weight:600;color:var(--ink);}
+/* PAGE HEADER */
+.page-hd{margin-bottom:1.75rem;}
+.page-title{font-size:1.5rem;font-weight:700;letter-spacing:-.03em;color:var(--ink);margin-bottom:.3rem;}
+.page-sub{font-size:.88rem;color:var(--ink3);line-height:1.6;}
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rl);box-shadow:var(--sh);}
+.card:hover{box-shadow:var(--shm);}
+/* BUTTONS */
+.btn-primary{display:inline-flex;align-items:center;gap:.45rem;padding:.62rem 1.3rem;background:var(--ink);color:#fff;border-radius:var(--rm);font-size:.85rem;font-weight:600;transition:all .15s;}
+.btn-primary:hover{background:var(--blue);transform:translateY(-1px);}
+.btn-blue{display:inline-flex;align-items:center;gap:.45rem;padding:.62rem 1.3rem;background:var(--blue);color:#fff;border-radius:var(--rm);font-size:.85rem;font-weight:600;transition:all .15s;box-shadow:0 2px 8px rgba(79,126,248,.25);}
+.btn-blue:hover{background:#3d6cf7;transform:translateY(-1px);}
+.btn-outline{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1.3rem;background:var(--white);border:1.5px solid var(--bdr2);color:var(--ink2);border-radius:var(--rm);font-size:.85rem;font-weight:600;transition:all .15s;}
+.btn-outline:hover{border-color:var(--ink);background:var(--bg);}
+/* SECTION TITLE */
+.sec-title{font-size:.82rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin-bottom:.85rem;}
+/* RESPONSIVE */
+@media(max-width:640px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);box-shadow:var(--shm);}
+  .main-wrap{margin-left:0!important;}
+  .mob-bar{display:flex!important;}
+  .hamburger{display:flex!important;}
+  .topbar{display:none;}
+  .main{padding:1rem 1rem 2rem;}
+}
 
-/* Success state */
-.success{display:none;text-align:center;padding:1rem 0;}
-.success-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
-.success-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:.5rem;}
-.success-sub{font-size:.88rem;color:#666;line-height:1.65;margin-bottom:1.5rem;}
-.back-btn{display:inline-block;padding:.6rem 1.5rem;background:#1a1a1a;color:#fff;border-radius:100px;text-decoration:none;font-size:.86rem;font-weight:600;}
-.back-btn:hover{background:#d4541a;}
+.form-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rl);padding:2rem;max-width:560px;box-shadow:var(--sh);}
+.field{margin-bottom:1rem;}
+.field label{display:block;font-size:.76rem;font-weight:600;color:var(--ink2);margin-bottom:.38rem;letter-spacing:.01em;}
+.field input,.field textarea,.field select{width:100%;border:1px solid var(--bdr);border-radius:var(--r);padding:.6rem .85rem;font-family:var(--fb);font-size:.88rem;color:var(--ink);outline:none;background:var(--bg);transition:border-color .15s;}
+.field input:focus,.field textarea:focus{border-color:var(--blue);background:var(--white);box-shadow:0 0 0 3px rgba(79,126,248,.1);}
+.field textarea{resize:vertical;min-height:120px;line-height:1.7;}
+.rating-row{display:flex;gap:.45rem;}
+.star{width:36px;height:36px;border:1.5px solid var(--bdr);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:all .12s;}
+.star:hover,.star.on{background:#fef9c3;border-color:#fde68a;}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;}
+.cat-item{padding:.5rem .75rem;border:1.5px solid var(--bdr);border-radius:var(--r);font-size:.8rem;cursor:pointer;transition:all .12s;text-align:center;}
+.cat-item:hover,.cat-item.on{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
+.submit-btn{width:100%;padding:.72rem;background:var(--ink);color:#fff;border:none;border-radius:var(--rm);font-family:var(--fb);font-size:.88rem;font-weight:600;cursor:pointer;transition:background .15s;margin-top:.5rem;}
+.submit-btn:hover{background:var(--blue);}
+.submit-btn:disabled{background:var(--ink4);cursor:not-allowed;}
+.success{display:none;text-align:center;padding:2rem 1rem;}
+.success-emoji{font-size:2.8rem;margin-bottom:.75rem;display:block;}
+.success-title{font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;}
+.success-sub{font-size:.86rem;color:var(--ink3);line-height:1.65;margin-bottom:1.25rem;}
 </style>
-<script type="module">
-  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  const app=initializeApp({apiKey:"AIzaSyC-eNh5D7Lg_o026ZAR5QWo8BvdxRpustM",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"});
-  const db = getFirestore(app);
-  let currentUser = null;
-  onAuthStateChanged(getAuth(app),function(u){
-    if(!u){location.replace("bandio-login.html");return;}
-    currentUser = u;
-  });
-  window._fbDb = db;
-  window._fbAddDoc = addDoc;
-  window._fbCollection = collection;
-  window._fbServerTimestamp = serverTimestamp;
-</script>
 </head>
 <body>
-<nav>
-  <a class="logo" href="bandio-home.html">Band<span>io</span></a>
-  <a class="nav-back" href="bandio-dashboard.html">← Dashboard</a>
-</nav>
-<div class="page">
-  <div class="card">
-
-    <!-- FORM -->
-    <div id="fb-form">
-      <div class="card-title">💬 Send feedback</div>
-      <div class="card-sub">We read every message. Tell us what you love, what to improve, or anything else on your mind.</div>
-
-      <div class="field">
-        <label>Your name (optional)</label>
-        <input type="text" id="fb-name" placeholder="e.g. Aisha"/>
-      </div>
-
-      <div class="field">
-        <label>Your email (optional)</label>
-        <input type="email" id="fb-email" placeholder="so we can reply to you"/>
-      </div>
-
-      <div class="field">
-        <label>Category</label>
-        <div class="cat-grid" id="cat-grid">
-          <div class="cat-item on" onclick="pickCat(this)">💡 Suggestion</div>
-          <div class="cat-item" onclick="pickCat(this)">🐛 Bug report</div>
-          <div class="cat-item" onclick="pickCat(this)">❤️ Compliment</div>
-          <div class="cat-item" onclick="pickCat(this)">❓ Question</div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>How would you rate Bandio?</label>
-        <div class="rating-row" id="stars">
-          <div class="star" onclick="pickStar(1)">⭐</div>
-          <div class="star" onclick="pickStar(2)">⭐</div>
-          <div class="star" onclick="pickStar(3)">⭐</div>
-          <div class="star on" onclick="pickStar(4)">⭐</div>
-          <div class="star on" onclick="pickStar(5)">⭐</div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Your message <span style="color:#e24b4a">*</span></label>
-        <textarea id="fb-msg" placeholder="Write your feedback here..."></textarea>
-      </div>
-
-      <button class="submit-btn" id="submitBtn" onclick="submitFeedback()">Send feedback</button>
-    </div>
-
-    <!-- SUCCESS -->
-    <div class="success" id="fb-success">
-      <span class="success-emoji">🙏</span>
-      <div class="success-title">Thank you so much!</div>
-      <div class="success-sub">Your feedback has been received. I personally read every message and your thoughts help make Bandio better every day. It means a lot!</div>
-      <a class="back-btn" href="bandio-dashboard.html">← Back to dashboard</a>
-    </div>
-
-  </div>
+<!-- SIDEBAR OVERLAY -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<!-- MOBILE TOPBAR -->
+<div class="mob-bar" id="mobBar">
+  <button class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+  <span class="mob-logo">Bandio<span style="display:inline-block;width:6px;height:6px;background:var(--blue);border-radius:50%;margin-left:2px;vertical-align:middle;margin-bottom:2px;"></span></span>
 </div>
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="s-top">
+    <div class="s-logo"><span class="s-logo-txt">Bandio</span><span class="s-logo-dot"></span></div>
+    <a class="nav-item " href="bandio-dashboard.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/></svg></span>Dashboard</a>
+    <div style="position:relative;">
+      <div class="nav-item " id="practice-toggle" onclick="togglePractice()" style="cursor:pointer;"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M6 5.5l4 2.5-4 2.5V5.5z" fill="currentColor"/></svg></span>Practice<span id="pchev" style="margin-left:auto;font-size:.62rem;color:var(--ink4);transition:transform .2s;">▾</span></div>
+      <div id="pmenu" style="display:none;padding-left:.7rem;">
+        <a class="nav-item " href="bandio-practice.html" style="font-size:.8rem;"><span class="nav-icon" style="width:24px;height:24px;font-size:.8rem;">📖</span>Reading</a>
+        <a class="nav-item " href="bandio-listening.html" style="font-size:.8rem;"><span class="nav-icon" style="width:24px;height:24px;font-size:.8rem;">🎧</span>Listening</a>
+      </div>
+    </div>
+    <a class="nav-item " href="bandio-books.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 2h6a2 2 0 012 2v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 4h1.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5H11" stroke="currentColor" stroke-width="1.5"/></svg></span>Books</a>
+    <a class="nav-item " href="bandio-articles.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 5.5h6M5 8h4M5 10.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>Articles</a>
+    <a class="nav-item " href="bandio-vocab.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2L9.5 6.5H14L10.25 9.25l1.5 4.5L8 11l-3.75 2.75 1.5-4.5L2 6.5h4.5L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></span>Vocabulary</a>
+    <a class="nav-item " href="bandio-speaking.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="5" y="1.5" width="6" height="8" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 8.5A5.5 5.5 0 008 14a5.5 5.5 0 005.5-5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Speaking</a>
+    <a class="nav-item " href="bandio-writing.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>Writing</a>
+    <div class="nav-sep"></div>
+    <a class="nav-item" href="bandio-pricing.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 4H14l-3.4 2.5 1.3 4L8 9 4.1 11.5l1.3-4L2 5h4.2L8 1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></span>Upgrade<span class="nav-badge">PRO</span></a>
+    <a class="nav-item" href="bandio-feedback.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h10a1 1 0 011 1v7a1 1 0 01-1 1H5.5L2 14V3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>Feedback</a>
+    <a class="nav-item" href="bandio-gift.html"><span class="nav-icon">🎁</span>Give a gift</a>
+    <a class="nav-item" href="bandio-profile.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 13.5c0-2.5 2.7-4.5 6-4.5s6 2 6 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>Profile</a>
+    <a class="nav-item" href="bandio-settings.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5v1.2M8 13.3v1.2M1.5 8h1.2M13.3 8h1.2M3.4 3.4l.85.85M11.75 11.75l.85.85M3.4 12.6l.85-.85M11.75 4.25l.85-.85" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>Settings</a>
+    <button class="nav-item" onclick="doSignOut()" style="width:100%;text-align:left;"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M10.5 11l3-3-3-3M13.5 8H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Log out</button>
+  </div>
+  <div class="s-bottom">
+    <div class="user-chip"><div class="u-av" id="sb-av">?</div><div><div class="u-name" id="sb-name">Student</div><div class="u-plan" id="sb-plan">Free plan</div></div></div>
+  </div>
+</nav>
+
+<div class="main-wrap">
+  <div class="topbar"><div class="tb-user"><div class="tb-av" id="tb-av">?</div><span class="tb-name" id="tb-name">Student</span></div></div>
+  <main class="main">
+    <div class="page-hd"><div class="page-title">Send Feedback</div><div class="page-sub">We read every message. Tell us what you love or what to improve.</div></div>
+    <div class="form-card">
+      <div id="fb-form">
+        <div class="field"><label>Your name (optional)</label><input type="text" id="fb-name" placeholder="e.g. Aisha"/></div>
+        <div class="field"><label>Your email (optional)</label><input type="email" id="fb-email" placeholder="so we can reply"/></div>
+        <div class="field"><label>Category</label>
+          <div class="cat-grid" id="cat-grid">
+            <div class="cat-item on" onclick="pickCat(this)">💡 Suggestion</div>
+            <div class="cat-item" onclick="pickCat(this)">🐛 Bug report</div>
+            <div class="cat-item" onclick="pickCat(this)">❤️ Compliment</div>
+            <div class="cat-item" onclick="pickCat(this)">❓ Question</div>
+          </div>
+        </div>
+        <div class="field"><label>Rating</label>
+          <div class="rating-row" id="stars">
+            <div class="star" onclick="pickStar(1)">⭐</div>
+            <div class="star" onclick="pickStar(2)">⭐</div>
+            <div class="star" onclick="pickStar(3)">⭐</div>
+            <div class="star on" onclick="pickStar(4)">⭐</div>
+            <div class="star on" onclick="pickStar(5)">⭐</div>
+          </div>
+        </div>
+        <div class="field"><label>Your message <span style="color:#e24b4a">*</span></label><textarea id="fb-msg" placeholder="Write your feedback here…"></textarea></div>
+        <button class="submit-btn" id="submitBtn" onclick="submitFeedback()">Send feedback</button>
+      </div>
+      <div class="success" id="fb-success">
+        <span class="success-emoji">🙏</span>
+        <div class="success-title">Thank you so much!</div>
+        <div class="success-sub">Your feedback has been received. Every message is read personally and helps make Bandio better.</div>
+        <a href="bandio-dashboard.html" class="btn-primary">← Back to dashboard</a>
+      </div>
+    </div>
+  </main>
+</div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyBZdCEYUded-YT9RMSr1R7wg8VAqK9HCz0",authDomain:"bandio-53433.firebaseapp.com",projectId:"bandio-53433",storageBucket:"bandio-53433.firebasestorage.app",messagingSenderId:"161548316253",appId:"1:161548316253:web:a7746750b2ea6d239d67b4"});
+const auth=getAuth(app);const db=getFirestore(app);
+let currentUser=null;
+function rn(d,u){const r=d.name||d.displayName||d.username||u.displayName||u.email||"Student";return r.includes("@")?r.split("@")[0]:r.split(" ")[0];}
+onAuthStateChanged(auth,async user=>{
+  if(!user){location.href="bandio-login.html";return;}
+  currentUser=user;
+  try{const snap=await getDoc(doc(db,"users",user.uid));const data=snap.exists()?snap.data():{};const name=rn(data,user);
+  ["sb-av","tb-av"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name.charAt(0).toUpperCase();});
+  ["sb-name","tb-name"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name;});
+  const ps={premium:"Premium ✦",intensive:"Intensive ✦✦",free:"Free plan"};
+  const sp=document.getElementById("sb-plan");if(sp)sp.textContent=ps[data.planType||data.plan||"free"]||"Free plan";
+  }catch(e){}
+});
+window.doSignOut=async()=>{await signOut(auth);location.href="bandio-login.html";};
+window._db=db;window._addDoc=addDoc;window._col=collection;window._currentUser=()=>currentUser;
+</script>
 <script>
-var rating = 4;
-var category = 'Suggestion';
-
-function pickStar(n) {
-  rating = n;
-  var stars = document.getElementById('stars').children;
-  for (var i = 0; i < stars.length; i++) {
-    stars[i].classList.toggle('on', i < n);
-  }
-}
-
-function pickCat(el) {
-  document.querySelectorAll('.cat-item').forEach(function(c){ c.classList.remove('on'); });
-  el.classList.add('on');
-  category = el.textContent.replace(/[^a-zA-Z ]/g,'').trim();
-}
-
-function submitFeedback() {
-  var msg = document.getElementById('fb-msg').value.trim();
-  if (!msg) { alert('Please write your feedback before sending.'); return; }
-
-  var btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = 'Sending...';
-
-  var feedback = {
-    name:     document.getElementById('fb-name').value.trim() || 'Anonymous',
-    email:    document.getElementById('fb-email').value.trim() || '—',
-    category: category,
-    rating:   rating,
-    message:  msg,
-    date:     new Date().toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}),
-    time:     new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-    createdAt: new Date().toISOString(),
-    read:     false
-  };
-
-  // Save to Firestore so admin can see it from any device
-  if (window._fbDb && window._fbAddDoc && window._fbCollection) {
-    window._fbAddDoc(window._fbCollection(window._fbDb, 'feedback'), feedback)
-      .then(function() {
-        document.getElementById('fb-form').style.display = 'none';
-        document.getElementById('fb-success').style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'Send feedback';
-      })
-      .catch(function(e) {
-        console.log('Feedback save error:', e.message);
-        btn.disabled = false;
-        btn.textContent = 'Send feedback';
-        alert('Could not send feedback. Please try again.');
-      });
-  } else {
-    // Fallback if Firebase not ready yet
-    setTimeout(function() {
-      document.getElementById('fb-form').style.display = 'none';
-      document.getElementById('fb-success').style.display = 'block';
-    }, 600);
+var rating=4,category="Suggestion";
+function pickStar(n){rating=n;var s=document.getElementById("stars").children;for(var i=0;i<s.length;i++)s[i].classList.toggle("on",i<n);}
+function pickCat(el){document.querySelectorAll(".cat-item").forEach(c=>c.classList.remove("on"));el.classList.add("on");category=el.textContent.replace(/[^a-zA-Z ]/g,"").trim();}
+function submitFeedback(){
+  var msg=document.getElementById("fb-msg").value.trim();
+  if(!msg){alert("Please write your feedback.");return;}
+  var btn=document.getElementById("submitBtn");btn.disabled=true;btn.textContent="Sending…";
+  var fb={name:document.getElementById("fb-name").value.trim()||"Anonymous",email:document.getElementById("fb-email").value.trim()||"—",category:category,rating:rating,message:msg,date:new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}),time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),createdAt:new Date().toISOString(),read:false};
+  if(window._db&&window._addDoc){
+    window._addDoc(window._col(window._db,"feedback"),fb).then(()=>{
+      document.getElementById("fb-form").style.display="none";
+      document.getElementById("fb-success").style.display="block";
+    }).catch(e=>{btn.disabled=false;btn.textContent="Send feedback";alert("Error: "+e.message);});
   }
 }
 </script>
-</body>
-</html>
+<script>
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sbOverlay').classList.add('show');document.body.style.overflow='hidden';}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('show');document.body.style.overflow='';}
+var _po=false;
+function togglePractice(){_po=!_po;document.getElementById('pmenu').style.display=_po?'block':'none';document.getElementById('pchev').style.transform=_po?'rotate(180deg)':'rotate(0)';}
+document.querySelectorAll('.nav-item').forEach(function(el){el.addEventListener('click',function(){if(window.innerWidth<=640)closeSidebar();});});
+</script>
+
+</body></html>

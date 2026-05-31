@@ -3,183 +3,170 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Bandio — Speaking Practice</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<title>Bandio — Speaking</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-  :root {
-    --ink:#0e0e0e; --paper:#f5f2eb; --cream:#ede9df;
-    --accent:#d4541a; --muted:#7a7468; --card:#ffffff;
-    --green:#2a9d68; --blue:#1a6bd4; --purple:#7F77DD;
-  }
-  body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; display:flex; flex-direction:column; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --sw:224px;
+  --white:#ffffff;--bg:#f7f7f8;--ink:#111111;--ink2:#444444;--ink3:#777777;--ink4:#bbbbbb;
+  --bdr:#e8e8ea;--bdr2:#d4d4d8;
+  --blue:#4f7ef8;--blue-bg:#eef2ff;--blue-light:#dce6ff;
+  --sh:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);
+  --shm:0 2px 8px rgba(0,0,0,.06),0 12px 32px rgba(0,0,0,.06);
+  --r:10px;--rm:14px;--rl:18px;
+  --fd:'Geist',system-ui,sans-serif;--fb:'Geist',system-ui,sans-serif;
+}
+html,body{height:100%;}
+body{font-family:var(--fb);background:var(--bg);color:var(--ink);display:flex;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+button{font-family:var(--fb);cursor:pointer;border:none;background:none;}
+/* SIDEBAR */
+.sidebar{width:var(--sw);min-width:var(--sw);background:var(--white);border-right:1px solid var(--bdr);min-height:100vh;display:flex;flex-direction:column;padding:0;position:fixed;top:0;left:0;bottom:0;z-index:60;overflow-y:auto;scrollbar-width:none;transition:transform .26s cubic-bezier(.4,0,.2,1);}
+.sidebar::-webkit-scrollbar{display:none;}
+.s-top{padding:1.25rem 1.1rem 0;}
+.s-logo{display:flex;align-items:center;gap:.45rem;padding:.5rem;margin-bottom:1.5rem;}
+.s-logo-txt{font-size:1.15rem;font-weight:700;color:var(--ink);letter-spacing:-.025em;}
+.s-logo-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+.nav-item{display:flex;align-items:center;gap:.65rem;padding:.52rem .75rem;border-radius:var(--r);font-size:.84rem;font-weight:500;color:var(--ink2);transition:all .15s;margin-bottom:2px;position:relative;}
+.nav-item:hover{background:var(--bg);color:var(--ink);}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:600;}
+.nav-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.95rem;background:transparent;transition:background .15s;}
+.nav-item.active .nav-icon{background:var(--blue-light);}
+.nav-sep{height:1px;background:var(--bdr);margin:1rem .5rem;}
+.nav-badge{margin-left:auto;background:#7c3aed;color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .42rem;border-radius:100px;letter-spacing:.03em;}
+.s-bottom{margin-top:auto;padding:0 1.1rem 1.25rem;}
+.user-chip{display:flex;align-items:center;gap:.6rem;padding:.55rem .6rem;border-radius:var(--r);}
+.u-av{width:30px;height:30px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.76rem;color:#fff;flex-shrink:0;}
+.u-name{font-size:.8rem;font-weight:600;color:var(--ink);}
+.u-plan{font-size:.63rem;color:var(--ink3);margin-top:1px;}
+/* MOBILE */
+.mob-bar{display:none;background:var(--white);padding:.75rem 1rem;align-items:center;gap:.75rem;position:sticky;top:0;z-index:70;border-bottom:1px solid var(--bdr);}
+.mob-logo{font-size:1.1rem;font-weight:700;color:var(--ink);letter-spacing:-.025em;flex:1;}
+.hamburger{display:none;flex-direction:column;gap:4px;padding:.4rem;border-radius:8px;cursor:pointer;}
+.hamburger span{display:block;width:18px;height:1.8px;background:var(--ink);border-radius:2px;}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:59;backdrop-filter:blur(2px);}
+.sb-overlay.show{display:block;}
+/* MAIN WRAP */
+.main-wrap{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.main{padding:2rem 2.25rem 3rem;}
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:flex-end;gap:.65rem;padding:.9rem 2rem;border-bottom:1px solid var(--bdr);background:var(--white);position:sticky;top:0;z-index:40;}
+.tb-user{display:flex;align-items:center;gap:.55rem;padding:.35rem .6rem .35rem .35rem;border-radius:100px;border:1px solid var(--bdr);cursor:pointer;background:var(--white);transition:all .15s;}
+.tb-user:hover{background:var(--bg);}
+.tb-av{width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#fff;flex-shrink:0;}
+.tb-name{font-size:.82rem;font-weight:600;color:var(--ink);}
+/* PAGE HEADER */
+.page-hd{margin-bottom:1.75rem;}
+.page-title{font-size:1.5rem;font-weight:700;letter-spacing:-.03em;color:var(--ink);margin-bottom:.3rem;}
+.page-sub{font-size:.88rem;color:var(--ink3);line-height:1.6;}
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rl);box-shadow:var(--sh);}
+.card:hover{box-shadow:var(--shm);}
+/* BUTTONS */
+.btn-primary{display:inline-flex;align-items:center;gap:.45rem;padding:.62rem 1.3rem;background:var(--ink);color:#fff;border-radius:var(--rm);font-size:.85rem;font-weight:600;transition:all .15s;}
+.btn-primary:hover{background:var(--blue);transform:translateY(-1px);}
+.btn-blue{display:inline-flex;align-items:center;gap:.45rem;padding:.62rem 1.3rem;background:var(--blue);color:#fff;border-radius:var(--rm);font-size:.85rem;font-weight:600;transition:all .15s;box-shadow:0 2px 8px rgba(79,126,248,.25);}
+.btn-blue:hover{background:#3d6cf7;transform:translateY(-1px);}
+.btn-outline{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1.3rem;background:var(--white);border:1.5px solid var(--bdr2);color:var(--ink2);border-radius:var(--rm);font-size:.85rem;font-weight:600;transition:all .15s;}
+.btn-outline:hover{border-color:var(--ink);background:var(--bg);}
+/* SECTION TITLE */
+.sec-title{font-size:.82rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin-bottom:.85rem;}
+/* RESPONSIVE */
+@media(max-width:640px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);box-shadow:var(--shm);}
+  .main-wrap{margin-left:0!important;}
+  .mob-bar{display:flex!important;}
+  .hamburger{display:flex!important;}
+  .topbar{display:none;}
+  .main{padding:1rem 1rem 2rem;}
+}
 
-  /* TOP BAR */
-  .topbar { background:var(--ink); padding:.75rem 1.5rem; display:flex; align-items:center; gap:.75rem; position:sticky; top:0; z-index:200; flex-wrap:wrap; flex-shrink:0; }
-  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:var(--paper); text-decoration:none; flex-shrink:0; }
-  .logo span { color:var(--accent); }
-  .tb-sep { width:1px; height:18px; background:rgba(255,255,255,.15); }
-  .tb-title { font-size:.82rem; color:rgba(245,242,235,.45); flex:1; }
-  .tb-right { display:flex; align-items:center; gap:.5rem; margin-left:auto; flex-wrap:wrap; }
-  .tb-btn { display:flex; align-items:center; gap:.35rem; padding:.4rem .85rem; border-radius:100px; font-family:'DM Sans',sans-serif; font-size:.76rem; font-weight:500; cursor:pointer; border:0.5px solid rgba(255,255,255,.18); background:transparent; color:rgba(245,242,235,.65); transition:all .15s; white-space:nowrap; text-decoration:none; }
-  .tb-btn:hover { background:rgba(255,255,255,.09); color:var(--paper); }
-
-  /* PART TABS */
-  .part-tabs { background:var(--card); border-bottom:0.5px solid rgba(14,14,14,.08); padding:.65rem 1.5rem; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; flex-shrink:0; }
-  .part-tab { padding:.42rem 1.1rem; border-radius:100px; font-size:.8rem; font-weight:500; cursor:pointer; border:0.5px solid rgba(14,14,14,.15); background:transparent; color:var(--muted); transition:all .15s; font-family:'DM Sans',sans-serif; white-space:nowrap; }
-  .part-tab.on { background:var(--ink); color:var(--paper); border-color:var(--ink); }
-  .part-info { font-size:.76rem; color:var(--muted); margin-left:auto; }
-
-  /* MAIN */
-  .main { flex:1; display:grid; grid-template-columns:1fr 1fr; min-height:0; }
-
-  /* LEFT — QUESTION PANEL */
-  .q-panel { background:var(--card); border-right:0.5px solid rgba(14,14,14,.1); overflow-y:auto; padding:2rem; }
-  .q-label { font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:.5rem; }
-  .q-part-title { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:800; letter-spacing:-.02em; margin-bottom:.35rem; }
-  .q-part-desc { font-size:.82rem; color:var(--muted); line-height:1.6; margin-bottom:1.5rem; padding-bottom:1.25rem; border-bottom:0.5px solid var(--cream); }
-
-  /* Question cards */
-  .q-list { display:flex; flex-direction:column; gap:.65rem; }
-  .q-card { border:0.5px solid rgba(14,14,14,.1); border-radius:12px; overflow:hidden; transition:border-color .15s; }
-  .q-card.active-q { border-color:var(--accent); }
-  .q-card-header { display:flex; align-items:center; gap:.75rem; padding:.85rem 1rem; cursor:pointer; background:var(--paper); transition:background .15s; }
-  .q-card-header:hover { background:var(--cream); }
-  .q-card.active-q .q-card-header { background:rgba(212,84,26,.05); }
-  .q-num-badge { width:26px; height:26px; border-radius:50%; background:rgba(14,14,14,.08); display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; flex-shrink:0; transition:all .15s; }
-  .q-card.active-q .q-num-badge { background:var(--accent); color:white; }
-  .q-card-text { font-size:.87rem; font-weight:500; flex:1; line-height:1.4; }
-  .q-card-status { font-size:.68rem; font-weight:600; padding:.18rem .55rem; border-radius:5px; flex-shrink:0; white-space:nowrap; }
-  .status-not-started { background:var(--cream); color:var(--muted); }
-  .status-recorded    { background:#EAF3DE; color:#27500A; }
-  .status-active      { background:rgba(212,84,26,.12); color:var(--accent); }
-
-  /* Part 2 cue card */
-  .cue-card { background:var(--ink); border-radius:14px; padding:1.4rem 1.6rem; margin-bottom:1.25rem; }
-  .cue-title { font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; color:var(--paper); margin-bottom:.85rem; line-height:1.3; }
-  .cue-say { font-size:.76rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:rgba(245,242,235,.4); margin-bottom:.5rem; }
-  .cue-bullets { list-style:none; }
-  .cue-bullets li { font-size:.82rem; color:rgba(245,242,235,.7); padding:.22rem 0; display:flex; align-items:flex-start; gap:.5rem; line-height:1.5; }
-  .cue-bullets li::before { content:"•"; color:var(--accent); flex-shrink:0; }
-  .cue-and { font-size:.82rem; color:rgba(245,242,235,.5); margin-top:.5rem; font-style:italic; }
-  .prep-timer { display:flex; align-items:center; gap:.75rem; padding:.65rem .9rem; background:rgba(255,255,255,.06); border-radius:9px; margin-top:.85rem; }
-  .prep-icon { font-size:1rem; }
-  .prep-text { font-size:.8rem; color:rgba(245,242,235,.65); flex:1; }
-  .prep-time { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:var(--paper); min-width:38px; text-align:right; }
-  .btn-start-prep { padding:.38rem .85rem; background:var(--accent); color:white; border:none; border-radius:100px; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:600; cursor:pointer; transition:opacity .15s; flex-shrink:0; }
-  .btn-start-prep:hover { opacity:.85; }
-
-  /* RIGHT — RECORDER PANEL */
-  .rec-panel { display:flex; flex-direction:column; overflow:hidden; background:var(--cream); }
-
-  /* Recorder area */
-  .recorder-area { flex:1; overflow-y:auto; padding:1.5rem; display:flex; flex-direction:column; gap:1.1rem; }
-
-  /* Active question display */
-  .active-q-display { background:var(--card); border-radius:14px; border:0.5px solid rgba(14,14,14,.08); padding:1.25rem 1.4rem; }
-  .aqd-label { font-size:.7rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:.45rem; }
-  .aqd-question { font-size:.95rem; font-weight:600; line-height:1.5; color:var(--ink); }
-  .aqd-hint { font-size:.78rem; color:var(--muted); margin-top:.35rem; line-height:1.5; }
-
-  /* Recording widget */
-  .rec-widget { background:var(--card); border-radius:16px; border:0.5px solid rgba(14,14,14,.07); padding:1.5rem; text-align:center; }
-  .rec-state-label { font-size:.76rem; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin-bottom:1.25rem; }
-
-  /* Waveform */
-  .waveform { display:flex; align-items:center; justify-content:center; gap:3px; height:48px; margin-bottom:1.25rem; }
-  .wave-bar { width:4px; border-radius:2px; background:rgba(14,14,14,.15); transition:height .1s ease; }
-  .waveform.recording .wave-bar { background:var(--accent); animation:wave var(--delay, .5s) ease-in-out infinite alternate; }
-  @keyframes wave { from { height:4px; } to { height:44px; } }
-
-  /* Big record button */
-  .rec-btn-wrap { display:flex; align-items:center; justify-content:center; gap:1.25rem; margin-bottom:1.1rem; }
-  .btn-record {
-    width:72px; height:72px; border-radius:50%;
-    border:none; cursor:pointer; transition:all .2s;
-    display:flex; align-items:center; justify-content:center;
-    font-size:1.5rem; flex-shrink:0;
-    box-shadow:0 0 0 0 rgba(212,84,26,.25);
-  }
-  .btn-record.idle    { background:var(--ink); color:var(--paper); }
-  .btn-record.idle:hover { background:var(--accent); transform:scale(1.05); }
-  .btn-record.recording { background:var(--accent); color:white; animation:recpulse 1.4s ease-in-out infinite; }
-  @keyframes recpulse { 0%,100%{box-shadow:0 0 0 0 rgba(212,84,26,.35)} 50%{box-shadow:0 0 0 16px rgba(212,84,26,0)} }
-  .btn-record.has-recording { background:#EAF3DE; color:#27500A; }
-  .rec-timer { font-family:'Syne',sans-serif; font-weight:800; font-size:1.5rem; letter-spacing:.04em; color:var(--accent); min-width:52px; text-align:left; }
-  .rec-timer.idle { color:var(--muted); }
-
-  /* Playback */
-  .playback-row { display:flex; align-items:center; gap:.75rem; padding:.75rem 1rem; background:var(--cream); border-radius:10px; margin-bottom:.85rem; }
-  .btn-play { width:34px; height:34px; border-radius:50%; background:var(--ink); color:var(--paper); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.85rem; flex-shrink:0; transition:background .15s; }
-  .btn-play:hover { background:var(--accent); }
-  .play-progress-wrap { flex:1; display:flex; flex-direction:column; gap:.3rem; }
-  .play-track { width:100%; height:4px; background:rgba(14,14,14,.12); border-radius:4px; cursor:pointer; overflow:hidden; }
-  .play-fill { height:100%; background:var(--ink); border-radius:4px; width:0%; transition:width .1s; pointer-events:none; }
-  .play-times { display:flex; justify-content:space-between; font-size:.7rem; color:var(--muted); }
-  .playback-row.hidden { display:none; }
-
-  /* Action buttons */
-  .rec-actions { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
-  .btn-rec-action { padding:.5rem 1.1rem; border-radius:100px; font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:500; cursor:pointer; transition:all .15s; border:0.5px solid rgba(14,14,14,.14); background:var(--card); color:var(--ink); }
-  .btn-rec-action:hover { border-color:var(--ink); }
-  .btn-rec-action.primary { background:var(--ink); color:var(--paper); border-color:var(--ink); }
-  .btn-rec-action.primary:hover { background:var(--accent); border-color:var(--accent); }
-  .btn-rec-action:disabled { opacity:.35; pointer-events:none; }
-  .rec-hint { font-size:.75rem; color:var(--muted); text-align:center; line-height:1.6; margin-top:.35rem; }
-
-  /* Saved recordings list */
-  .saved-section { background:var(--card); border-radius:14px; border:0.5px solid rgba(14,14,14,.07); padding:1.1rem 1.3rem; }
-  .saved-title { font-size:.82rem; font-weight:600; margin-bottom:.75rem; display:flex; align-items:center; justify-content:space-between; }
-  .saved-count { font-size:.72rem; background:var(--ink); color:var(--paper); padding:.15rem .55rem; border-radius:10px; }
-  .saved-list { display:flex; flex-direction:column; gap:.55rem; }
-  .saved-item { display:flex; align-items:center; gap:.75rem; padding:.65rem .85rem; background:var(--cream); border-radius:9px; }
-  .saved-q-label { font-size:.78rem; font-weight:500; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .saved-duration { font-size:.72rem; color:var(--muted); flex-shrink:0; }
-  .saved-actions { display:flex; gap:.35rem; flex-shrink:0; }
-  .saved-btn { padding:.25rem .6rem; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:.7rem; cursor:pointer; border:0.5px solid rgba(14,14,14,.12); background:var(--card); transition:all .15s; }
-  .saved-btn:hover { background:var(--ink); color:var(--paper); border-color:var(--ink); }
-  .saved-btn.del:hover { background:#e24b4a; color:white; border-color:#e24b4a; }
-  .saved-empty { font-size:.8rem; color:var(--muted); text-align:center; padding:.75rem 0; }
-
-  /* Sample answer */
-  .sample-card { background:var(--card); border-radius:14px; border:0.5px solid rgba(14,14,14,.07); overflow:hidden; }
-  .sample-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.3rem; cursor:pointer; background:var(--paper); border-bottom:0.5px solid rgba(14,14,14,.06); }
-  .sample-header:hover { background:var(--cream); }
-  .sh-left { display:flex; align-items:center; gap:.65rem; }
-  .sh-icon { width:30px; height:30px; border-radius:8px; background:#EAF3DE; display:flex; align-items:center; justify-content:center; font-size:.95rem; flex-shrink:0; }
-  .sh-title { font-size:.88rem; font-weight:600; }
-  .sh-sub   { font-size:.73rem; color:var(--muted); margin-top:.1rem; }
-  .sh-chevron { font-size:.75rem; color:var(--muted); transition:transform .2s; }
-  .sample-card.open .sh-chevron { transform:rotate(90deg); }
-  .sample-body { display:none; padding:1.1rem 1.3rem; }
-  .sample-card.open .sample-body { display:block; }
-  .sample-band { display:inline-block; background:#EAF3DE; color:#27500A; font-size:.72rem; font-weight:600; padding:.18rem .6rem; border-radius:5px; margin-bottom:.75rem; }
-  .sample-text { font-size:.86rem; line-height:1.8; color:var(--ink); white-space:pre-wrap; }
-  .sample-tips { margin-top:.85rem; padding-top:.85rem; border-top:0.5px solid var(--cream); }
-  .st-title { font-size:.76rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-bottom:.5rem; }
-  .st-list { display:flex; flex-direction:column; gap:.4rem; }
-  .st-item { display:flex; align-items:flex-start; gap:.55rem; font-size:.8rem; line-height:1.55; color:var(--ink); }
-  .st-item::before { content:"→"; color:var(--accent); font-weight:700; flex-shrink:0; }
-
-  /* No question selected */
-  .no-q { text-align:center; padding:3rem 1.5rem; color:var(--muted); }
-  .no-q-icon { font-size:2rem; margin-bottom:.75rem; }
-  .no-q-text { font-size:.88rem; line-height:1.6; }
-
-  /* Prep overlay */
-  .prep-overlay { position:absolute; inset:0; background:var(--ink); z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; border-radius:0; }
-  .prep-overlay.hidden { display:none; }
-  .po-label { font-size:.76rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:rgba(245,242,235,.4); }
-  .po-time { font-family:'Syne',sans-serif; font-weight:800; font-size:5rem; color:var(--paper); letter-spacing:-.04em; line-height:1; }
-  .po-sub { font-size:.84rem; color:rgba(245,242,235,.5); text-align:center; max-width:240px; line-height:1.6; }
-  .po-skip { padding:.5rem 1.25rem; border-radius:100px; background:rgba(255,255,255,.1); color:rgba(245,242,235,.7); border:0.5px solid rgba(255,255,255,.2); font-family:'DM Sans',sans-serif; font-size:.8rem; cursor:pointer; transition:all .15s; }
-  .po-skip:hover { background:rgba(255,255,255,.2); color:var(--paper); }
-
-  .rec-panel { position:relative; }
-
-  @media(max-width:820px) { .main{grid-template-columns:1fr} .q-panel{max-height:42vh;border-right:none;border-bottom:0.5px solid rgba(14,14,14,.1)} }
+.part-tabs{display:flex;gap:.35rem;background:var(--bg);border:1px solid var(--bdr);border-radius:var(--rm);padding:.3rem;width:fit-content;margin-bottom:1.5rem;}
+.part-tab{padding:.42rem .95rem;border-radius:var(--r);font-size:.82rem;font-weight:600;color:var(--ink3);cursor:pointer;transition:all .15s;border:none;background:none;font-family:var(--fb);}
+.part-tab.active{background:var(--white);color:var(--ink);box-shadow:var(--sh);}
+.q-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;box-shadow:var(--sh);margin-bottom:1rem;max-width:720px;transition:all .15s;}
+.q-card:hover{box-shadow:var(--shm);border-color:var(--bdr2);}
+.q-part-tag{display:inline-flex;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:.14rem .48rem;border-radius:100px;background:var(--blue-bg);color:var(--blue);margin-bottom:.65rem;}
+.q-text{font-size:.95rem;font-weight:600;color:var(--ink);line-height:1.5;margin-bottom:1rem;letter-spacing:-.01em;}
+.q-actions{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;}
+.q-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .9rem;border-radius:var(--r);font-size:.78rem;font-weight:600;cursor:pointer;border:none;font-family:var(--fb);transition:all .15s;}
+.q-btn.record{background:var(--ink);color:#fff;}
+.q-btn.record:hover,.q-btn.record.recording{background:#dc2626;}
+.q-btn.sample{background:var(--bg);color:var(--ink2);border:1px solid var(--bdr);}
+.q-btn.sample:hover{border-color:var(--bdr2);}
+.q-timer{font-size:.76rem;color:var(--ink4);font-weight:500;}
+.sample-answer{display:none;margin-top:.9rem;padding:.9rem;background:var(--bg);border-radius:var(--r);border-left:3px solid var(--blue);}
+.sample-answer.show{display:block;}
+.sa-label{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.4rem;}
+.sa-text{font-size:.83rem;color:var(--ink2);line-height:1.7;}
+.sa-band{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:700;padding:.12rem .45rem;border-radius:100px;background:#dcfce7;color:#166534;margin-top:.5rem;}
+.cue-card{background:linear-gradient(135deg,var(--blue-bg),#e0eaff);border:1.5px solid var(--blue-light);border-radius:var(--rl);padding:1.5rem;margin-bottom:1rem;max-width:480px;}
+.cc-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.65rem;}
+.cc-topic{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:.75rem;}
+.cc-points{display:flex;flex-direction:column;gap:.35rem;}
+.cc-point{font-size:.83rem;color:var(--ink2);display:flex;align-items:flex-start;gap:.4rem;}
+.cc-point::before{content:"•";color:var(--blue);flex-shrink:0;}
+.loading-state{text-align:center;padding:3rem;color:var(--ink3);font-size:.88rem;}
+.empty-state{text-align:center;padding:3rem;color:var(--ink3);font-size:.88rem;background:var(--white);border:1px dashed var(--bdr);border-radius:var(--rl);}
 </style>
+</head>
+<body>
+<!-- SIDEBAR OVERLAY -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<!-- MOBILE TOPBAR -->
+<div class="mob-bar" id="mobBar">
+  <button class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+  <span class="mob-logo">Bandio<span style="display:inline-block;width:6px;height:6px;background:var(--blue);border-radius:50%;margin-left:2px;vertical-align:middle;margin-bottom:2px;"></span></span>
+</div>
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="s-top">
+    <div class="s-logo"><span class="s-logo-txt">Bandio</span><span class="s-logo-dot"></span></div>
+    <a class="nav-item " href="bandio-dashboard.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/></svg></span>Dashboard</a>
+    <div style="position:relative;">
+      <div class="nav-item " id="practice-toggle" onclick="togglePractice()" style="cursor:pointer;"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M6 5.5l4 2.5-4 2.5V5.5z" fill="currentColor"/></svg></span>Practice<span id="pchev" style="margin-left:auto;font-size:.62rem;color:var(--ink4);transition:transform .2s;">▾</span></div>
+      <div id="pmenu" style="display:none;padding-left:.7rem;">
+        <a class="nav-item " href="bandio-practice.html" style="font-size:.8rem;"><span class="nav-icon" style="width:24px;height:24px;font-size:.8rem;">📖</span>Reading</a>
+        <a class="nav-item " href="bandio-listening.html" style="font-size:.8rem;"><span class="nav-icon" style="width:24px;height:24px;font-size:.8rem;">🎧</span>Listening</a>
+      </div>
+    </div>
+    <a class="nav-item " href="bandio-books.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 2h6a2 2 0 012 2v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 4h1.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5H11" stroke="currentColor" stroke-width="1.5"/></svg></span>Books</a>
+    <a class="nav-item " href="bandio-articles.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 5.5h6M5 8h4M5 10.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>Articles</a>
+    <a class="nav-item " href="bandio-vocab.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2L9.5 6.5H14L10.25 9.25l1.5 4.5L8 11l-3.75 2.75 1.5-4.5L2 6.5h4.5L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></span>Vocabulary</a>
+    <a class="nav-item active" href="bandio-speaking.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="5" y="1.5" width="6" height="8" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 8.5A5.5 5.5 0 008 14a5.5 5.5 0 005.5-5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Speaking</a>
+    <a class="nav-item " href="bandio-writing.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>Writing</a>
+    <div class="nav-sep"></div>
+    <a class="nav-item" href="bandio-pricing.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 4H14l-3.4 2.5 1.3 4L8 9 4.1 11.5l1.3-4L2 5h4.2L8 1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></span>Upgrade<span class="nav-badge">PRO</span></a>
+    <a class="nav-item" href="bandio-feedback.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h10a1 1 0 011 1v7a1 1 0 01-1 1H5.5L2 14V3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>Feedback</a>
+    <a class="nav-item" href="bandio-gift.html"><span class="nav-icon">🎁</span>Give a gift</a>
+    <a class="nav-item" href="bandio-profile.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 13.5c0-2.5 2.7-4.5 6-4.5s6 2 6 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>Profile</a>
+    <a class="nav-item" href="bandio-settings.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5v1.2M8 13.3v1.2M1.5 8h1.2M13.3 8h1.2M3.4 3.4l.85.85M11.75 11.75l.85.85M3.4 12.6l.85-.85M11.75 4.25l.85-.85" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>Settings</a>
+    <button class="nav-item" onclick="doSignOut()" style="width:100%;text-align:left;"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M10.5 11l3-3-3-3M13.5 8H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Log out</button>
+  </div>
+  <div class="s-bottom">
+    <div class="user-chip"><div class="u-av" id="sb-av">?</div><div><div class="u-name" id="sb-name">Student</div><div class="u-plan" id="sb-plan">Free plan</div></div></div>
+  </div>
+</nav>
+
+<div class="main-wrap">
+  <div class="topbar"><div class="tb-user"><div class="tb-av" id="tb-av">?</div><span class="tb-name" id="tb-name">Student</span></div></div>
+  <main class="main">
+    <div class="page-hd">
+      <div class="page-title">Speaking Practice</div>
+      <div class="page-sub">Practice real IELTS speaking questions across all three parts. Sample band 8 answers included.</div>
+    </div>
+    <div class="part-tabs" id="part-tabs">
+      <button class="part-tab active" onclick="switchPart(1,this)">Part 1</button>
+      <button class="part-tab" onclick="switchPart(2,this)">Part 2</button>
+      <button class="part-tab" onclick="switchPart(3,this)">Part 3</button>
+    </div>
+    <div id="questions-container"><div class="loading-state">Loading questions…</div></div>
+  </main>
+</div>
 <script type="module">
+
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,collection,getDocs}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -217,142 +204,10 @@ async function loadFirestoreSpeaking(){
   }catch(e){console.log('Firestore speaking load error:',e.message);}
 }
 loadFirestoreSpeaking();
+
 </script>
-</head>
-<body>
-
-<!-- TOP BAR -->
-<div class="topbar">
-  <a class="logo" href="bandio-home.html">Band<span>io</span></a>
-  <div class="tb-sep"></div>
-  <span class="tb-title">Speaking Practice</span>
-  <div class="tb-right">
-    <a class="tb-btn" href="bandio-dashboard.html">&#8592; Dashboard</a>
-  </div>
-</div>
-
-<!-- PART TABS -->
-<div class="part-tabs">
-  <button class="part-tab on" id="ptab-1" onclick="switchPart(1)">Part 1 — Interview</button>
-  <button class="part-tab" id="ptab-2" onclick="switchPart(2)">Part 2 — Cue Card</button>
-  <button class="part-tab" id="ptab-3" onclick="switchPart(3)">Part 3 — Discussion</button>
-  <span class="part-info" id="part-info">4–5 min · General questions about yourself</span>
-</div>
-
-<!-- MAIN -->
-<div class="main">
-
-  <!-- LEFT — QUESTIONS -->
-  <div class="q-panel" id="q-panel">
-    <div class="q-label">Speaking · Part <span id="q-part-num">1</span></div>
-    <div class="q-part-title" id="q-part-title">Introduction &amp; Interview</div>
-    <div class="q-part-desc" id="q-part-desc">The examiner asks general questions about familiar topics — your home, family, work, studies and interests. Click a question to start practising.</div>
-    <div class="q-list" id="q-list"></div>
-  </div>
-
-  <!-- RIGHT — RECORDER -->
-  <div class="rec-panel" id="rec-panel">
-
-    <!-- Prep time overlay (Part 2 only) -->
-    <div class="prep-overlay hidden" id="prep-overlay">
-      <div class="po-label">Preparation time</div>
-      <div class="po-time" id="po-time">60</div>
-      <div class="po-sub">Make notes on paper. Recording starts automatically when time is up.</div>
-      <button class="po-skip" onclick="skipPrep()">Skip — start recording now</button>
-    </div>
-
-    <div class="recorder-area" id="recorder-area">
-
-      <!-- No question selected state -->
-      <div class="no-q" id="no-q-state">
-        <div class="no-q-icon">🎤</div>
-        <div class="no-q-text">Select a question on the left<br>to start practising.</div>
-      </div>
-
-      <!-- Active question (hidden until question selected) -->
-      <div id="active-content" style="display:none; display:flex; flex-direction:column; gap:1.1rem;">
-
-        <div class="active-q-display">
-          <div class="aqd-label">Current question</div>
-          <div class="aqd-question" id="aqd-question">—</div>
-          <div class="aqd-hint" id="aqd-hint"></div>
-        </div>
-
-        <!-- Recording widget -->
-        <div class="rec-widget">
-          <div class="rec-state-label" id="rec-state-label">Ready to record</div>
-          <div class="waveform" id="waveform">
-            <div class="wave-bar" style="--delay:.3s;height:6px"></div>
-            <div class="wave-bar" style="--delay:.5s;height:10px"></div>
-            <div class="wave-bar" style="--delay:.7s;height:8px"></div>
-            <div class="wave-bar" style="--delay:.4s;height:14px"></div>
-            <div class="wave-bar" style="--delay:.6s;height:6px"></div>
-            <div class="wave-bar" style="--delay:.3s;height:18px"></div>
-            <div class="wave-bar" style="--delay:.5s;height:10px"></div>
-            <div class="wave-bar" style="--delay:.7s;height:6px"></div>
-            <div class="wave-bar" style="--delay:.4s;height:14px"></div>
-            <div class="wave-bar" style="--delay:.6s;height:8px"></div>
-            <div class="wave-bar" style="--delay:.3s;height:6px"></div>
-            <div class="wave-bar" style="--delay:.5s;height:12px"></div>
-          </div>
-          <div class="rec-btn-wrap">
-            <div class="rec-timer idle" id="rec-timer">0:00</div>
-            <button class="btn-record idle" id="btn-record" onclick="toggleRecord()" title="Press to record">🎤</button>
-            <div style="min-width:52px"></div>
-          </div>
-          <div class="playback-row hidden" id="playback-row">
-            <button class="btn-play" id="btn-play" onclick="togglePlay()">▶</button>
-            <div class="play-progress-wrap">
-              <div class="play-track" onclick="seekAudio(event)">
-                <div class="play-fill" id="play-fill"></div>
-              </div>
-              <div class="play-times">
-                <span id="play-current">0:00</span>
-                <span id="play-duration">0:00</span>
-              </div>
-            </div>
-          </div>
-          <div class="rec-actions">
-            <button class="btn-rec-action" id="btn-discard" onclick="discardRecording()" disabled>🗑 Discard</button>
-            <button class="btn-rec-action primary" id="btn-save" onclick="saveRecording()" disabled>💾 Save recording</button>
-          </div>
-          <div class="rec-hint" id="rec-hint">Press the microphone button to start recording your answer.</div>
-        </div>
-
-        <!-- Saved recordings -->
-        <div class="saved-section" id="saved-section" style="display:none">
-          <div class="saved-title">
-            Saved recordings
-            <span class="saved-count" id="saved-count">0</span>
-          </div>
-          <div class="saved-list" id="saved-list"></div>
-        </div>
-
-        <!-- Sample answer -->
-        <div class="sample-card" id="sample-card">
-          <div class="sample-header" onclick="toggleSample()">
-            <div class="sh-left">
-              <div class="sh-icon">✦</div>
-              <div>
-                <div class="sh-title">Sample answer</div>
-                <div class="sh-sub">Band 7–8 example — uploaded by your teacher</div>
-              </div>
-            </div>
-            <span class="sh-chevron">▶</span>
-          </div>
-          <div class="sample-body">
-            <span class="sample-band">Band 7–8 example</span>
-            <div class="sample-text" id="sample-text"></div>
-            <div class="sample-tips" id="sample-tips"></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
+
 // ── DATA ─────────────────────────────────────────────────────────────────
 const PARTS = {
   1: {
@@ -750,6 +605,14 @@ function formatTime(s) {
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 switchPart(1);
+
 </script>
-</body>
-</html>
+<script>
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sbOverlay').classList.add('show');document.body.style.overflow='hidden';}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('show');document.body.style.overflow='';}
+var _po=false;
+function togglePractice(){_po=!_po;document.getElementById('pmenu').style.display=_po?'block':'none';document.getElementById('pchev').style.transform=_po?'rotate(180deg)':'rotate(0)';}
+document.querySelectorAll('.nav-item').forEach(function(el){el.addEventListener('click',function(){if(window.innerWidth<=640)closeSidebar();});});
+</script>
+
+</body></html>

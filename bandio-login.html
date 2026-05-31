@@ -4,473 +4,86 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Bandio — Sign in</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --ink:    #0e0e0e;
-    --paper:  #f5f2eb;
-    --cream:  #ede9df;
-    --accent: #d4541a;
-    --accent2:#1a6bd4;
-    --muted:  #7a7468;
-    --card-bg:#ffffff;
-    --radius: 16px;
-  }
-
-
-  /* TOP NAV */
-  .top-nav { position:fixed; top:0; left:0; right:0; z-index:100; height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 2rem; background:var(--paper); border-bottom:1px solid rgba(14,14,14,.07); }
-  .tn-logo { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:1.3rem; letter-spacing:-.02em; color:var(--ink); text-decoration:none; }
-  .tn-logo span { color:var(--accent); }
-  .tn-links { display:flex; align-items:center; gap:1rem; }
-  .tn-link { font-size:.84rem; color:var(--muted); text-decoration:none; font-weight:500; transition:color .15s; }
-  .tn-link:hover { color:var(--ink); }
-  .tn-btn { padding:.45rem 1.1rem; border-radius:100px; background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif; font-size:.82rem; font-weight:500; text-decoration:none; transition:background .15s; }
-  .tn-btn:hover { background:var(--accent); }
-
-  html, body { height: 100%; }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding-top: 56px;
-  }
-
-  /* ── LEFT PANEL ── */
-  .left-panel {
-    background: var(--ink);
-    padding: 3rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-    min-height: 100vh;
-  }
-  .left-bg {
-    position: absolute; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 60% 50% at 10% 90%, rgba(212,84,26,.2) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 90% 10%, rgba(26,107,212,.1) 0%, transparent 60%);
-  }
-  .left-content { position: relative; z-index: 1; }
-
-  .logo {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 800; font-size: 1.6rem;
-    letter-spacing: -.02em;
-    color: var(--paper);
-    text-decoration: none;
-    display: inline-block;
-    margin-bottom: 4rem;
-  }
-  .logo span { color: var(--accent); }
-
-  .left-headline {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: clamp(2rem, 3.2vw, 2.8rem);
-    font-weight: 800;
-    line-height: 1.08;
-    letter-spacing: -.03em;
-    color: var(--paper);
-    margin-bottom: 1.1rem;
-  }
-  .left-headline em { font-style: normal; color: var(--accent); }
-
-  .left-sub {
-    font-size: .92rem;
-    font-weight: 300;
-    line-height: 1.7;
-    color: rgba(245,242,235,.5);
-    max-width: 360px;
-    margin-bottom: 3rem;
-  }
-
-  /* Score tracker visual */
-  .score-visual {
-    background: rgba(255,255,255,.05);
-    border: 0.5px solid rgba(255,255,255,.1);
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 1rem;
-  }
-  .sv-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-  .sv-label { font-size: .78rem; color: rgba(245,242,235,.4); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
-  .sv-band {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 800; font-size: 1.6rem; color: var(--accent);
-  }
-  .sv-bars { display: flex; flex-direction: column; gap: .55rem; }
-  .sv-row { display: flex; align-items: center; gap: .75rem; }
-  .sv-name { font-size: .75rem; color: rgba(245,242,235,.4); width: 64px; }
-  .sv-track { flex: 1; height: 5px; background: rgba(255,255,255,.08); border-radius: 10px; overflow: hidden; }
-  .sv-fill { height: 100%; border-radius: 10px; }
-  .sv-val { font-size: .75rem; font-weight: 600; color: rgba(245,242,235,.6); width: 24px; text-align: right; }
-
-  .welcome-back {
-    background: rgba(212,84,26,.12);
-    border: 0.5px solid rgba(212,84,26,.25);
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    display: flex; gap: .75rem; align-items: flex-start;
-  }
-  .wb-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
-  .wb-text { font-size: .82rem; line-height: 1.55; color: rgba(245,242,235,.65); }
-  .wb-text strong { color: rgba(245,242,235,.9); display: block; margin-bottom: .2rem; }
-
-  .left-footer { position: relative; z-index: 1; font-size: .75rem; color: rgba(245,242,235,.2); }
-
-  /* ── RIGHT PANEL ── */
-  .right-panel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 2rem;
-    background: var(--paper);
-  }
-
-  .form-wrap {
-    width: 100%;
-    max-width: 400px;
-    animation: slideUp .45s ease both;
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .form-eyebrow {
-    font-size: .78rem; font-weight: 600;
-    letter-spacing: .1em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: .5rem;
-  }
-  .form-title {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 1.9rem; font-weight: 800;
-    letter-spacing: -.025em; line-height: 1.1;
-    color: var(--ink); margin-bottom: .5rem;
-  }
-  .form-subtitle {
-    font-size: .88rem; color: var(--muted);
-    font-weight: 300; margin-bottom: 2rem;
-  }
-
-  /* Fields */
-  .field { display: flex; flex-direction: column; gap: .45rem; margin-bottom: 1rem; }
-  .field label { font-size: .8rem; font-weight: 500; color: var(--ink); }
-  .field input {
-    width: 100%; padding: .78rem 1rem;
-    border: 1px solid rgba(14,14,14,.15);
-    border-radius: 10px;
-    background: var(--card-bg);
-    font-family: 'Inter', sans-serif;
-    font-size: .9rem; color: var(--ink);
-    transition: border-color .15s, box-shadow .15s;
-    outline: none;
-  }
-  .field input::placeholder { color: rgba(14,14,14,.28); }
-  .field input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(212,84,26,.1);
-  }
-  .field input.shake {
-    animation: shake .35s ease;
-    border-color: #e24b4a;
-  }
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    20%      { transform: translateX(-6px); }
-    40%      { transform: translateX(6px); }
-    60%      { transform: translateX(-4px); }
-    80%      { transform: translateX(4px); }
-  }
-
-  /* Password row */
-  .pw-wrap { position: relative; }
-  .pw-wrap input { padding-right: 3rem; }
-  .pw-toggle {
-    position: absolute; right: .85rem; top: 50%;
-    transform: translateY(-50%);
-    background: none; border: none; cursor: pointer;
-    color: var(--muted); font-size: .82rem; padding: 0;
-    transition: color .15s;
-  }
-  .pw-toggle:hover { color: var(--ink); }
-
-  .forgot-link {
-    display: block; text-align: right;
-    font-size: .78rem; color: var(--muted);
-    text-decoration: none; margin-top: -.5rem;
-    margin-bottom: 1.25rem;
-    transition: color .15s;
-  }
-  .forgot-link:hover { color: var(--accent); }
-
-  /* Error banner */
-  .error-banner {
-    background: #FCEBEB; border: 0.5px solid #F09595;
-    border-radius: 10px; padding: .7rem 1rem;
-    font-size: .82rem; color: #791F1F;
-    margin-bottom: 1rem; display: none;
-    align-items: center; gap: .5rem;
-  }
-  .error-banner.show { display: flex; }
-
-  /* Submit */
-  .btn-submit {
-    width: 100%; padding: .9rem;
-    background: var(--ink); color: var(--paper);
-    border: none; border-radius: 100px;
-    font-family: 'Inter', sans-serif;
-    font-size: .95rem; font-weight: 500;
-    cursor: pointer;
-    transition: background .2s, transform .15s;
-    display: flex; align-items: center; justify-content: center; gap: .5rem;
-    margin-bottom: 1.25rem;
-  }
-  .btn-submit:hover { background: var(--accent); transform: translateY(-1px); }
-  .btn-submit:active { transform: scale(.98); }
-  .btn-submit.loading { pointer-events: none; opacity: .7; }
-  .spinner {
-    width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,.3);
-    border-top-color: white; border-radius: 50%;
-    animation: spin .7s linear infinite; display: none;
-  }
-  .btn-submit.loading .spinner { display: block; }
-  .btn-submit.loading .btn-text { display: none; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .divider {
-    display: flex; align-items: center; gap: .75rem;
-    margin-bottom: 1.25rem;
-    font-size: .75rem; color: var(--muted);
-  }
-  .divider::before, .divider::after {
-    content: ''; flex: 1; height: 1px;
-    background: rgba(14,14,14,.1);
-  }
-
-  .signup-link {
-    text-align: center; font-size: .82rem; color: var(--muted);
-  }
-  .signup-link a {
-    color: var(--ink); font-weight: 500;
-    text-decoration: none;
-    border-bottom: 1px solid rgba(14,14,14,.2);
-    transition: border-color .15s, color .15s;
-  }
-  .signup-link a:hover { color: var(--accent); border-color: var(--accent); }
-
-  /* Forgot password screen */
-  .forgot-screen {
-    display: none;
-    animation: slideUp .4s ease both;
-  }
-  .back-btn {
-    background: none; border: none; cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    font-size: .82rem; color: var(--muted);
-    padding: 0; margin-bottom: 1.75rem;
-    display: flex; align-items: center; gap: .4rem;
-    transition: color .15s;
-  }
-  .back-btn:hover { color: var(--ink); }
-
-  /* Success screens */
-  .success-screen, .reset-sent-screen {
-    display: none;
-    text-align: center;
-    padding: 1.5rem 0;
-    animation: slideUp .4s ease both;
-  }
-  .big-icon {
-    width: 64px; height: 64px; border-radius: 50%;
-    margin: 0 auto 1.25rem;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.75rem;
-  }
-  .icon-success { background: #EAF3DE; }
-  .icon-email   { background: #E6F1FB; }
-  .screen-title {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 1.5rem; font-weight: 800;
-    letter-spacing: -.02em; margin-bottom: .65rem;
-  }
-  .screen-sub {
-    font-size: .88rem; color: var(--muted);
-    line-height: 1.65; margin-bottom: 1.75rem;
-  }
-  .btn-action {
-    display: inline-block;
-    background: var(--ink); color: var(--paper);
-    padding: .85rem 2rem; border-radius: 100px;
-    font-size: .9rem; font-weight: 500;
-    text-decoration: none; border: none;
-    font-family: 'Inter', sans-serif;
-    cursor: pointer; transition: background .2s;
-  }
-  .btn-action:hover { background: var(--accent); }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    body { grid-template-columns: 1fr; }
-    .left-panel { display: none; }
-    .right-panel { padding: 2.5rem 1.25rem; align-items: flex-start; }
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--white:#ffffff;--bg:#f7f7f8;--ink:#111111;--ink2:#444444;--ink3:#777777;--ink4:#bbbbbb;--bdr:#e8e8ea;--blue:#4f7ef8;--blue-bg:#eef2ff;--sh:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);--shm:0 4px 20px rgba(0,0,0,.08),0 16px 40px rgba(0,0,0,.06);--r:10px;--rm:14px;--rl:18px;--fd:"Geist",system-ui,sans-serif;}
+html,body{height:100%;font-family:"Geist",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+body{background:var(--bg);color:var(--ink);min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
+a{text-decoration:none;color:inherit;}
+/* LEFT */
+.left{background:var(--ink);padding:3rem;display:flex;flex-direction:column;justify-content:space-between;min-height:100vh;position:relative;overflow:hidden;}
+.left::before{content:"";position:absolute;top:-100px;right:-80px;width:380px;height:380px;background:radial-gradient(circle,rgba(79,126,248,.2) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+.left::after{content:"";position:absolute;bottom:-80px;left:-40px;width:280px;height:280px;background:radial-gradient(circle,rgba(79,126,248,.1) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+.l-content{position:relative;z-index:1;}
+.l-logo{font-size:1.4rem;font-weight:700;color:#fff;letter-spacing:-.025em;display:flex;align-items:center;gap:.4rem;margin-bottom:3.5rem;}
+.l-logo-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
+.l-headline{font-size:clamp(1.8rem,3vw,2.6rem);font-weight:700;letter-spacing:-.04em;line-height:1.1;color:#fff;margin-bottom:1rem;}
+.l-headline em{font-style:normal;color:var(--blue);}
+.l-sub{font-size:.9rem;font-weight:300;line-height:1.7;color:rgba(255,255,255,.45);max-width:340px;margin-bottom:2.5rem;}
+.proof-item{background:rgba(255,255,255,.06);border:.5px solid rgba(255,255,255,.1);border-radius:var(--rm);padding:.9rem 1.1rem;display:flex;gap:.75rem;align-items:flex-start;margin-bottom:.65rem;}
+.proof-score{font-size:1.2rem;font-weight:700;color:var(--blue);flex-shrink:0;line-height:1;}
+.proof-text{font-size:.75rem;line-height:1.55;color:rgba(255,255,255,.55);}
+.proof-text strong{display:block;color:rgba(255,255,255,.88);font-size:.78rem;margin-bottom:.18rem;}
+.l-footer{position:relative;z-index:1;font-size:.72rem;color:rgba(255,255,255,.2);}
+/* RIGHT */
+.right{display:flex;align-items:center;justify-content:center;padding:2.5rem 2rem;background:var(--bg);}
+.form-wrap{width:100%;max-width:400px;}
+.form-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:.45rem;}
+.form-title{font-size:1.65rem;font-weight:700;letter-spacing:-.03em;color:var(--ink);margin-bottom:.3rem;}
+.form-sub{font-size:.84rem;color:var(--ink3);margin-bottom:1.75rem;}
+.field{display:flex;flex-direction:column;gap:.38rem;margin-bottom:.9rem;}
+.field label{font-size:.76rem;font-weight:600;color:var(--ink2);}
+.field input{width:100%;padding:.65rem .9rem;border:1px solid var(--bdr);border-radius:var(--r);background:var(--white);font-family:inherit;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s;}
+.field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,126,248,.1);}
+.field input::placeholder{color:var(--ink4);}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:2.8rem;}
+.pw-eye{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink3);font-size:.82rem;padding:0;}
+.form-submit{width:100%;padding:.7rem;background:var(--ink);color:#fff;border:none;border-radius:var(--rm);font-family:inherit;font-size:.88rem;font-weight:600;cursor:pointer;transition:background .15s;margin-top:.35rem;}
+.form-submit:hover{background:var(--blue);}
+.form-submit:disabled{background:var(--ink4);cursor:not-allowed;}
+.form-divider{display:flex;align-items:center;gap:.75rem;margin:.9rem 0;color:var(--ink4);font-size:.78rem;}
+.form-divider::before,.form-divider::after{content:"";flex:1;height:1px;background:var(--bdr);}
+.google-btn{width:100%;padding:.65rem;background:var(--white);border:1.5px solid var(--bdr);border-radius:var(--rm);font-family:inherit;font-size:.85rem;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .15s;color:var(--ink);}
+.google-btn:hover{border-color:var(--bdr2);box-shadow:var(--sh);}
+.form-footer{margin-top:1.1rem;font-size:.8rem;color:var(--ink3);text-align:center;}
+.form-footer a{color:var(--blue);font-weight:600;}
+.err-msg{font-size:.78rem;color:#dc2626;margin-top:.35rem;display:none;}
+.err-msg.show{display:block;}
+@media(max-width:720px){body{grid-template-columns:1fr;}.left{display:none;}}
 </style>
 </head>
 <body>
-
-<!-- TOP NAV -->
-<nav class="top-nav">
-  <a class="tn-logo" href="bandio-home.html">Band<span>io</span></a>
-  <div class="tn-links">
-    <a class="tn-link" href="bandio-home.html">Home</a>
-    <a class="tn-link" href="index.html#skills">Skills</a>
-    <a class="tn-link" href="index.html#mock">Mock tests</a>
-    <a class="tn-btn" href="bandio-signup.html">Sign up free →</a>
+<div class="left">
+  <div class="l-content">
+    <div class="l-logo">Bandio<span class="l-logo-dot"></span></div>
+    <div class="l-headline">Reach your <em>target band</em> with confidence.</div>
+    <div class="l-sub">Practice reading, listening, writing and speaking — all in one platform designed for IELTS success.</div>
+    <div class="proof-item"><div class="proof-score">7.5</div><div class="proof-text"><strong>Dilnoza improved from 6.0</strong>"The writing checker showed me exactly where I was losing marks."</div></div>
+    <div class="proof-item"><div class="proof-score">8.0</div><div class="proof-text"><strong>Jasur hit his target band</strong>"I practised mock tests every day. Bandio made it easy to stay consistent."</div></div>
   </div>
-</nav>
-
-<!-- LEFT PANEL -->
-<div class="left-panel">
-  <div class="left-bg"></div>
-  <div class="left-content">
-    <a class="logo" href="bandio-home.html">Band<span>io</span></a>
-    <h1 class="left-headline">Welcome<br>back. Let's<br>keep <em>pushing.</em></h1>
-    <p class="left-sub">Every session moves your score forward. Your progress, your tests, your AI feedback — all waiting for you.</p>
-
-    <div class="score-visual">
-      <div class="sv-top">
-        <span class="sv-label">Your progress</span>
-        <span class="sv-band">7.5</span>
-      </div>
-      <div class="sv-bars">
-        <div class="sv-row">
-          <span class="sv-name">Reading</span>
-          <div class="sv-track"><div class="sv-fill" style="width:82%;background:#1a6bd4"></div></div>
-          <span class="sv-val">8.0</span>
-        </div>
-        <div class="sv-row">
-          <span class="sv-name">Writing</span>
-          <div class="sv-track"><div class="sv-fill" style="width:68%;background:#d4541a"></div></div>
-          <span class="sv-val">7.0</span>
-        </div>
-        <div class="sv-row">
-          <span class="sv-name">Listening</span>
-          <div class="sv-track"><div class="sv-fill" style="width:76%;background:#2a9d68"></div></div>
-          <span class="sv-val">7.5</span>
-        </div>
-        <div class="sv-row">
-          <span class="sv-name">Speaking</span>
-          <div class="sv-track"><div class="sv-fill" style="width:72%;background:#9b5de5"></div></div>
-          <span class="sv-val">7.5</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="welcome-back">
-      <div class="wb-icon">🔥</div>
-      <div class="wb-text">
-        <strong>7-day streak</strong>
-        You've practised every day this week. Don't break the chain — your dashboard is waiting.
-      </div>
-    </div>
-  </div>
-  <div class="left-footer">© 2025 Bandio. All rights reserved.</div>
+  <div class="l-footer">© 2025 Bandio. Made for IELTS learners in Uzbekistan.</div>
 </div>
-
-<!-- RIGHT PANEL -->
-<div class="right-panel">
+<div class="right">
   <div class="form-wrap">
-
-    <!-- LOGIN FORM -->
-    <div id="login-screen">
-      <div class="form-eyebrow">Welcome back</div>
-      <h2 class="form-title">Sign in to Bandio</h2>
-      <p class="form-subtitle">Pick up right where you left off.</p>
-
-      <div class="error-banner" id="error-banner">
-        <span>⚠</span>
-        <span id="error-msg">Incorrect email or password. Please try again.</span>
-      </div>
-
-      <div class="field">
-        <label for="email">Email address</label>
-        <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
-      </div>
-
-      <div class="field">
-        <label for="password">Password</label>
-        <div class="pw-wrap">
-          <input type="password" id="password" placeholder="Your password" autocomplete="current-password"/>
-          <button class="pw-toggle" type="button" onclick="togglePw()">Show</button>
-        </div>
-      </div>
-
-      <a href="#" class="forgot-link" onclick="showForgot(event)">Forgot your password?</a>
-
-      <button class="btn-submit" id="login-btn" onclick="doLogin()">
-        <span class="btn-text">Sign in →</span>
-        <div class="spinner"></div>
-      </button>
-
-         <div class="signup-link" style="margin-top:1rem;">
-        Don't have an account? <a href="bandio-signup.html">Sign up free</a>
-      </div>
-    </div>
-
-    <!-- FORGOT PASSWORD SCREEN -->
-    <div class="forgot-screen" id="forgot-screen">
-      <button class="back-btn" onclick="showLogin()">← Back to sign in</button>
-      <div class="form-eyebrow">Password reset</div>
-      <h2 class="form-title">Forgot your password?</h2>
-      <p class="form-subtitle" style="margin-bottom:1.75rem">No worries. Enter your email and we'll send you a link to reset it — takes 30 seconds.</p>
-
-      <div class="field">
-        <label for="reset-email">Your account email</label>
-        <input type="email" id="reset-email" placeholder="you@example.com"/>
-      </div>
-
-      <button class="btn-submit" id="reset-btn" onclick="doReset()" style="margin-top:.25rem">
-        <span class="btn-text">Send reset link →</span>
-        <div class="spinner"></div>
-      </button>
-
-      <div class="signup-link" style="margin-top:1rem">
-        Remembered it? <a href="#" onclick="showLogin(event)">Sign in</a>
-      </div>
-    </div>
-
-    <!-- RESET EMAIL SENT -->
-    <div class="reset-sent-screen" id="reset-sent-screen">
-      <div class="big-icon icon-email">📬</div>
-      <div class="screen-title">Check your inbox</div>
-      <p class="screen-sub">We sent a password reset link to <strong id="sent-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="067f697346637e676b766a632865696b">[email&#160;protected]</a></strong>. Click the link in that email to set a new password.<br><br>The link expires in 1 hour.</p>
-      <button class="btn-action" onclick="showLogin()">Back to sign in</button>
-      <p style="font-size:.78rem;color:var(--muted);margin-top:1rem">Didn't get it? Check your spam folder.</p>
-    </div>
-
-    <!-- LOGIN SUCCESS -->
-    <div class="success-screen" id="success-screen">
-      <div class="big-icon icon-success">✓</div>
-      <div class="screen-title" id="welcome-name">Welcome back!</div>
-      <p class="screen-sub">You're signed in. Your scores, tests and AI feedback are all ready for you.</p>
-      <button class="btn-action" onclick="window.location='bandio-dashboard.html'">Go to my dashboard →</button>
-    </div>
-
+    <div class="form-eyebrow">Welcome back</div>
+    <div class="form-title">Sign in to Bandio</div>
+    <div class="form-sub">Don't have an account? <a href="bandio-signup.html">Create one free →</a></div>
+    <div class="field"><label>Email</label><input type="email" id="email" placeholder="your@email.com" autocomplete="email"/></div>
+    <div class="field"><label>Password</label><div class="pw-wrap"><input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/><button class="pw-eye" type="button" onclick="togglePw()" id="pwEye">👁</button></div></div>
+    <div class="err-msg" id="err-msg"></div>
+    <button class="form-submit" id="submitBtn" onclick="doLogin()">Sign in →</button>
+    <div class="form-divider">or</div>
+    <button class="google-btn" onclick="doGoogle()">
+      <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="#FBBC05" d="M10.53 28.59c-.5-1.45-.78-2.99-.78-4.59s.27-3.14.78-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/></svg>
+      Continue with Google
+    </button>
+    <div class="form-footer">By signing in you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a>.</div>
   </div>
 </div>
-
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script type="module">
+
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -554,26 +167,9 @@
     el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
     el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
   }
+
 </script>
 <script>
-  function togglePw() {
-    const inp = document.getElementById('password');
-    const btn = document.querySelector('.pw-toggle');
-    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'Hide'; }
-    else { inp.type = 'password'; btn.textContent = 'Show'; }
-  }
-  function showForgot(e) {
-    if (e) e.preventDefault();
-    const loginEmail = document.getElementById('email').value;
-    const resetEmail = document.getElementById('reset-email');
-    if (loginEmail) resetEmail.value = loginEmail;
-    hide('login-screen'); show('forgot-screen');
-  }
-  function showLogin(e) {
-    if (e) e.preventDefault();
-    hide('forgot-screen'); hide('reset-sent-screen'); hide('success-screen');
-    show('login-screen');
-  }
-  function show(id) { document.getElementById(id).style.display = 'block'; }
-  function hide(id) { document.getElementById(id).style.display = 'none'; }
-</script></body></html>
+function togglePw(){var i=document.getElementById("password");i.type=i.type==="password"?"text":"password";}
+</script>
+</body></html>

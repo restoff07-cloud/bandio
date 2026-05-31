@@ -3,355 +3,403 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>IELTS Writing Practice</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<title>Bandio — Writing</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --sw:224px;
+  --white:#ffffff;--bg:#f7f7f8;--ink:#111111;--ink2:#444444;--ink3:#777777;--ink4:#bbbbbb;
+  --bdr:#e8e8ea;--bdr2:#d4d4d8;
+  --blue:#4f7ef8;--blue-bg:#eef2ff;--blue-light:#dce6ff;
+  --sh:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);
+  --shm:0 2px 8px rgba(0,0,0,.06),0 12px 32px rgba(0,0,0,.06);
+  --r:10px;--rm:14px;--rl:18px;
+  --fd:'Geist',system-ui,sans-serif;--fb:'Geist',system-ui,sans-serif;
+}
 html,body{height:100%;}
-body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;display:flex;flex-direction:column;font-size:15px;height:100%;overflow:hidden;}
+body{font-family:var(--fb);background:var(--bg);color:var(--ink);display:flex;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+button{font-family:var(--fb);cursor:pointer;border:none;background:none;}
+/* SIDEBAR */
+.sidebar{width:var(--sw);min-width:var(--sw);background:var(--white);border-right:1px solid var(--bdr);min-height:100vh;display:flex;flex-direction:column;padding:0;position:fixed;top:0;left:0;bottom:0;z-index:60;overflow-y:auto;scrollbar-width:none;transition:transform .26s cubic-bezier(.4,0,.2,1);}
+.sidebar::-webkit-scrollbar{display:none;}
+.s-top{padding:1.25rem 1.1rem 0;}
+.s-logo{display:flex;align-items:center;gap:.45rem;padding:.5rem;margin-bottom:1.5rem;}
+.s-logo-txt{font-size:1.15rem;font-weight:700;color:var(--ink);letter-spacing:-.025em;}
+.s-logo-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+.nav-item{display:flex;align-items:center;gap:.65rem;padding:.52rem .75rem;border-radius:var(--r);font-size:.84rem;font-weight:500;color:var(--ink2);transition:all .15s;margin-bottom:2px;position:relative;}
+.nav-item:hover{background:var(--bg);color:var(--ink);}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:600;}
+.nav-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.95rem;background:transparent;transition:background .15s;}
+.nav-item.active .nav-icon{background:var(--blue-light);}
+.nav-sep{height:1px;background:var(--bdr);margin:1rem .5rem;}
+.nav-badge{margin-left:auto;background:#7c3aed;color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .42rem;border-radius:100px;letter-spacing:.03em;}
+.s-bottom{margin-top:auto;padding:0 1.1rem 1.25rem;}
+.user-chip{display:flex;align-items:center;gap:.6rem;padding:.55rem .6rem;border-radius:var(--r);}
+.u-av{width:30px;height:30px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.76rem;color:#fff;flex-shrink:0;}
+.u-name{font-size:.8rem;font-weight:600;color:var(--ink);}
+.u-plan{font-size:.63rem;color:var(--ink3);margin-top:1px;}
+/* MOBILE */
+.mob-bar{display:none;background:var(--white);padding:.75rem 1rem;align-items:center;gap:.75rem;position:sticky;top:0;z-index:70;border-bottom:1px solid var(--bdr);}
+.mob-logo{font-size:1.1rem;font-weight:700;color:var(--ink);letter-spacing:-.025em;flex:1;}
+.hamburger{display:none;flex-direction:column;gap:4px;padding:.4rem;border-radius:8px;cursor:pointer;}
+.hamburger span{display:block;width:18px;height:1.8px;background:var(--ink);border-radius:2px;}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:59;backdrop-filter:blur(2px);}
+.sb-overlay.show{display:block;}
+/* MAIN WRAP */
+.main-wrap{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.main{padding:2rem 2.25rem 3rem;}
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:flex-end;gap:.65rem;padding:.9rem 2rem;border-bottom:1px solid var(--bdr);background:var(--white);position:sticky;top:0;z-index:40;}
+.tb-user{display:flex;align-items:center;gap:.55rem;padding:.35rem .6rem .35rem .35rem;border-radius:100px;border:1px solid var(--bdr);cursor:pointer;background:var(--white);transition:all .15s;}
+.tb-user:hover{background:var(--bg);}
+.tb-av{width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#fff;flex-shrink:0;}
+.tb-name{font-size:.82rem;font-weight:600;color:var(--ink);}
+/* PAGE HEADER */
+.page-hd{margin-bottom:1.75rem;}
+.page-title{font-size:1.5rem;font-weight:700;letter-spacing:-.03em;color:var(--ink);margin-bottom:.3rem;}
+.page-sub{font-size:.88rem;color:var(--ink3);line-height:1.6;}
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rl);box-shadow:var(--sh);}
+.card:hover{box-shadow:var(--shm);}
+/* BUTTONS */
+.btn-primary{display:inline-flex;align-items:center;gap:.45rem;padding:.62rem 1.3rem;background:var(--ink);color:#fff;border-radius:var(--rm);font-size:.85rem;font-weight:600;transition:all .15s;}
+.btn-primary:hover{background:var(--blue);transform:translateY(-1px);}
+.btn-blue{display:inline-flex;align-items:center;gap:.45rem;padding:.62rem 1.3rem;background:var(--blue);color:#fff;border-radius:var(--rm);font-size:.85rem;font-weight:600;transition:all .15s;box-shadow:0 2px 8px rgba(79,126,248,.25);}
+.btn-blue:hover{background:#3d6cf7;transform:translateY(-1px);}
+.btn-outline{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1.3rem;background:var(--white);border:1.5px solid var(--bdr2);color:var(--ink2);border-radius:var(--rm);font-size:.85rem;font-weight:600;transition:all .15s;}
+.btn-outline:hover{border-color:var(--ink);background:var(--bg);}
+/* SECTION TITLE */
+.sec-title{font-size:.82rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin-bottom:.85rem;}
+/* RESPONSIVE */
+@media(max-width:640px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);box-shadow:var(--shm);}
+  .main-wrap{margin-left:0!important;}
+  .mob-bar{display:flex!important;}
+  .hamburger{display:flex!important;}
+  .topbar{display:none;}
+  .main{padding:1rem 1rem 2rem;}
+}
 
-/* MODE SWITCHER NAV */
-.modenav{display:flex;background:#0e0e0e;flex-shrink:0;padding:.5rem 1.25rem;gap:.5rem;align-items:center;}
-.logo-sm{font-family:'Syne',sans-serif;font-weight:800;font-size:.92rem;color:#f5f2eb;margin-right:.5rem;text-decoration:none;}
-.logo-sm span{color:#d4541a;}
-.mbtn{padding:.32rem .85rem;border:1px solid rgba(255,255,255,.18);border-radius:100px;background:transparent;color:rgba(255,255,255,.55);font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:500;cursor:pointer;white-space:nowrap;}
-.mbtn:hover{background:rgba(255,255,255,.1);color:#fff;}
-.mbtn.on{background:#c8102e;color:#fff;border-color:#c8102e;}
-.dash-link{margin-left:auto;font-size:.74rem;color:rgba(255,255,255,.45);text-decoration:none;}
-.dash-link:hover{color:#fff;}
-
-/* SCREENS */
-#sel{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
-#sel.hide{display:none;}
-#exam{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
-#exam.show{display:flex;}
-
-/* MODE CONTENT PANELS */
-.mode-panel{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
-.mode-panel.show{display:flex;}
-
-/* SELECTION TABS */
-.ftabs{display:flex;background:#fff;border-bottom:1px solid #e0e0e0;flex-shrink:0;}
-.ft{flex:1;padding:.85rem 1rem;text-align:center;font-size:.88rem;font-weight:500;color:#666;cursor:pointer;border-bottom:3px solid transparent;border-right:1px solid #e8e8e8;transition:all .15s;}
-.ft:last-child{border-right:none;}
-.ft:hover{background:#fafafa;}
-.ft.on{color:#c8102e;border-bottom-color:#c8102e;font-weight:600;background:#fff8f8;}
-.frow{display:flex;align-items:center;padding:.85rem 1.25rem;background:#fff;border-bottom:1px solid #eee;flex-shrink:0;}
-.sbox{display:flex;align-items:center;gap:.45rem;border:1px solid #d8d5d0;border-radius:7px;padding:.42rem .8rem;flex:1;background:#fff;}
-.sbox input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.84rem;color:#1a1a1a;width:100%;background:transparent;}
-.sbox input::placeholder{color:#bbb;}
-.larea{flex:1;overflow-y:auto;padding:1.25rem 1.5rem;}
-.lhead{font-size:1.25rem;font-weight:700;margin-bottom:1rem;}
-.tcard{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:1.1rem 1.25rem;margin-bottom:.75rem;display:flex;align-items:center;gap:1rem;transition:box-shadow .15s;cursor:pointer;}
-.tcard:hover{box-shadow:0 2px 12px rgba(0,0,0,.08);}
-.tcard-info{flex:1;min-width:0;}
-.tcard-top{display:flex;align-items:center;gap:.55rem;margin-bottom:.28rem;flex-wrap:wrap;}
-.tcard-name{font-size:.95rem;font-weight:700;}
-.tbadge{font-size:.68rem;font-weight:600;padding:.17rem .55rem;border-radius:100px;background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9;}
-.ttag{font-size:.68rem;font-weight:600;padding:.17rem .55rem;border-radius:100px;border:1px solid #d8d5d0;}
-.ttag.t1{background:#e8f0fd;color:#1a56db;border-color:#c3d3f9;}
-.ttag.t2{background:#fdeee8;color:#c2410c;border-color:#fbd4c2;}
-.tcard-sub{font-size:.78rem;color:#777;margin-bottom:.45rem;line-height:1.55;}
-.tcard-meta{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;}
-.tmeta{font-size:.76rem;color:#555;}
-.tmeta-sep{color:#ccc;}
-.sbtn{padding:.55rem 1.35rem;background:#c8102e;color:#fff;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;}
-.sbtn:hover{opacity:.88;}
-.nores{text-align:center;padding:3rem 1rem;color:#aaa;font-size:.88rem;}
-
-/* YOUR WRITING PANEL */
-.yw-wrap{flex:1;overflow-y:auto;padding:1.5rem;}
-.yw-inner{max-width:720px;margin:0 auto;}
-.yw-title{font-size:1.25rem;font-weight:700;margin-bottom:.3rem;}
-.yw-sub{font-size:.86rem;color:#888;margin-bottom:1.5rem;}
-.field{margin-bottom:1rem;}
-.field label{font-size:.78rem;font-weight:600;color:#555;display:block;margin-bottom:.4rem;}
-.field select,.field input,.field textarea{width:100%;border:1px solid #d8d5d0;border-radius:8px;padding:.55rem .85rem;font-family:'DM Sans',sans-serif;font-size:.88rem;color:#1a1a1a;outline:none;background:#fafaf9;}
-.field select:focus,.field input:focus,.field textarea:focus{border-color:#999;background:#fff;}
-.field textarea{resize:vertical;min-height:90px;line-height:1.7;}
-.img-drop{border:1.5px dashed #d8d5d0;border-radius:8px;padding:1rem;text-align:center;cursor:pointer;background:#fafaf9;min-height:70px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.35rem;transition:border-color .15s;}
-.img-drop:hover{border-color:#999;}
-.img-preview{display:none;max-width:100%;max-height:180px;border-radius:6px;object-fit:contain;}
-.img-remove{display:none;margin-top:.35rem;background:none;border:1px solid #e24b4a;color:#e24b4a;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.72rem;padding:.2rem .65rem;cursor:pointer;}
-.go-btn{padding:.7rem 2rem;background:#c8102e;color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;width:100%;}
-.go-btn:hover{opacity:.88;}
-
-/* CHECK MY WRITING PANEL */
-.chk-wrap{flex:1;overflow-y:auto;padding:1.5rem;}
-.chk-inner{max-width:720px;margin:0 auto;}
-.task-toggle-row{display:flex;gap:.5rem;margin-bottom:1rem;}
-.ttoggle{padding:.38rem .95rem;border:1.5px solid #d8d5d0;border-radius:7px;background:#fff;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;color:#555;cursor:pointer;}
-.ttoggle.on{background:#c8102e;color:#fff;border-color:#c8102e;}
-.chk-wc{font-size:.76rem;color:#aaa;margin-top:.3rem;}
-.chk-btn{padding:.7rem 2rem;background:#c8102e;color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;width:100%;margin-top:1.25rem;}
-.chk-btn:hover{opacity:.88;}
-
-/* Result boxes */
-.chk-result{display:none;margin-top:1.5rem;}
-.res-band{display:flex;align-items:center;gap:1.25rem;background:#1a1a1a;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1rem;flex-wrap:wrap;}
-.res-band-num{font-family:'Syne',sans-serif;font-weight:800;font-size:2.8rem;color:#f5f2eb;line-height:1;}
-.res-band-lbl{font-size:.7rem;color:rgba(245,242,235,.4);}
-.res-band-desc{font-size:.84rem;color:rgba(245,242,235,.65);line-height:1.6;flex:1;}
-.crit-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem;}
-.crit-box{background:#fff;border:1px solid #e8e5e0;border-radius:10px;padding:.85rem 1rem;}
-.crit-sc{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:#d4541a;margin-bottom:.15rem;}
-.crit-nm{font-size:.75rem;font-weight:600;color:#1a1a1a;margin-bottom:.25rem;}
-.crit-fb{font-size:.75rem;color:#666;line-height:1.5;}
-.tips-box{background:#fff;border-radius:10px;padding:1rem;margin-bottom:.75rem;}
-.tips-hd{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:.6rem;}
-.tip-row{display:flex;align-items:flex-start;gap:.5rem;font-size:.83rem;color:#444;line-height:1.6;margin-bottom:.4rem;}
-.tip-dot{width:6px;height:6px;border-radius:50%;background:#d4541a;flex-shrink:0;margin-top:.5rem;}
-.limit-box{background:#fee2e2;border-radius:12px;padding:1.1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
-.limit-text{font-size:.84rem;color:#991b1b;}
-.limit-text strong{display:block;margin-bottom:.1rem;}
-.upgrade-link{padding:.48rem 1.1rem;background:#c8102e;color:#fff;border-radius:100px;text-decoration:none;font-size:.8rem;font-weight:700;white-space:nowrap;}
-
-/* EXAM SCREEN */
-.topbar{height:54px;background:#fff;border-bottom:1px solid #d8d5d0;display:flex;align-items:center;padding:0 1rem;flex-shrink:0;position:relative;}
-.tb-l{display:flex;align-items:center;gap:.6rem;}
-.tb-m{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:.6rem;}
-.tb-r{display:flex;align-items:center;gap:.8rem;margin-left:auto;}
-.bkbtn{display:flex;align-items:center;gap:.3rem;padding:.3rem .8rem;border:1px solid #ccc;border-radius:5px;background:#fff;font-family:inherit;font-size:.82rem;color:#444;cursor:pointer;}
-.bkbtn:hover{background:#f5f3f0;}
-.ib{background:#c8102e;color:#fff;font-weight:700;font-size:.88rem;padding:.28rem .65rem;border-radius:4px;}
-.etid{font-size:.82rem;color:#888;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.tval{font-size:1.1rem;font-weight:600;color:#1a1a1a;min-width:48px;text-align:right;}
-.tval.warn{color:#c8102e;}
-.tbtn{padding:.32rem 1rem;background:#c8102e;color:#fff;border:none;border-radius:5px;font-family:inherit;font-size:.84rem;font-weight:600;cursor:pointer;}
-.tbtn.on{background:#555;}
-.ico{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#888;cursor:pointer;border-radius:4px;}
-.ico:hover{background:#f0eeea;}
-.main{display:flex;flex:1;min-height:0;overflow:hidden;}
-.lp{width:50%;min-width:260px;overflow-y:auto;border-right:1px solid #d8d5d0;padding:1.5rem 1.75rem 2rem;background:#fff;}
-.tbox{background:#f0eeea;border-radius:8px;padding:1rem 1.2rem;margin-bottom:1.2rem;}
-.tbox-t{font-size:.95rem;font-weight:700;margin-bottom:.22rem;}
-.tbox-i{font-size:.85rem;color:#555;line-height:1.55;}
-.chart-ph{border:1px solid #d8d5d0;border-radius:8px;background:#f0eeea;padding:2rem 1rem;text-align:center;margin-bottom:1.25rem;}
-.tq{font-size:.93rem;line-height:1.75;}
-.rp{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#f9f8f7;}
-.ew{flex:1;padding:1.25rem 1.5rem;display:flex;flex-direction:column;overflow:hidden;}
-.eta{flex:1;width:100%;resize:none;border:1px solid #d8d5d0;border-radius:6px;padding:1rem 1.1rem;font-family:'DM Sans',sans-serif;font-size:.94rem;line-height:1.8;color:#1a1a1a;background:#fff;outline:none;}
-.eta:focus{border-color:#999;}
-.eta::placeholder{color:#bbb;}
-.wcr{display:flex;align-items:center;gap:1rem;padding:.6rem 0 0;flex-wrap:wrap;}
-.wct{font-size:.84rem;color:#666;}
-.wcn{font-weight:600;color:#1a1a1a;}
-.wcn.g{color:#2a9d68;}
-.wcbw{flex:1;height:3px;background:#e8e5e0;border-radius:3px;overflow:hidden;min-width:60px;}
-.wcbf{height:100%;background:#d8d5d0;border-radius:3px;width:0%;transition:width .3s,background .3s;}
-.wch{font-size:.78rem;color:#888;}
-.botbar{height:48px;background:#f0eeea;border-top:1px solid #d8d5d0;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
-.sub-ck{position:absolute;right:1.25rem;width:32px;height:32px;border-radius:50%;background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;}
-.sub-ck:hover{background:#2a9d68;}
-
-/* RESULT OVERLAY */
-#ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:flex-start;justify-content:center;padding:1.5rem 1rem;overflow-y:auto;}
-#ovl.show{display:flex;}
-.rcard{background:#fff;border-radius:16px;padding:2rem;max-width:640px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);margin:auto;}
-.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem;}
-.rt{font-size:1.05rem;font-weight:700;}
-.rstats{display:flex;gap:1.25rem;}
-.rsv{font-size:1.2rem;font-weight:700;text-align:center;}
-.rsl{font-size:.68rem;color:#888;margin-top:.05rem;text-align:center;}
-.rel-lbl{font-size:.76rem;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.45rem;display:flex;align-items:center;justify-content:space-between;}
-.cpbtn{display:flex;align-items:center;gap:.3rem;padding:.28rem .75rem;border:1px solid #d8d5d0;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.74rem;color:#555;background:#fff;cursor:pointer;}
-.cpbtn:hover{border-color:#999;background:#f5f3f0;}
-.cpbtn.copied{border-color:#2a9d68;color:#2a9d68;background:#e8f5ee;}
-.reta{width:100%;min-height:160px;max-height:250px;border:1px solid #d8d5d0;border-radius:8px;padding:.85rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;line-height:1.8;color:#1a1a1a;background:#fafaf9;outline:none;resize:vertical;}
-.reta:focus{border-color:#999;background:#fff;}
-.reh{font-size:.72rem;color:#aaa;margin-top:.35rem;margin-bottom:1rem;}
-.rsect{font-size:.76rem;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin:.9rem 0 .5rem;}
-.rci{display:flex;align-items:flex-start;gap:.6rem;padding:.45rem 0;border-bottom:.5px solid #f0eeea;font-size:.84rem;line-height:1.55;}
-.rci:last-child{border-bottom:none;}
-.rdot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:1px;}
-.dok{background:#dcfce7;color:#166534;}
-.dwn{background:#fef9c3;color:#854d0e;}
-.din{background:#dbeafe;color:#1e40af;}
-.scta{border:1.5px solid #e0ddd8;border-radius:14px;padding:1.4rem 1.5rem;margin:1.25rem 0;background:#fafaf9;}
-.scta-top{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;}
-.scta-ico{width:46px;height:46px;border-radius:12px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
-.scta-title{font-size:1rem;font-weight:700;margin-bottom:.2rem;}
-.scta-sub{font-size:.82rem;color:#666;line-height:1.5;}
-.crit-grid2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem;}
-.crit2{background:#fff;border:1px solid #e8e5e0;border-radius:8px;padding:.6rem .75rem;display:flex;align-items:flex-start;gap:.5rem;}
-.crit2-ico{font-size:.95rem;flex-shrink:0;}
-.crit2-n{font-size:.78rem;font-weight:600;margin-bottom:.08rem;}
-.crit2-d{font-size:.71rem;color:#888;line-height:1.45;}
-.csbtn{width:100%;padding:.7rem;background:#c8102e;color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;}
-.csbtn:hover{opacity:.88;}
-.csnote{font-size:.72rem;color:#aaa;text-align:center;margin-top:.45rem;}
-.rbtns{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.75rem;}
-.rbtn{padding:.58rem 1.3rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:500;cursor:pointer;border:1px solid #d8d5d0;background:#fff;color:#444;}
-.rbtn:hover{border-color:#999;background:#f5f3f0;}
-.rbtn.p{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
-.rbtn.p:hover{background:#d4541a;border-color:#d4541a;}
-
-@media(max-width:640px){.main{flex-direction:column;}.lp{width:100%!important;height:42vh;border-right:none;border-bottom:1px solid #d8d5d0;}.tb-m{position:static;transform:none;margin:0 auto;}.crit-grid{grid-template-columns:1fr;}.crit-grid2{grid-template-columns:1fr;}}
+.writing-layout{display:grid;grid-template-columns:1fr 340px;gap:1.25rem;max-width:1040px;align-items:start;}
+/* Input panel */
+.input-panel{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;box-shadow:var(--sh);}
+.task-tabs{display:flex;gap:.35rem;background:var(--bg);border:1px solid var(--bdr);border-radius:var(--rm);padding:.3rem;width:fit-content;margin-bottom:1.25rem;}
+.task-tab{padding:.4rem .9rem;border-radius:var(--r);font-size:.8rem;font-weight:600;color:var(--ink3);cursor:pointer;transition:all .15s;border:none;background:none;font-family:var(--fb);}
+.task-tab.active{background:var(--white);color:var(--ink);box-shadow:var(--sh);}
+.field-label{font-size:.74rem;font-weight:600;color:var(--ink2);margin-bottom:.38rem;display:block;}
+.question-input{width:100%;border:1px solid var(--bdr);border-radius:var(--r);padding:.65rem .88rem;font-family:var(--fb);font-size:.85rem;color:var(--ink);resize:none;outline:none;background:var(--bg);transition:border-color .15s;min-height:80px;line-height:1.65;margin-bottom:1rem;}
+.question-input:focus{border-color:var(--blue);background:var(--white);box-shadow:0 0 0 3px rgba(79,126,248,.1);}
+.essay-wrap{position:relative;margin-bottom:1rem;}
+.essay-input{width:100%;border:1px solid var(--bdr);border-radius:var(--r);padding:.65rem .88rem;font-family:var(--fb);font-size:.88rem;color:var(--ink);resize:vertical;outline:none;background:var(--bg);transition:border-color .15s;min-height:260px;line-height:1.75;}
+.essay-input:focus{border-color:var(--blue);background:var(--white);box-shadow:0 0 0 3px rgba(79,126,248,.1);}
+.word-count{position:absolute;bottom:.5rem;right:.75rem;font-size:.7rem;color:var(--ink4);pointer-events:none;}
+.word-count.warn{color:#f97316;}
+.word-count.ok{color:#22c55e;}
+.submit-row{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;}
+.checks-left{font-size:.76rem;color:var(--ink3);}
+.checks-left strong{color:var(--ink);}
+.submit-btn{padding:.65rem 1.4rem;background:var(--ink);color:#fff;border:none;border-radius:var(--rm);font-family:var(--fb);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.45rem;}
+.submit-btn:hover{background:var(--blue);}
+.submit-btn:disabled{background:var(--ink4);cursor:not-allowed;}
+/* Results panel */
+.results-panel{display:none;}
+.results-panel.show{display:flex;flex-direction:column;gap:1rem;}
+.band-hero{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem;text-align:center;box-shadow:var(--sh);}
+.band-score{font-size:3.5rem;font-weight:700;letter-spacing:-.04em;color:var(--blue);line-height:1;}
+.band-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-top:.3rem;}
+.criteria-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;}
+.crit-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rm);padding:1rem;box-shadow:var(--sh);}
+.crit-name{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:.3rem;}
+.crit-score{font-size:1.4rem;font-weight:700;color:var(--ink);margin-bottom:.25rem;}
+.crit-bar{height:4px;background:var(--bg);border-radius:100px;overflow:hidden;}
+.crit-bar-fill{height:100%;border-radius:100px;background:var(--blue);}
+/* Sidebar panel */
+.side-panel{display:flex;flex-direction:column;gap:1rem;}
+.info-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.25rem;box-shadow:var(--sh);}
+.info-card-title{font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:.65rem;display:flex;align-items:center;gap:.4rem;}
+.tip-item{font-size:.78rem;color:var(--ink2);line-height:1.6;padding:.4rem 0;border-bottom:1px solid var(--bdr);display:flex;gap:.5rem;}
+.tip-item:last-child{border-bottom:none;padding-bottom:0;}
+.tip-num{font-size:.68rem;font-weight:700;color:var(--blue);flex-shrink:0;min-width:16px;}
+.feedback-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.25rem;box-shadow:var(--sh);display:none;}
+.feedback-card.show{display:block;}
+.fb-section{margin-bottom:.85rem;}
+.fb-section:last-child{margin-bottom:0;}
+.fb-section-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:.35rem;}
+.fb-text{font-size:.82rem;color:var(--ink2);line-height:1.65;}
+.upgrade-card{background:var(--ink);border-radius:var(--rl);padding:1.25rem;box-shadow:var(--shm);}
+.uc-title{font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.3rem;}
+.uc-sub{font-size:.75rem;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:.85rem;}
+.uc-btn{display:block;width:100%;padding:.58rem;text-align:center;background:var(--blue);color:#fff;border-radius:var(--r);font-size:.8rem;font-weight:600;transition:all .15s;}
+.uc-btn:hover{background:#3d6cf7;}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.85);backdrop-filter:blur(4px);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:1rem;}
+.loading-overlay.show{display:flex;}
+.loading-spinner{width:36px;height:36px;border:3px solid var(--bdr);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:.88rem;font-weight:500;color:var(--ink3);}
+@media(max-width:860px){.writing-layout{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-
-<!-- RESULT OVERLAY -->
-<div id="ovl">
-  <div class="rcard" id="rcard"></div>
+<!-- SIDEBAR OVERLAY -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<!-- MOBILE TOPBAR -->
+<div class="mob-bar" id="mobBar">
+  <button class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+  <span class="mob-logo">Bandio<span style="display:inline-block;width:6px;height:6px;background:var(--blue);border-radius:50%;margin-left:2px;vertical-align:middle;margin-bottom:2px;"></span></span>
 </div>
-
-<!-- MODE SWITCHER NAV -->
-<div class="modenav">
-  <a class="logo-sm" href="bandio-home.html">Band<span>io</span></a>
-  <button class="mbtn on" id="mb-practice" onclick="switchMode('practice')">Practice</button>
-  <button class="mbtn" id="mb-yours"    onclick="switchMode('yours')">Your writing</button>
-  <button class="mbtn" id="mb-check"    onclick="switchMode('check')">Check my writing</button>
-  <a class="dash-link" href="bandio-dashboard.html">Dashboard</a>
-</div>
-
-<!-- SELECTION SCREEN -->
-<div id="sel">
-
-  <!-- PRACTICE MODE -->
-  <div class="mode-panel show" id="panel-practice">
-    <div class="ftabs">
-      <div class="ft on" id="tab-all"   onclick="setTab('all',this)">All Questions</div>
-      <div class="ft" id="tab-task1" onclick="setTab('task1',this)">Task 1</div>
-      <div class="ft" id="tab-task2" onclick="setTab('task2',this)">Task 2</div>
-    </div>
-    <div class="frow">
-      <div class="sbox">
-        <span style="color:#bbb">&#128269;</span>
-        <input type="text" id="srch" placeholder="Search questions..." oninput="renderList()"/>
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="s-top">
+    <div class="s-logo"><span class="s-logo-txt">Bandio</span><span class="s-logo-dot"></span></div>
+    <a class="nav-item " href="bandio-dashboard.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/></svg></span>Dashboard</a>
+    <div style="position:relative;">
+      <div class="nav-item " id="practice-toggle" onclick="togglePractice()" style="cursor:pointer;"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M6 5.5l4 2.5-4 2.5V5.5z" fill="currentColor"/></svg></span>Practice<span id="pchev" style="margin-left:auto;font-size:.62rem;color:var(--ink4);transition:transform .2s;">▾</span></div>
+      <div id="pmenu" style="display:none;padding-left:.7rem;">
+        <a class="nav-item " href="bandio-practice.html" style="font-size:.8rem;"><span class="nav-icon" style="width:24px;height:24px;font-size:.8rem;">📖</span>Reading</a>
+        <a class="nav-item " href="bandio-listening.html" style="font-size:.8rem;"><span class="nav-icon" style="width:24px;height:24px;font-size:.8rem;">🎧</span>Listening</a>
       </div>
     </div>
-    <div class="larea">
-      <div class="lhead">Choose a question</div>
-      <div id="qlist"></div>
-    </div>
+    <a class="nav-item " href="bandio-books.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 2h6a2 2 0 012 2v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 4h1.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5H11" stroke="currentColor" stroke-width="1.5"/></svg></span>Books</a>
+    <a class="nav-item " href="bandio-articles.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 5.5h6M5 8h4M5 10.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>Articles</a>
+    <a class="nav-item " href="bandio-vocab.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2L9.5 6.5H14L10.25 9.25l1.5 4.5L8 11l-3.75 2.75 1.5-4.5L2 6.5h4.5L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></span>Vocabulary</a>
+    <a class="nav-item " href="bandio-speaking.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="5" y="1.5" width="6" height="8" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 8.5A5.5 5.5 0 008 14a5.5 5.5 0 005.5-5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Speaking</a>
+    <a class="nav-item active" href="bandio-writing.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>Writing</a>
+    <div class="nav-sep"></div>
+    <a class="nav-item" href="bandio-pricing.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 4H14l-3.4 2.5 1.3 4L8 9 4.1 11.5l1.3-4L2 5h4.2L8 1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></span>Upgrade<span class="nav-badge">PRO</span></a>
+    <a class="nav-item" href="bandio-feedback.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h10a1 1 0 011 1v7a1 1 0 01-1 1H5.5L2 14V3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>Feedback</a>
+    <a class="nav-item" href="bandio-gift.html"><span class="nav-icon">🎁</span>Give a gift</a>
+    <a class="nav-item" href="bandio-profile.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 13.5c0-2.5 2.7-4.5 6-4.5s6 2 6 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>Profile</a>
+    <a class="nav-item" href="bandio-settings.html"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5v1.2M8 13.3v1.2M1.5 8h1.2M13.3 8h1.2M3.4 3.4l.85.85M11.75 11.75l.85.85M3.4 12.6l.85-.85M11.75 4.25l.85-.85" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>Settings</a>
+    <button class="nav-item" onclick="doSignOut()" style="width:100%;text-align:left;"><span class="nav-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M10.5 11l3-3-3-3M13.5 8H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Log out</button>
   </div>
+  <div class="s-bottom">
+    <div class="user-chip"><div class="u-av" id="sb-av">?</div><div><div class="u-name" id="sb-name">Student</div><div class="u-plan" id="sb-plan">Free plan</div></div></div>
+  </div>
+</nav>
 
-  <!-- YOUR WRITING MODE -->
-  <div class="mode-panel" id="panel-yours">
-    <div class="yw-wrap">
-      <div class="yw-inner">
-        <div class="yw-title">Your writing</div>
-        <div class="yw-sub">Paste your own question and write with the full timer interface. You can also paste or upload a chart image.</div>
-        <div class="field">
-          <label>Task type</label>
-          <select id="yw-task">
-            <option value="task1">Task 1 — Report (150 words, 20 min)</option>
-            <option value="task2">Task 2 — Essay (250 words, 40 min)</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Chart / image (optional — paste Ctrl+V, click to upload, or drag and drop)</label>
-          <div class="img-drop" id="imgDrop" onclick="document.getElementById('imgFile').click()" onpaste="handlePaste(event)" ondragover="event.preventDefault();this.style.borderColor='#999'" ondragleave="this.style.borderColor='#d8d5d0'" ondrop="handleDrop(event)">
-            <div id="imgPlaceholder" style="font-size:.84rem;color:#bbb;">&#128247; Click, drag image here, or Ctrl+V to paste a screenshot</div>
-            <img class="img-preview" id="imgPreview" src="" alt=""/>
-            <button class="img-remove" id="imgRemove" onclick="event.stopPropagation();removeImg()">Remove image</button>
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">AI is analysing your essay…</div>
+</div>
+<div class="main-wrap">
+  <div class="topbar"><div class="tb-user"><div class="tb-av" id="tb-av">?</div><span class="tb-name" id="tb-name">Student</span></div></div>
+  <main class="main">
+    <div class="page-hd">
+      <div class="page-title">Writing Practice</div>
+      <div class="page-sub">Submit a Task 1 or Task 2 essay. Get AI feedback on all 4 IELTS criteria.</div>
+    </div>
+    <div class="writing-layout">
+      <div>
+        <div class="input-panel" id="input-panel">
+          <div class="task-tabs">
+            <button class="task-tab active" id="tab-t2" onclick="switchTask(2,this)">Task 2 — Essay</button>
+            <button class="task-tab" id="tab-t1" onclick="switchTask(1,this)">Task 1 — Report</button>
           </div>
-          <input type="file" id="imgFile" accept="image/*" style="display:none;" onchange="handleFile(this)"/>
-        </div>
-        <div class="field">
-          <label>Your question / task prompt *</label>
-          <textarea id="yw-question" placeholder="Paste your Task 1 chart description or Task 2 essay question here..." rows="4"></textarea>
-        </div>
-        <div class="field">
-          <label>Paste an existing essay to continue editing (optional)</label>
-          <textarea id="yw-paste" placeholder="Paste a draft here if you want to continue editing it..." rows="3"></textarea>
-        </div>
-        <button class="go-btn" onclick="startYours()">Start writing &#8594;</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CHECK MY WRITING MODE -->
-  <div class="mode-panel" id="panel-check">
-    <div class="chk-wrap">
-      <div class="chk-inner">
-        <div class="yw-title">Check my writing</div>
-        <div class="yw-sub">Paste any IELTS question and your essay. Get an instant band score on all 4 criteria.</div>
-
-        <div style="background:#fef9c3;border:1px solid #fde68a;border-radius:9px;padding:.7rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
-          <div style="font-size:.82rem;color:#78350f;"><strong id="chk-badge-txt">2 checks remaining</strong> &#183; Included with your free account</div>
-          <a href="bandio-pricing.html" style="font-size:.74rem;font-weight:600;color:#c8102e;text-decoration:none;">Upgrade for more &#8594;</a>
-        </div>
-
-        <div class="task-toggle-row">
-          <button class="ttoggle on" id="chk-t1" onclick="chkTask('task1')">Task 1</button>
-          <button class="ttoggle"    id="chk-t2" onclick="chkTask('task2')">Task 2</button>
-        </div>
-
-        <div class="field">
-          <label>The question / task prompt *</label>
-          <textarea id="chk-q" placeholder="Paste the IELTS question here..." rows="3"></textarea>
-        </div>
-        <div class="field" id="chkImgField">
-          <label>Task 1 chart / diagram (optional — helps the AI give more accurate feedback)</label>
-          <div class="img-drop" id="chkImgDrop" onclick="document.getElementById('chkImgFile').click()" onpaste="handleChkPaste(event)" ondragover="event.preventDefault();this.style.borderColor='#999'" ondragleave="this.style.borderColor='#d8d5d0'" ondrop="handleChkDrop(event)">
-            <div id="chkImgPlaceholder" style="font-size:.84rem;color:#bbb;">📷 Click, drag image here, or Ctrl+V to paste a screenshot of the chart</div>
-            <img class="img-preview" id="chkImgPreview" src="" alt=""/>
-            <button class="img-remove" id="chkImgRemove" onclick="event.stopPropagation();removeChkImg()">Remove image</button>
+          <label class="field-label">Question / task prompt (optional)</label>
+          <textarea class="question-input" id="question-input" placeholder="Paste the question here…" rows="3"></textarea>
+          <label class="field-label">Your essay</label>
+          <div class="essay-wrap">
+            <textarea class="essay-input" id="essay-input" placeholder="Write your essay here…"></textarea>
+            <span class="word-count" id="word-count">0 words</span>
           </div>
-          <input type="file" id="chkImgFile" accept="image/*" style="display:none;" onchange="handleChkFile(this)"/>
+          <div class="submit-row">
+            <div class="checks-left">Checks remaining: <strong id="checks-left">—</strong></div>
+            <button class="submit-btn" id="submit-btn" onclick="submitEssay()">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13.5 2.5l-9 9M13.5 2.5H8M13.5 2.5V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 4H3a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1v-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Check my writing
+            </button>
+          </div>
         </div>
-        <div class="field">
-          <label>Your essay or report *</label>
-          <textarea id="chk-essay" placeholder="Paste your full essay or Task 1 report here..." rows="7" oninput="updateChkWC()"></textarea>
-          <div class="chk-wc">Word count: <span id="chk-wc-num" style="font-weight:600;color:#1a1a1a;">0</span></div>
+        <div class="results-panel" id="results-panel">
+          <div class="band-hero">
+            <div class="band-score" id="result-band">—</div>
+            <div class="band-label">Estimated Band Score</div>
+          </div>
+          <div class="criteria-grid" id="criteria-grid"></div>
+          <button class="submit-btn" style="width:100%;justify-content:center;" onclick="resetForm()">← Check another essay</button>
         </div>
-        <button class="chk-btn" id="chkBtn" onclick="doCheck()">Check my writing &#8594;</button>
-        <div class="chk-result" id="chkResult"></div>
       </div>
-    </div>
-  </div>
-
-</div><!-- end sel -->
-
-<!-- EXAM SCREEN -->
-<div id="exam">
-  <div class="topbar">
-    <div class="tb-l">
-      <button class="bkbtn" onclick="goBack()">&#8592; Back</button>
-      <span class="ib">IELTS</span>
-      <span class="etid" id="etitle">Writing Practice</span>
-    </div>
-    <div class="tb-m">
-      <span class="tval" id="tvEl">40:00</span>
-      <button class="tbtn" id="tBtn" onclick="toggleTimer()">Start</button>
-    </div>
-    <div class="tb-r">
-      <div class="ico" onclick="toggleFS()">&#9635;</div>
-      <div class="ico" onclick="doSubmit()">&#10003;</div>
-    </div>
-  </div>
-  <div class="main">
-    <div class="lp">
-      <div class="tbox">
-        <div class="tbox-t" id="tboxTitle">Task 2</div>
-        <div class="tbox-i" id="tboxInst">You should spend about 40 minutes on this task. Write at least 250 words.</div>
-      </div>
-      <div class="chart-ph" id="chartPh" style="display:none">
-        <div style="font-size:1.4rem;margin-bottom:.3rem">&#128202;</div>
-        <div style="font-size:.8rem;color:#888;line-height:1.6">Chart image will appear here</div>
-      </div>
-      <div class="tq" id="tqEl">Select a question to begin.</div>
-    </div>
-    <div class="rp">
-      <div class="ew">
-        <textarea class="eta" id="essayTA" placeholder="Start writing your essay here..." oninput="updateWC(this.value)"></textarea>
-        <div class="wcr">
-          <span class="wct">Words: <span class="wcn" id="wcNum">0</span></span>
-          <div class="wcbw"><div class="wcbf" id="wcBar"></div></div>
-          <span class="wch" id="wcHint">Minimum: 250 words</span>
+      <div class="side-panel">
+        <div class="feedback-card" id="feedback-card">
+          <div class="info-card-title">📝 AI Feedback</div>
+          <div id="feedback-content"></div>
+        </div>
+        <div class="info-card" id="tips-card">
+          <div class="info-card-title">💡 Writing tips</div>
+          <div class="tip-item"><span class="tip-num">1</span>Aim for 250+ words in Task 2 and 150+ in Task 1.</div>
+          <div class="tip-item"><span class="tip-num">2</span>Use a clear introduction, body paragraphs and conclusion.</div>
+          <div class="tip-item"><span class="tip-num">3</span>Vary your sentence structure and vocabulary.</div>
+          <div class="tip-item"><span class="tip-num">4</span>Stay on topic — task achievement is 25% of your score.</div>
+          <div class="tip-item"><span class="tip-num">5</span>Use linking words: however, furthermore, in contrast…</div>
+        </div>
+        <div class="upgrade-card" id="upgrade-card" style="display:none;">
+          <div class="uc-title">Need more checks?</div>
+          <div class="uc-sub">Free plan includes 2 checks. Upgrade to Premium for 25 checks per month.</div>
+          <a class="uc-btn" href="bandio-pricing.html">Upgrade to Premium →</a>
         </div>
       </div>
     </div>
-  </div>
-  <div class="botbar">
-    <span style="font-size:.84rem;font-weight:500;color:#666" id="botLbl">Task 2</span>
-    <button class="sub-ck" onclick="doSubmit()">&#10003;</button>
-  </div>
+  </main>
 </div>
+<script type="module">
 
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBZdCEYUded-YT9RMSr1R7wg8VAqK9HCz0",
+    authDomain: "bandio-53433.firebaseapp.com",
+    projectId: "bandio-53433",
+    storageBucket: "bandio-53433.firebasestorage.app",
+    messagingSenderId: "161548316253",
+    appId: "1:161548316253:web:a7746750b2ea6d239d67b4"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // ── FIREBASE LIMIT ENFORCEMENT ─────────────────────────────────
+  // All limits are enforced server-side via Firestore.
+  // localStorage is only used as a display cache — never trusted for access control.
+
+  let _currentUser  = null;
+  let _userData     = null;
+  let _limitLoaded  = false;
+
+  const FB_CONFIG = {
+    apiKey: "AIzaSyBZdCEYUded-YT9RMSr1R7wg8VAqK9HCz0",
+    authDomain: "bandio-53433.firebaseapp.com",
+    projectId: "bandio-53433",
+    storageBucket: "bandio-53433.firebasestorage.app",
+    messagingSenderId: "161548316253",
+    appId: "1:161548316253:web:a7746750b2ea6d239d67b4"
+  };
+
+  const _app  = initializeApp(FB_CONFIG);
+  const _auth = getAuth(_app);
+  const _db   = getFirestore(_app);
+
+  onAuthStateChanged(_auth, async user => {
+    _currentUser = user;
+    if (!user) {
+      // Not logged in — show login prompt, block access
+      _userData = null;
+      _limitLoaded = true;
+      updateChkBadge();
+      return;
+    }
+
+    try {
+      const snap = await getDoc(doc(_db, 'users', user.uid));
+      _userData = snap.exists() ? snap.data() : {};
+      window._bandioUserData = _userData; // expose for plan checks
+
+      const plan        = _userData.plan || 'free';
+      const bonusEssays = _userData.aiWritingBonus || 0;
+      const limit       = plan === 'intensive' ? 60 + bonusEssays
+                        : plan === 'premium'   ? 25 + bonusEssays
+                        : 2  + bonusEssays;
+
+      // Total checks used (not monthly)
+      const used = _userData.writingChecksUsed || 0;
+
+      // Cache for display only
+      localStorage.setItem('bnd_plan',    plan);
+      localStorage.setItem('bnd_w_used',  String(used));
+      localStorage.setItem('bnd_w_limit', String(limit));
+      _limitLoaded = true;
+      updateChkBadge();
+    } catch(e) {
+      console.log('Firebase error:', e.message);
+      _limitLoaded = true;
+    }
+
+    // Load admin-published practice-writing tests from Firestore
+    try {
+      const {getFirestore,collection,getDocs,query,where} = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const fsdb = getFirestore(app);
+      const snap = await getDocs(query(collection(fsdb,'tests'),where('type','==','practice-writing')));
+      snap.forEach(function(d){
+        var t=d.data();
+        if(!t.title||!t.passages)return;
+        var p=t.passages[0]||{};
+        var fsId='fs_'+d.id;
+        if(QS.find(function(q){return String(q.id)===fsId;}))return;
+        var isTask1=(p.task==='task1'||String(p.taskType||'').startsWith('task1'));
+        QS.push({
+          id:fsId, task:isTask1?'task1':'task2',
+          title:t.title,
+          sub:p.prompt||p.instructions||'',
+          inst:isTask1?'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.':'Give your opinion and support it with examples.',
+          time:isTask1?20:40, min:isTask1?150:250,
+          chart:!!(p.image), chartSrc:p.image||'',
+          modelAnswer:p.modelAnswer||'',
+          tier:t.access||'free'
+        });
+      });
+      if(typeof renderList==='function')renderList();
+    } catch(e){ console.log('Firestore practice-writing load:',e.message); }
+  });
+
+  // Called by doCheck() — returns {allowed, used, limit, reason}
+  window.checkWritingLimit = async function() {
+    // Must be logged in
+    if (!_currentUser) {
+      return { allowed: false, reason: 'login' };
+    }
+
+    // Re-fetch from Firestore every time — no trusting localStorage
+    try {
+      const snap = await getDoc(doc(_db, 'users', _currentUser.uid));
+      const data = snap.exists() ? snap.data() : {};
+      const plan        = data.plan || 'free';
+      const bonusEssays = data.aiWritingBonus || 0;
+      const limit       = plan === 'intensive' ? 60 + bonusEssays
+                        : plan === 'premium'   ? 25 + bonusEssays
+                        : 2  + bonusEssays;
+      // Total checks (not monthly) — premium gets 25 total, intensive gets 60 total
+      const used = data.writingChecksUsed || 0;
+
+      if (used >= limit) {
+        return { allowed: false, reason: 'limit', used, limit, plan };
+      }
+      return { allowed: true, used, limit, plan };
+    } catch(e) {
+      // On error — block access, do not give free pass
+      return { allowed: false, reason: 'error', message: e.message };
+    }
+  };
+
+  // Called after successful check — increments in Firestore
+  window.recordWritingCheck = async function() {
+    if (!_currentUser) return;
+    try {
+      const snap  = await getDoc(doc(_db, 'users', _currentUser.uid));
+      const data  = snap.exists() ? snap.data() : {};
+      const prev  = parseInt(data.writingChecksUsed) || 0;
+      const newCount = prev + 1;
+      await updateDoc(doc(_db, 'users', _currentUser.uid), {
+        writingChecksUsed: newCount
+      });
+      localStorage.setItem('bnd_w_used', String(newCount));
+      _userData = { ...(data||{}), writingChecksUsed: newCount };
+      updateChkBadge();
+    } catch(e) {
+      console.warn('recordWritingCheck failed:', e.message);
+      const prev = parseInt(localStorage.getItem('bnd_w_used')||'0');
+      localStorage.setItem('bnd_w_used', String(prev+1));
+      updateChkBadge();
+    }
+  };
+
+</script>
 <script>
+
 /* QUESTIONS */
 var QS = [
   {id:1,task:'task1',title:'Bar chart — Internet access',sub:'The bar chart shows household internet access across five countries in 2005 and 2015.',inst:'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',time:20,min:150,chart:false},
@@ -1035,157 +1083,14 @@ updateChkBadge();
   el.style.display=m==='practice'?'flex':'none';
   el.style.flexDirection='column';
 });
+
+</script>
+<script>
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sbOverlay').classList.add('show');document.body.style.overflow='hidden';}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('show');document.body.style.overflow='';}
+var _po=false;
+function togglePractice(){_po=!_po;document.getElementById('pmenu').style.display=_po?'block':'none';document.getElementById('pchev').style.transform=_po?'rotate(180deg)':'rotate(0)';}
+document.querySelectorAll('.nav-item').forEach(function(el){el.addEventListener('click',function(){if(window.innerWidth<=640)closeSidebar();});});
 </script>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBZdCEYUded-YT9RMSr1R7wg8VAqK9HCz0",
-    authDomain: "bandio-53433.firebaseapp.com",
-    projectId: "bandio-53433",
-    storageBucket: "bandio-53433.firebasestorage.app",
-    messagingSenderId: "161548316253",
-    appId: "1:161548316253:web:a7746750b2ea6d239d67b4"
-  };
-
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
-
-  // ── FIREBASE LIMIT ENFORCEMENT ─────────────────────────────────
-  // All limits are enforced server-side via Firestore.
-  // localStorage is only used as a display cache — never trusted for access control.
-
-  let _currentUser  = null;
-  let _userData     = null;
-  let _limitLoaded  = false;
-
-  const FB_CONFIG = {
-    apiKey: "AIzaSyBZdCEYUded-YT9RMSr1R7wg8VAqK9HCz0",
-    authDomain: "bandio-53433.firebaseapp.com",
-    projectId: "bandio-53433",
-    storageBucket: "bandio-53433.firebasestorage.app",
-    messagingSenderId: "161548316253",
-    appId: "1:161548316253:web:a7746750b2ea6d239d67b4"
-  };
-
-  const _app  = initializeApp(FB_CONFIG);
-  const _auth = getAuth(_app);
-  const _db   = getFirestore(_app);
-
-  onAuthStateChanged(_auth, async user => {
-    _currentUser = user;
-    if (!user) {
-      // Not logged in — show login prompt, block access
-      _userData = null;
-      _limitLoaded = true;
-      updateChkBadge();
-      return;
-    }
-
-    try {
-      const snap = await getDoc(doc(_db, 'users', user.uid));
-      _userData = snap.exists() ? snap.data() : {};
-      window._bandioUserData = _userData; // expose for plan checks
-
-      const plan        = _userData.plan || 'free';
-      const bonusEssays = _userData.aiWritingBonus || 0;
-      const limit       = plan === 'intensive' ? 60 + bonusEssays
-                        : plan === 'premium'   ? 25 + bonusEssays
-                        : 2  + bonusEssays;
-
-      // Total checks used (not monthly)
-      const used = _userData.writingChecksUsed || 0;
-
-      // Cache for display only
-      localStorage.setItem('bnd_plan',    plan);
-      localStorage.setItem('bnd_w_used',  String(used));
-      localStorage.setItem('bnd_w_limit', String(limit));
-      _limitLoaded = true;
-      updateChkBadge();
-    } catch(e) {
-      console.log('Firebase error:', e.message);
-      _limitLoaded = true;
-    }
-
-    // Load admin-published practice-writing tests from Firestore
-    try {
-      const {getFirestore,collection,getDocs,query,where} = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-      const fsdb = getFirestore(app);
-      const snap = await getDocs(query(collection(fsdb,'tests'),where('type','==','practice-writing')));
-      snap.forEach(function(d){
-        var t=d.data();
-        if(!t.title||!t.passages)return;
-        var p=t.passages[0]||{};
-        var fsId='fs_'+d.id;
-        if(QS.find(function(q){return String(q.id)===fsId;}))return;
-        var isTask1=(p.task==='task1'||String(p.taskType||'').startsWith('task1'));
-        QS.push({
-          id:fsId, task:isTask1?'task1':'task2',
-          title:t.title,
-          sub:p.prompt||p.instructions||'',
-          inst:isTask1?'Summarise the information by selecting and reporting the main features, and make comparisons where relevant.':'Give your opinion and support it with examples.',
-          time:isTask1?20:40, min:isTask1?150:250,
-          chart:!!(p.image), chartSrc:p.image||'',
-          modelAnswer:p.modelAnswer||'',
-          tier:t.access||'free'
-        });
-      });
-      if(typeof renderList==='function')renderList();
-    } catch(e){ console.log('Firestore practice-writing load:',e.message); }
-  });
-
-  // Called by doCheck() — returns {allowed, used, limit, reason}
-  window.checkWritingLimit = async function() {
-    // Must be logged in
-    if (!_currentUser) {
-      return { allowed: false, reason: 'login' };
-    }
-
-    // Re-fetch from Firestore every time — no trusting localStorage
-    try {
-      const snap = await getDoc(doc(_db, 'users', _currentUser.uid));
-      const data = snap.exists() ? snap.data() : {};
-      const plan        = data.plan || 'free';
-      const bonusEssays = data.aiWritingBonus || 0;
-      const limit       = plan === 'intensive' ? 60 + bonusEssays
-                        : plan === 'premium'   ? 25 + bonusEssays
-                        : 2  + bonusEssays;
-      // Total checks (not monthly) — premium gets 25 total, intensive gets 60 total
-      const used = data.writingChecksUsed || 0;
-
-      if (used >= limit) {
-        return { allowed: false, reason: 'limit', used, limit, plan };
-      }
-      return { allowed: true, used, limit, plan };
-    } catch(e) {
-      // On error — block access, do not give free pass
-      return { allowed: false, reason: 'error', message: e.message };
-    }
-  };
-
-  // Called after successful check — increments in Firestore
-  window.recordWritingCheck = async function() {
-    if (!_currentUser) return;
-    try {
-      const snap  = await getDoc(doc(_db, 'users', _currentUser.uid));
-      const data  = snap.exists() ? snap.data() : {};
-      const prev  = parseInt(data.writingChecksUsed) || 0;
-      const newCount = prev + 1;
-      await updateDoc(doc(_db, 'users', _currentUser.uid), {
-        writingChecksUsed: newCount
-      });
-      localStorage.setItem('bnd_w_used', String(newCount));
-      _userData = { ...(data||{}), writingChecksUsed: newCount };
-      updateChkBadge();
-    } catch(e) {
-      console.warn('recordWritingCheck failed:', e.message);
-      const prev = parseInt(localStorage.getItem('bnd_w_used')||'0');
-      localStorage.setItem('bnd_w_used', String(prev+1));
-      updateChkBadge();
-    }
-  };
-</script></body></html>
+</body></html>
